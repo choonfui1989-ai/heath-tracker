@@ -362,11 +362,11 @@ function cloudWatch(path,cb){ return fx.onSnapshot(fx.doc(db,...path), s=>cb(s.e
 /* ============================================================
    3) STATE
    ============================================================ */
+const CARB_KEYS=['早餐','午餐','下午点','晚餐'];
+const PROT=['早餐','午餐','晚餐'], VEGM=['午餐','晚餐'];
 let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 let data = blankDay();
 let curTag='餐前';
-const CARB_KEYS=['早餐','午餐','下午点','晚餐'];
-const PROT=['早餐','午餐','晚餐'], VEGM=['午餐','晚餐'];
 const RING=2*Math.PI*96;
 
 function dkey(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
