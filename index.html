@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>每日健康记录</title>
+<style>
+  :root{
+    --paper:#F5F2EC; --card:#FFFFFF; --ink:#26332F; --sub:#6E7B76;
+    --jade:#3E8E7E; --jade-soft:#E4F0EC; --amber:#DFA24E; --amber-soft:#FBF0DD;
+    --coral:#D66A5A; --coral-soft:#FBE7E2; --line:#E8E4DB;
+    --shadow:0 2px 10px rgba(40,55,50,.06),0 1px 3px rgba(40,55,50,.05);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+    background:var(--paper); color:var(--ink); font-size:18px; line-height:1.5;
+    padding-bottom:96px; max-width:520px; margin:0 auto;}
+  header{padding:20px 20px 6px; display:flex; justify-content:space-between; align-items:flex-start;}
+  .date{font-size:15px; color:var(--sub); font-weight:600;}
+  .greet{font-size:21px; font-weight:800; margin-top:2px;}
+  .gear{background:#fff; border:1.5px solid var(--line); border-radius:12px;
+    width:44px; height:44px; font-size:20px; cursor:pointer; flex:none;}
+  .cloud-tag{font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px; margin-top:6px; display:inline-block;}
+  .cloud-on{background:var(--jade-soft); color:var(--jade);}
+  .cloud-off{background:var(--amber-soft); color:var(--amber);}
+
+  .card{background:var(--card); border-radius:22px; margin:14px 16px; padding:20px; box-shadow:var(--shadow);}
+  .card h2{font-size:20px; margin:0 0 4px; font-weight:800;}
+  .card .hint{font-size:14px; color:var(--sub); margin:0 0 16px; line-height:1.45;}
+
+  .ring-center{position:relative; width:220px; height:220px; margin:2px auto 0;}
+  svg.ring{transform:rotate(-90deg);}
+  .ring-text{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
+  .ring-big{font-size:46px; font-weight:800; line-height:1;}
+  .ring-unit{font-size:16px; color:var(--sub); margin-top:6px;}
+  .ring-label{font-size:14px; color:var(--sub); margin-top:6px;}
+  .pace{text-align:center; font-size:14px; color:var(--jade); font-weight:700; margin:10px 0 0;}
+  .fluid-warn{text-align:center; font-size:15px; font-weight:700; margin:8px 0 0;}
+  .btn-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;}
+  .fbtn{border:2px solid var(--jade); background:#fff; color:var(--jade); border-radius:16px;
+    padding:15px 8px; font-size:18px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; transition:transform .08s;}
+  .fbtn small{font-size:13px; color:var(--sub); font-weight:600;}
+  .fbtn:active{transform:scale(.95); background:var(--jade-soft);}
+  .ghost{width:100%; margin-top:10px; border:1.5px solid var(--line); background:#fff; color:var(--sub);
+    border-radius:14px; padding:13px; font-size:16px; font-weight:700; cursor:pointer;}
+  .ghost:active{background:var(--paper);}
+
+  .meal-row{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line);}
+  .meal-row:last-child{border-bottom:none;}
+  .meal-name{font-size:18px; font-weight:700;}
+  .meal-target{font-size:13px; color:var(--sub); font-weight:600; margin-top:2px;}
+  .stepper{display:flex; align-items:center; gap:14px;}
+  .step-btn{width:46px; height:46px; border-radius:50%; border:none; cursor:pointer; font-size:26px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; background:var(--jade-soft); color:var(--jade);}
+  .step-btn:active{transform:scale(.92);}
+  .step-btn.minus{background:var(--paper); color:var(--sub);}
+  .count{min-width:30px; text-align:center; font-size:24px; font-weight:800;}
+  .bar{height:12px; background:var(--paper); border-radius:10px; overflow:hidden; margin-top:14px;}
+  .bar > i{display:block; height:100%; border-radius:10px; background:var(--jade); transition:width .3s,background .3s;}
+  .bar-label{display:flex; justify-content:space-between; font-size:14px; color:var(--sub); font-weight:600; margin-top:8px;}
+
+  .g-tags{display:flex; gap:10px; margin-bottom:12px;}
+  .g-tag{flex:1; padding:12px; border-radius:14px; border:2px solid var(--line); background:#fff;
+    font-size:16px; font-weight:700; text-align:center; cursor:pointer; color:var(--sub);}
+  .g-tag.on{border-color:var(--jade); color:var(--jade); background:var(--jade-soft);}
+  .g-input{display:flex; gap:10px; align-items:center;}
+  .g-input input{flex:1; font-size:24px; font-weight:800; text-align:center; border:2px solid var(--line);
+    border-radius:14px; padding:12px; color:var(--ink); width:100%;}
+  .save{background:var(--jade); color:#fff; border:none; border-radius:14px; padding:14px 22px; font-size:18px; font-weight:800; cursor:pointer; flex:none;}
+  .save:active{transform:scale(.96);}
+  .glist{margin-top:14px;}
+  .gitem{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); font-size:16px;}
+  .gitem:last-child{border-bottom:none;}
+  .gval{font-weight:800; font-size:18px;}
+  .pill{font-size:12px; font-weight:800; padding:3px 10px; border-radius:20px;}
+  .pill.ok{background:var(--jade-soft); color:var(--jade);}
+  .pill.hi{background:var(--coral-soft); color:var(--coral);}
+  .pill.lo{background:var(--amber-soft); color:var(--amber);}
+
+  .chk-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .chk{padding:12px 16px; border-radius:14px; border:2px solid var(--line); background:#fff; font-size:16px; font-weight:700; cursor:pointer; color:var(--sub);}
+  .chk.on{border-color:var(--jade); background:var(--jade-soft); color:var(--jade);}
+
+  /* tabs */
+  .tabbar{position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:520px;
+    background:#fff; border-top:1px solid var(--line); display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom));}
+  .tab{flex:1; text-align:center; padding:8px 0; font-size:12px; font-weight:700; color:var(--sub); cursor:pointer; border:none; background:none;}
+  .tab .ic{font-size:22px; display:block; margin-bottom:2px;}
+  .tab.on{color:var(--jade);}
+  .page{display:none;} .page.on{display:block;}
+
+  /* summary rows */
+  .sum{display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-bottom:1px solid var(--line);}
+  .sum:last-child{border-bottom:none;}
+  .sum .k{font-size:16px; font-weight:700;}
+  .sum .v{font-size:18px; font-weight:800;}
+  .sub2{font-size:13px; color:var(--sub); font-weight:600;}
+
+  /* modal */
+  .mask{position:fixed; inset:0; background:rgba(30,40,36,.45); display:none; align-items:flex-end; justify-content:center; z-index:50;}
+  .mask.on{display:flex;}
+  .sheet{background:#fff; width:100%; max-width:520px; border-radius:24px 24px 0 0; padding:22px 20px calc(22px + env(safe-area-inset-bottom)); max-height:88vh; overflow:auto;}
+  .sheet h3{margin:0 0 14px; font-size:20px; font-weight:800;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:14px; color:var(--sub); font-weight:700; margin-bottom:6px;}
+  .field input{width:100%; font-size:18px; border:2px solid var(--line); border-radius:12px; padding:12px; font-weight:700;}
+  .grp{background:var(--paper); border-radius:14px; padding:12px 14px; margin-bottom:14px;}
+  .grp .gt{font-size:13px; font-weight:800; color:var(--jade); margin-bottom:8px;}
+  .two{display:flex; gap:10px;} .two .field{flex:1;}
+  .primary{width:100%; background:var(--jade); color:#fff; border:none; border-radius:14px; padding:15px; font-size:18px; font-weight:800; cursor:pointer; margin-top:4px;}
+  .link{display:block; text-align:center; margin-top:12px; color:var(--sub); background:none; border:none; font-size:14px; text-decoration:underline; cursor:pointer; width:100%;}
+  .foot{text-align:center; font-size:13px; color:var(--sub); padding:8px 24px 0; line-height:1.6;}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="date" id="date">—</div>
+    <div class="greet">今天也要好好照顾自己 🌿</div>
+    <span class="cloud-tag cloud-off" id="cloudTag">本地模式</span>
+  </div>
+  <button class="gear" onclick="openCare()">⚙️</button>
+</header>
+
+<!-- ================= TODAY ================= -->
+<div class="page on" id="page-today">
+  <div class="card">
+    <h2>💧 今日喝水</h2>
+    <p class="hint" id="fluidHint">医生建议每天不超过 1500 毫升。汤、粥水、吃药的水，都要算进去。</p>
+    <div class="ring-center">
+      <svg class="ring" width="220" height="220" viewBox="0 0 220 220">
+        <circle cx="110" cy="110" r="96" fill="none" stroke="#EFEBE2" stroke-width="20"/>
+        <circle id="ringFill" cx="110" cy="110" r="96" fill="none" stroke="#3E8E7E" stroke-width="20"
+          stroke-linecap="round" stroke-dasharray="603" stroke-dashoffset="603"/>
+      </svg>
+      <div class="ring-text">
+        <div class="ring-big" id="fluidRemain">1500</div>
+        <div class="ring-unit">毫升 还可以喝</div>
+        <div class="ring-label" id="fluidUsed">已喝 0 毫升</div>
+      </div>
+    </div>
+    <div class="pace" id="fluidPace"></div>
+    <div class="fluid-warn" id="fluidWarn"></div>
+    <div class="btn-grid">
+      <button class="fbtn" onclick="addFluid(250,'一杯水')">一杯水<small>250 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(125,'半杯水')">半杯水<small>125 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(200,'一碗汤／粥')">一碗汤／粥<small>200 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(150,'一茶杯')">一茶杯<small>150 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(30,'吃药喝水')">吃药喝水<small>30 毫升</small></button>
+      <button class="fbtn" onclick="addCustomFluid()">其他份量<small>自己填</small></button>
+    </div>
+    <button class="ghost" onclick="undoFluid()">↩ 撤销上一次</button>
+  </div>
+
+  <div class="card">
+    <h2>🍚 主食（碳水）</h2>
+    <p class="hint" id="carbHint">一天 12 份。1 份 ≈ ¼ 碗饭、1 片面包、⅓ 碗米粉。</p>
+    <div id="carbRows"></div>
+    <div class="bar"><i id="carbBar" style="width:0%"></i></div>
+    <div class="bar-label"><span>今天已吃</span><span id="carbTotal">0 / 12 份</span></div>
+  </div>
+
+  <div class="card">
+    <h2>🍎 水果</h2>
+    <p class="hint" id="fruitHint">一天 2 份。例如 1 粒苹果、8 粒葡萄。</p>
+    <div class="meal-row">
+      <div><div class="meal-name">今日水果</div><div class="meal-target" id="fruitTgt">目标 2 份</div></div>
+      <div class="stepper">
+        <button class="step-btn minus" onclick="stepFruit(-1)">−</button>
+        <span class="count" id="fruitCount">0</span>
+        <button class="step-btn" onclick="stepFruit(1)">＋</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🥗 蛋白质 & 蔬菜</h2>
+    <p class="hint">吃了就点一下。蛋白质约手掌／火柴盒大小（鱼、鸡肉、豆腐、蛋）。</p>
+    <div style="font-weight:700;margin:4px 0 8px;">蛋白质</div>
+    <div class="chk-row" id="proteinChks"></div>
+    <div style="font-weight:700;margin:16px 0 8px;">蔬菜（每餐约 2 碗）</div>
+    <div class="chk-row" id="vegChks"></div>
+  </div>
+</div>
+
+<!-- ================= BLOOD PRESSURE ================= -->
+<div class="page" id="page-bp">
+  <div class="card">
+    <h2>🫀 血压记录</h2>
+    <p class="hint" id="bpHint">医生建议一天测 2 次（早上起床后、晚上睡前）。</p>
+    <div class="bar"><i id="bpBar" style="width:0%"></i></div>
+    <div class="bar-label"><span id="bpCountLabel">今天已测 0 次</span><span id="bpTargetLabel">建议 2 次</span></div>
+    <div class="two" style="margin-top:16px;">
+      <div class="field"><label>高压 (mmHg)</label><input id="bpSys" type="number" inputmode="numeric" placeholder="例如 128"></div>
+      <div class="field"><label>低压 (mmHg)</label><input id="bpDia" type="number" inputmode="numeric" placeholder="例如 78"></div>
+    </div>
+    <div class="two">
+      <div class="field" style="flex:1;"><label>脉搏（可不填）</label><input id="bpPulse" type="number" inputmode="numeric" placeholder="例如 66"></div>
+      <button class="save" style="align-self:flex-end; margin-bottom:14px;" onclick="saveBP()">记录</button>
+    </div>
+    <div class="glist" id="bpList"></div>
+  </div>
+</div>
+
+<!-- ================= GLUCOSE ================= -->
+<div class="page" id="page-glucose">
+  <div class="card">
+    <h2>🩸 血糖记录</h2>
+    <p class="hint" id="gHint">餐前目标 4.4–7.0，餐后 2 小时 4.4–8.5 mmol/L。</p>
+    <div class="g-tags">
+      <div class="g-tag on" id="tagPre" onclick="setTag('餐前')">餐前</div>
+      <div class="g-tag" id="tagPost" onclick="setTag('餐后')">餐后 2 小时</div>
+    </div>
+    <div class="g-input">
+      <input id="gVal" type="number" inputmode="decimal" step="0.1" placeholder="例如 6.5">
+      <button class="save" onclick="saveGlucose()">记录</button>
+    </div>
+    <div class="glist" id="gList"></div>
+  </div>
+</div>
+
+<!-- ================= WEEKLY ================= -->
+<div class="page" id="page-week">
+  <div class="card">
+    <h2>📊 最近 7 天</h2>
+    <p class="hint">给医生看的时候，可以打开这一页。</p>
+    <div id="weekBody"></div>
+    <button class="ghost" onclick="buildWeek()">🔄 刷新</button>
+  </div>
+  <p class="foot">记录会保存在这台手机上；如果已连接云端，照护者也能同步看到。</p>
+</div>
+
+<!-- ================= TABS ================= -->
+<nav class="tabbar">
+  <button class="tab on" data-p="today" onclick="go('today')"><span class="ic">🏠</span>今日</button>
+  <button class="tab" data-p="bp" onclick="go('bp')"><span class="ic">🫀</span>血压</button>
+  <button class="tab" data-p="glucose" onclick="go('glucose')"><span class="ic">🩸</span>血糖</button>
+  <button class="tab" data-p="week" onclick="go('week')"><span class="ic">📊</span>周报</button>
+</nav>
+
+<!-- ================= CAREGIVER SHEET ================= -->
+<div class="mask" id="careMask">
+  <div class="sheet" id="careSheet">
+    <!-- password gate -->
+    <div id="gate">
+      <h3>照护者设置</h3>
+      <p class="hint">修改目标数值需要密码。这是给家人／照护者用的。</p>
+      <div class="field"><label>密码</label><input id="carePass" type="password" inputmode="numeric" placeholder="输入密码"></div>
+      <button class="primary" onclick="checkPass()">进入</button>
+      <button class="link" onclick="closeCare()">取消</button>
+    </div>
+    <!-- settings form -->
+    <div id="settingsForm" style="display:none;">
+      <h3>调整目标</h3>
+      <p class="hint">医生更新建议后，在这里修改。改完记得按「保存」。</p>
+
+      <div class="grp"><div class="gt">💧 喝水</div>
+        <div class="field"><label>每天上限（毫升）</label><input id="s_fluid" type="number" inputmode="numeric"></div>
+        <div class="two">
+          <div class="field"><label>起床时间</label><input id="s_wake" type="number" inputmode="numeric" placeholder="7"></div>
+          <div class="field"><label>睡觉时间</label><input id="s_sleep" type="number" inputmode="numeric" placeholder="21"></div>
+        </div>
+      </div>
+
+      <div class="grp"><div class="gt">🍚 主食（份）</div>
+        <div class="field"><label>每天总份数</label><input id="s_carbTotal" type="number" inputmode="numeric"></div>
+        <div class="two">
+          <div class="field"><label>早餐</label><input id="s_c1" type="text"></div>
+          <div class="field"><label>午餐</label><input id="s_c2" type="text"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label>下午点</label><input id="s_c3" type="text"></div>
+          <div class="field"><label>晚餐</label><input id="s_c4" type="text"></div>
+        </div>
+      </div>
+
+      <div class="grp"><div class="gt">🍎 水果</div>
+        <div class="field"><label>每天份数</label><input id="s_fruit" type="number" inputmode="numeric"></div>
+      </div>
+
+      <div class="grp"><div class="gt">🫀 血压</div>
+        <div class="field"><label>每天测量次数</label><input id="s_bpPerDay" type="number" inputmode="numeric"></div>
+        <div class="two">
+          <div class="field"><label>高压偏高 ≥</label><input id="s_sysHi" type="number" inputmode="numeric"></div>
+          <div class="field"><label>低压偏高 ≥</label><input id="s_diaHi" type="number" inputmode="numeric"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label>高压偏低 <</label><input id="s_sysLo" type="number" inputmode="numeric"></div>
+          <div class="field"><label>低压偏低 <</label><input id="s_diaLo" type="number" inputmode="numeric"></div>
+        </div>
+      </div>
+
+      <div class="grp"><div class="gt">🩸 血糖 (mmol/L)</div>
+        <div class="two">
+          <div class="field"><label>餐前 下限</label><input id="s_preLo" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label>餐前 上限</label><input id="s_preHi" type="number" step="0.1" inputmode="decimal"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label>餐后 下限</label><input id="s_postLo" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label>餐后 上限</label><input id="s_postHi" type="number" step="0.1" inputmode="decimal"></div>
+        </div>
+      </div>
+
+      <button class="primary" onclick="saveSettings()">保存</button>
+      <button class="link" onclick="closeCare()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+/* ============================================================
+   1) CONFIG  —  PASTE YOUR FIREBASE KEYS + SET PASSWORD HERE
+   ============================================================ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBrTD8J_RnWL2qEm1ijc-yJAE4EbB8pSZ4",
+  authDomain: "healthtracker-wwp.firebaseapp.com",
+  projectId: "healthtracker-wwp",
+  storageBucket: "healthtracker-wwp.firebasestorage.app",
+  messagingSenderId: "157389297242",
+  appId: "1:157389297242:web:923a554ff1a6c5be286a63"
+};
+const CAREGIVER_PASSWORD = "6171";
+const PATIENT_ID = "WWP";            // folder name in the cloud database
+
+/* Default targets (used first time; caregiver can change in-app) */
+const DEFAULT_SETTINGS = {
+  fluidTarget: 1500, wake: 7, sleep: 21,
+  carbTotal: 12, carbMeals: {'早餐':'3-4','午餐':'4','下午点':'1','晚餐':'3-4'},
+  fruitTarget: 2,
+  bpPerDay: 2, bp:{sysHi:135, diaHi:85, sysLo:100, diaLo:60},
+  glucose:{preLo:4.4, preHi:7.0, postLo:4.4, postHi:8.5}
+};
+
+/* ============================================================
+   2) CLOUD / LOCAL STORAGE LAYER
+   ============================================================ */
+let db=null, cloud=false, fx=null;
+async function initCloud(){
+  if(!FIREBASE_CONFIG.apiKey) return;
+  try{
+    const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    fx = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const app = appMod.initializeApp(FIREBASE_CONFIG);
+    /* Anonymous sign-in — invisible to the user, required by security rules */
+    const authMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+    const auth = authMod.getAuth(app);
+    await authMod.signInAnonymously(auth);
+    db = fx.getFirestore(app);
+    try{ await fx.enableIndexedDbPersistence(db); }catch(e){}
+    cloud=true;
+  }catch(e){ console.warn('cloud off', e); cloud=false; }
+}
+function lget(k){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return MEM[k]??null; } }
+function lset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){ MEM[k]=v; } }
+const MEM={};
+
+async function cloudGet(path){ const s=await fx.getDoc(fx.doc(db,...path)); return s.exists()?s.data().d:null; }
+async function cloudSet(path,val){ await fx.setDoc(fx.doc(db,...path),{d:val}); }
+function cloudWatch(path,cb){ return fx.onSnapshot(fx.doc(db,...path), s=>cb(s.exists()?s.data().d:null)); }
+
+/* ============================================================
+   3) STATE
+   ============================================================ */
+let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+let data = blankDay();
+let curTag='餐前';
+const CARB_KEYS=['早餐','午餐','下午点','晚餐'];
+const PROT=['早餐','午餐','晚餐'], VEGM=['午餐','晚餐'];
+const RING=2*Math.PI*96;
+
+function dkey(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function blankDay(){
+  const c={}; CARB_KEYS.forEach(k=>c[k]=0);
+  const p={}; PROT.forEach(k=>p[k]=false);
+  const v={}; VEGM.forEach(k=>v[k]=false);
+  return {fluid:{total:0,log:[]}, carbs:c, fruit:0, protein:p, veg:v, glucose:[], bp:[]};
+}
+const TODAY=dkey();
+const dayPath=(dt)=>['patients',PATIENT_ID,'days',dt];
+const setPath=['patients',PATIENT_ID,'meta','settings'];
+
+async function saveDay(){ lset('day:'+TODAY,data); if(cloud){ try{ await cloudSet(dayPath(TODAY),data);}catch(e){} } }
+async function saveSet(){ lset('settings',settings); if(cloud){ try{ await cloudSet(setPath,settings);}catch(e){} } }
+
+/* ============================================================
+   4) INIT
+   ============================================================ */
+(function head(){
+  const d=new Date(), wk=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  document.getElementById('date').textContent=(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · '+wk[d.getDay()];
+})();
+
+await initCloud();
+document.getElementById('cloudTag').className='cloud-tag '+(cloud?'cloud-on':'cloud-off');
+document.getElementById('cloudTag').textContent= cloud?'☁️ 云端已连接':'本地模式（未连云端）';
+
+// load settings
+let ls=lget('settings'); if(ls) settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),ls);
+if(cloud){ try{ const cs=await cloudGet(setPath); if(cs) settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),cs); else await cloudSet(setPath,settings);}catch(e){} }
+// load today
+let ld=lget('day:'+TODAY); if(ld) data=Object.assign(blankDay(),ld);
+if(cloud){ try{ const cd=await cloudGet(dayPath(TODAY)); if(cd) data=Object.assign(blankDay(),cd);}catch(e){}
+  cloudWatch(dayPath(TODAY), d=>{ if(d){ data=Object.assign(blankDay(),d); renderAll(); }});
+  cloudWatch(setPath, s=>{ if(s){ settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),s); renderAll(); }});
+}
+renderAll();
+
+/* ============================================================
+   5) TAB NAV
+   ============================================================ */
+window.go=function(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.getElementById('page-'+p).classList.add('on');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p===p));
+  if(p==='week') buildWeek();
+  window.scrollTo(0,0);
+};
+
+/* ============================================================
+   6) FLUID
+   ============================================================ */
+window.addFluid=function(ml,label){ data.fluid.total+=ml; data.fluid.log.push({ml,label,t:Date.now()}); saveDay(); renderFluid(); };
+window.undoFluid=function(){ const l=data.fluid.log.pop(); if(l){ data.fluid.total=Math.max(0,data.fluid.total-l.ml); saveDay(); renderFluid(); } };
+window.addCustomFluid=function(){ const v=parseInt(prompt('喝了多少毫升？（数字）'),10); if(v>0) addFluid(v,'自己填'); };
+function renderFluid(){
+  const T=settings.fluidTarget, used=data.fluid.total, remain=T-used;
+  document.getElementById('fluidHint').textContent='医生建议每天不超过 '+T+' 毫升。汤、粥水、吃药的水，都要算进去。';
+  document.getElementById('fluidRemain').textContent= remain>=0?remain:0;
+  document.getElementById('fluidUsed').textContent='已喝 '+used+' 毫升';
+  const pct=Math.min(used/T,1), fill=document.getElementById('ringFill');
+  fill.style.strokeDashoffset=RING*(1-pct);
+  let col='#3E8E7E', warn='';
+  if(used>T){ col='#D66A5A'; warn='⚠️ 已超过今天的上限，先别再喝了'; }
+  else if(used>=T*0.8){ col='#DFA24E'; warn='快到上限了，接下来慢慢喝'; }
+  fill.setAttribute('stroke',col);
+  document.getElementById('fluidRemain').style.color=col;
+  const w=document.getElementById('fluidWarn'); w.textContent=warn; w.style.color=col;
+  // pacing
+  const now=new Date(), hr=now.getHours()+now.getMinutes()/60;
+  const pace=document.getElementById('fluidPace');
+  if(remain>0 && hr<settings.sleep){
+    const hrsLeft=Math.max(settings.sleep-hr,0.5);
+    pace.textContent='到睡前大约还有 '+hrsLeft.toFixed(1)+' 小时，每小时大约 '+Math.round(remain/hrsLeft)+' 毫升';
+  } else pace.textContent='';
+}
+
+/* ============================================================
+   7) CARBS / FRUIT / CHECKS
+   ============================================================ */
+function renderCarbs(){
+  document.getElementById('carbHint').textContent='一天 '+settings.carbTotal+' 份。1 份 ≈ ¼ 碗饭、1 片面包、⅓ 碗米粉。';
+  const wrap=document.getElementById('carbRows'); wrap.innerHTML='';
+  CARB_KEYS.forEach(k=>{
+    const row=document.createElement('div'); row.className='meal-row';
+    row.innerHTML=`<div><div class="meal-name">${k}</div><div class="meal-target">目标 ${settings.carbMeals[k]} 份</div></div>
+      <div class="stepper"><button class="step-btn minus">−</button><span class="count">${data.carbs[k]}</span><button class="step-btn">＋</button></div>`;
+    const [mi,pl]=row.querySelectorAll('.step-btn'); const c=row.querySelector('.count');
+    mi.onclick=()=>{ data.carbs[k]=Math.max(0,data.carbs[k]-1); c.textContent=data.carbs[k]; saveDay(); carbTotal(); };
+    pl.onclick=()=>{ data.carbs[k]+=1; c.textContent=data.carbs[k]; saveDay(); carbTotal(); };
+    wrap.appendChild(row);
+  });
+  carbTotal();
+}
+function carbTotal(){
+  let t=0; CARB_KEYS.forEach(k=>t+=data.carbs[k]); const T=settings.carbTotal;
+  document.getElementById('carbTotal').textContent=t+' / '+T+' 份';
+  const b=document.getElementById('carbBar'); b.style.width=Math.min(t/T,1)*100+'%';
+  b.style.background= t>T?'#D66A5A':(t>=T?'#DFA24E':'#3E8E7E');
+}
+window.stepFruit=function(n){ data.fruit=Math.max(0,data.fruit+n); document.getElementById('fruitCount').textContent=data.fruit; saveDay(); };
+function renderFruit(){ document.getElementById('fruitTgt').textContent='目标 '+settings.fruitTarget+' 份';
+  document.getElementById('fruitHint').textContent='一天 '+settings.fruitTarget+' 份。例如 1 粒苹果、8 粒葡萄。';
+  document.getElementById('fruitCount').textContent=data.fruit; }
+function renderChecks(){
+  const pw=document.getElementById('proteinChks'); pw.innerHTML='';
+  PROT.forEach(m=>{ const b=document.createElement('div'); b.className='chk'+(data.protein[m]?' on':''); b.textContent=m;
+    b.onclick=()=>{ data.protein[m]=!data.protein[m]; b.classList.toggle('on'); saveDay(); }; pw.appendChild(b); });
+  const vw=document.getElementById('vegChks'); vw.innerHTML='';
+  VEGM.forEach(m=>{ const b=document.createElement('div'); b.className='chk'+(data.veg[m]?' on':''); b.textContent=m;
+    b.onclick=()=>{ data.veg[m]=!data.veg[m]; b.classList.toggle('on'); saveDay(); }; vw.appendChild(b); });
+}
+
+/* ============================================================
+   8) BLOOD PRESSURE
+   ============================================================ */
+window.saveBP=function(){
+  const sys=parseInt(document.getElementById('bpSys').value,10);
+  const dia=parseInt(document.getElementById('bpDia').value,10);
+  const pulse=parseInt(document.getElementById('bpPulse').value,10);
+  if(!(sys>0)||!(dia>0)){ document.getElementById('bpSys').focus(); return; }
+  data.bp.push({sys,dia,pulse:pulse>0?pulse:null,t:Date.now()});
+  document.getElementById('bpSys').value=''; document.getElementById('bpDia').value=''; document.getElementById('bpPulse').value='';
+  saveDay(); renderBP();
+};
+function bpFlag(sys,dia){
+  const b=settings.bp;
+  if(sys>=b.sysHi||dia>=b.diaHi) return {t:'偏高',c:'hi'};
+  if(sys<b.sysLo||dia<b.diaLo) return {t:'偏低',c:'lo'};
+  return {t:'正常',c:'ok'};
+}
+function renderBP(){
+  document.getElementById('bpHint').textContent='医生建议一天测 '+settings.bpPerDay+' 次（早上起床后、晚上睡前）。';
+  const n=data.bp.length, T=settings.bpPerDay;
+  document.getElementById('bpCountLabel').textContent='今天已测 '+n+' 次';
+  document.getElementById('bpTargetLabel').textContent='建议 '+T+' 次';
+  const bar=document.getElementById('bpBar'); bar.style.width=Math.min(n/T,1)*100+'%';
+  bar.style.background= n>=T?'#3E8E7E':'#DFA24E';
+  const wrap=document.getElementById('bpList'); wrap.innerHTML='';
+  [...data.bp].reverse().forEach(r=>{
+    const d=new Date(r.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const f=bpFlag(r.sys,r.dia);
+    const it=document.createElement('div'); it.className='gitem';
+    it.innerHTML=`<span>${hh}${r.pulse?' · 脉搏 '+r.pulse:''}</span>
+      <span><span class="gval">${r.sys}/${r.dia}</span> <span class="pill ${f.c}">${f.t}</span></span>`;
+    wrap.appendChild(it);
+  });
+}
+
+/* ============================================================
+   9) GLUCOSE
+   ============================================================ */
+window.setTag=function(t){ curTag=t; document.getElementById('tagPre').classList.toggle('on',t==='餐前'); document.getElementById('tagPost').classList.toggle('on',t==='餐后'); };
+window.saveGlucose=function(){ const el=document.getElementById('gVal'), v=parseFloat(el.value);
+  if(!(v>0)){ el.focus(); return; } data.glucose.push({value:v,tag:curTag,t:Date.now()}); el.value=''; saveDay(); renderGlucose(); };
+function gFlag(v,tag){ const g=settings.glucose;
+  const lo=tag==='餐前'?g.preLo:g.postLo, hi=tag==='餐前'?g.preHi:g.postHi;
+  if(v>hi) return {t:'偏高',c:'hi'}; if(v<lo) return {t:'偏低',c:'lo'}; return {t:'正常',c:'ok'}; }
+function renderGlucose(){
+  const g=settings.glucose;
+  document.getElementById('gHint').textContent=`餐前目标 ${g.preLo}–${g.preHi}，餐后 2 小时 ${g.postLo}–${g.postHi} mmol/L。`;
+  const wrap=document.getElementById('gList'); wrap.innerHTML='';
+  [...data.glucose].reverse().forEach(x=>{ const d=new Date(x.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const f=gFlag(x.value,x.tag); const it=document.createElement('div'); it.className='gitem';
+    it.innerHTML=`<span>${x.tag} · ${hh}</span><span><span class="gval">${x.value.toFixed(1)}</span> <span class="pill ${f.c}">${f.t}</span></span>`;
+    wrap.appendChild(it); });
+}
+
+/* ============================================================
+   10) WEEKLY SUMMARY
+   ============================================================ */
+window.buildWeek=async function(){
+  const wrap=document.getElementById('weekBody'); wrap.innerHTML='<p class="sub2">读取中…</p>';
+  const days=[]; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); days.push(dkey(d)); }
+  const recs={};
+  for(const dt of days){
+    let r=lget('day:'+dt);
+    if(!r && cloud){ try{ r=await cloudGet(dayPath(dt)); }catch(e){} }
+    if(dt===TODAY) r=data;
+    if(r) recs[dt]=r;
+  }
+  const ks=Object.keys(recs);
+  if(!ks.length){ wrap.innerHTML='<p class="sub2">还没有记录。</p>'; return; }
+  let fluidSum=0, fluidOver=0, gPre=[], gPost=[], bpS=[], bpD=[], carbDays=0, fluidDays=0;
+  ks.forEach(dt=>{ const r=recs[dt];
+    if(r.fluid){ fluidSum+=r.fluid.total; fluidDays++; if(r.fluid.total>settings.fluidTarget) fluidOver++; }
+    (r.glucose||[]).forEach(x=>{ (x.tag==='餐前'?gPre:gPost).push(x.value); });
+    (r.bp||[]).forEach(x=>{ bpS.push(x.sys); bpD.push(x.dia); });
+    let ct=0; CARB_KEYS.forEach(k=>ct+=(r.carbs?.[k]||0)); if(Math.abs(ct-settings.carbTotal)<=1) carbDays++;
+  });
+  const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):null;
+  const row=(k,v,s)=>`<div class="sum"><div><div class="k">${k}</div>${s?`<div class="sub2">${s}</div>`:''}</div><div class="v">${v}</div></div>`;
+  let html='';
+  html+=row('平均每天喝水', fluidDays?Math.round(fluidSum/fluidDays)+' 毫升':'—', '上限 '+settings.fluidTarget+' 毫升');
+  html+=row('超过喝水上限', fluidOver+' 天', '共记录 '+fluidDays+' 天');
+  html+=row('餐前血糖 平均', avg(gPre)?avg(gPre).toFixed(1):'—', '目标 '+settings.glucose.preLo+'–'+settings.glucose.preHi);
+  html+=row('餐后血糖 平均', avg(gPost)?avg(gPost).toFixed(1):'—', '目标 '+settings.glucose.postLo+'–'+settings.glucose.postHi);
+  html+=row('血压 平均', (avg(bpS)&&avg(bpD))?Math.round(avg(bpS))+'/'+Math.round(avg(bpD)):'—', bpS.length+' 次记录');
+  html+=row('主食达标', carbDays+' / '+ks.length+' 天', '接近 '+settings.carbTotal+' 份');
+  wrap.innerHTML=html;
+};
+
+/* ============================================================
+   11) CAREGIVER PANEL
+   ============================================================ */
+window.openCare=function(){ document.getElementById('careMask').classList.add('on');
+  document.getElementById('gate').style.display='block'; document.getElementById('settingsForm').style.display='none';
+  document.getElementById('carePass').value=''; };
+window.closeCare=function(){ document.getElementById('careMask').classList.remove('on'); };
+window.checkPass=function(){
+  if(document.getElementById('carePass').value===CAREGIVER_PASSWORD){
+    document.getElementById('gate').style.display='none';
+    document.getElementById('settingsForm').style.display='block'; fillForm();
+  } else { alert('密码不正确'); }
+};
+function fillForm(){
+  const S=settings;
+  document.getElementById('s_fluid').value=S.fluidTarget;
+  document.getElementById('s_wake').value=S.wake; document.getElementById('s_sleep').value=S.sleep;
+  document.getElementById('s_carbTotal').value=S.carbTotal;
+  document.getElementById('s_c1').value=S.carbMeals['早餐']; document.getElementById('s_c2').value=S.carbMeals['午餐'];
+  document.getElementById('s_c3').value=S.carbMeals['下午点']; document.getElementById('s_c4').value=S.carbMeals['晚餐'];
+  document.getElementById('s_fruit').value=S.fruitTarget;
+  document.getElementById('s_bpPerDay').value=S.bpPerDay;
+  document.getElementById('s_sysHi').value=S.bp.sysHi; document.getElementById('s_diaHi').value=S.bp.diaHi;
+  document.getElementById('s_sysLo').value=S.bp.sysLo; document.getElementById('s_diaLo').value=S.bp.diaLo;
+  document.getElementById('s_preLo').value=S.glucose.preLo; document.getElementById('s_preHi').value=S.glucose.preHi;
+  document.getElementById('s_postLo').value=S.glucose.postLo; document.getElementById('s_postHi').value=S.glucose.postHi;
+}
+window.saveSettings=async function(){
+  const num=(id,f)=>{ const v=parseFloat(document.getElementById(id).value); return isNaN(v)?f:v; };
+  settings.fluidTarget=num('s_fluid',1500); settings.wake=num('s_wake',7); settings.sleep=num('s_sleep',21);
+  settings.carbTotal=num('s_carbTotal',12);
+  settings.carbMeals={'早餐':document.getElementById('s_c1').value||'3-4','午餐':document.getElementById('s_c2').value||'4',
+    '下午点':document.getElementById('s_c3').value||'1','晚餐':document.getElementById('s_c4').value||'3-4'};
+  settings.fruitTarget=num('s_fruit',2); settings.bpPerDay=num('s_bpPerDay',2);
+  settings.bp={sysHi:num('s_sysHi',135),diaHi:num('s_diaHi',85),sysLo:num('s_sysLo',100),diaLo:num('s_diaLo',60)};
+  settings.glucose={preLo:num('s_preLo',4.4),preHi:num('s_preHi',7.0),postLo:num('s_postLo',4.4),postHi:num('s_postHi',8.5)};
+  await saveSet(); renderAll(); closeCare(); alert('已保存 ✓');
+};
+
+/* ============================================================
+   12) RENDER ALL
+   ============================================================ */
+function renderAll(){ renderFluid(); renderCarbs(); renderFruit(); renderChecks(); renderBP(); renderGlucose(); }
+window.buildWeek=window.buildWeek;
+</script>
+</body>
+</html>
