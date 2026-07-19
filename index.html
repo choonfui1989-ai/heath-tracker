@@ -111,22 +111,55 @@
   .primary{width:100%; background:var(--jade); color:#fff; border:none; border-radius:14px; padding:15px; font-size:18px; font-weight:800; cursor:pointer; margin-top:4px;}
   .link{display:block; text-align:center; margin-top:12px; color:var(--sub); background:none; border:none; font-size:14px; text-decoration:underline; cursor:pointer; width:100%;}
   .foot{text-align:center; font-size:13px; color:var(--sub); padding:8px 24px 0; line-height:1.6;}
+
+  /* history / medical additions */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .chip{padding:8px 14px;border-radius:20px;border:2px solid var(--line);background:#fff;font-size:14px;font-weight:700;color:var(--sub);cursor:pointer;}
+  .chip.on{border-color:var(--jade);color:var(--jade);background:var(--jade-soft);}
+  .day-h{font-size:15px;font-weight:800;color:var(--jade);margin:16px 0 2px;padding-bottom:4px;border-bottom:2px solid var(--jade-soft);}
+  .hrow{display:flex;justify-content:space-between;align-items:center;font-size:15px;padding:7px 0;border-bottom:1px dashed var(--line);}
+  .hrow .ht{color:var(--sub);font-weight:600;flex:none;margin-right:10px;}
+  .hrow .hv{font-weight:800;}
+  .emer{border:2.5px solid var(--coral);}
+  .emer h2{color:var(--coral);}
+  .emer .et{font-size:13px;font-weight:800;color:var(--coral);margin:14px 0 3px;letter-spacing:.5px;}
+  .emer .eb{font-size:17px;line-height:1.75;white-space:pre-line;font-weight:600;}
+  .appt{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+  .appt:last-child{border-bottom:none;}
+  .appt .ad{flex:none;text-align:center;background:var(--jade-soft);color:var(--jade);border-radius:12px;padding:8px 10px;font-weight:800;font-size:14px;min-width:66px;line-height:1.35;}
+  .appt.past .ad{background:var(--paper);color:var(--sub);}
+  .appt .ai{flex:1;min-width:0;} .appt .ai b{font-size:17px;} .appt .ai .sub2{margin-top:2px;}
+  .appt .del{border:none;background:none;color:var(--sub);font-size:18px;cursor:pointer;padding:4px;flex:none;}
+  .rec{padding:13px 0;border-bottom:1px solid var(--line);}
+  .rec:last-child{border-bottom:none;}
+  .rec .rt{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .rec .rb{font-size:15px;color:var(--sub);white-space:pre-line;margin-top:4px;line-height:1.55;}
+  .rec img{width:66px;height:66px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;flex:none;}
+  .field textarea{width:100%;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:12px;font-weight:600;min-height:72px;font-family:inherit;line-height:1.5;}
+  .photo-mask{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:99;}
+  .photo-mask.on{display:flex;}
+  .photo-mask img{max-width:96%;max-height:92%;border-radius:8px;}
+  .addbtn{width:100%;border:2px dashed var(--jade);background:var(--jade-soft);color:var(--jade);border-radius:14px;padding:13px;font-size:16px;font-weight:800;cursor:pointer;margin-top:12px;}
+  .photo-prev{width:100%;max-height:180px;object-fit:contain;border-radius:12px;border:1px solid var(--line);margin-top:8px;display:none;}
 </style>
 </head>
 <body>
 <header>
   <div>
     <div class="date" id="date">—</div>
-    <div class="greet">今天也要好好照顾自己 🌿</div>
+    <div class="greet" data-i18n="greet">今天也要好好照顾自己 🌿</div>
     <span class="cloud-tag cloud-off" id="cloudTag">本地模式</span>
   </div>
-  <button class="gear" onclick="openCare()">⚙️</button>
+  <div style="display:flex;gap:8px;">
+    <button class="gear" id="langBtn" onclick="toggleLang()" style="font-size:14px;font-weight:800;">EN</button>
+    <button class="gear" onclick="openCare()">⚙️</button>
+  </div>
 </header>
 
 <!-- ================= TODAY ================= -->
 <div class="page on" id="page-today">
   <div class="card">
-    <h2>💧 今日喝水</h2>
+    <h2 data-i18n="fluid_h">💧 今日喝水</h2>
     <p class="hint" id="fluidHint">医生建议每天不超过 1500 毫升。汤、粥水、吃药的水，都要算进去。</p>
     <div class="ring-center">
       <svg class="ring" width="220" height="220" viewBox="0 0 220 220">
@@ -136,36 +169,36 @@
       </svg>
       <div class="ring-text">
         <div class="ring-big" id="fluidRemain">1500</div>
-        <div class="ring-unit">毫升 还可以喝</div>
+        <div class="ring-unit" data-i18n="ml_left">毫升 还可以喝</div>
         <div class="ring-label" id="fluidUsed">已喝 0 毫升</div>
       </div>
     </div>
     <div class="pace" id="fluidPace"></div>
     <div class="fluid-warn" id="fluidWarn"></div>
     <div class="btn-grid">
-      <button class="fbtn" onclick="addFluid(250,'一杯水')">一杯水<small>250 毫升</small></button>
-      <button class="fbtn" onclick="addFluid(125,'半杯水')">半杯水<small>125 毫升</small></button>
-      <button class="fbtn" onclick="addFluid(200,'一碗汤／粥')">一碗汤／粥<small>200 毫升</small></button>
-      <button class="fbtn" onclick="addFluid(150,'一茶杯')">一茶杯<small>150 毫升</small></button>
-      <button class="fbtn" onclick="addFluid(30,'吃药喝水')">吃药喝水<small>30 毫升</small></button>
-      <button class="fbtn" onclick="addCustomFluid()">其他份量<small>自己填</small></button>
+      <button class="fbtn" onclick="addFluid(250,'一杯水')" data-i18n-h="fl1">一杯水<small>250 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(125,'半杯水')" data-i18n-h="fl2">半杯水<small>125 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(200,'一碗汤／粥')" data-i18n-h="fl3">一碗汤／粥<small>200 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(150,'一茶杯')" data-i18n-h="fl4">一茶杯<small>150 毫升</small></button>
+      <button class="fbtn" onclick="addFluid(30,'吃药喝水')" data-i18n-h="fl5">吃药喝水<small>30 毫升</small></button>
+      <button class="fbtn" onclick="addCustomFluid()" data-i18n-h="fl6">其他份量<small>自己填</small></button>
     </div>
-    <button class="ghost" onclick="undoFluid()">↩ 撤销上一次</button>
+    <button class="ghost" onclick="undoFluid()" data-i18n="undo">↩ 撤销上一次</button>
   </div>
 
   <div class="card">
-    <h2>🍚 主食（碳水）</h2>
+    <h2 data-i18n="carb_h">🍚 主食（碳水）</h2>
     <p class="hint" id="carbHint">一天 12 份。1 份 ≈ ¼ 碗饭、1 片面包、⅓ 碗米粉。</p>
     <div id="carbRows"></div>
     <div class="bar"><i id="carbBar" style="width:0%"></i></div>
-    <div class="bar-label"><span>今天已吃</span><span id="carbTotal">0 / 12 份</span></div>
+    <div class="bar-label"><span data-i18n="eaten">今天已吃</span><span id="carbTotal">0 / 12 份</span></div>
   </div>
 
   <div class="card">
-    <h2>🍎 水果</h2>
+    <h2 data-i18n="fruit_h">🍎 水果</h2>
     <p class="hint" id="fruitHint">一天 2 份。例如 1 粒苹果、8 粒葡萄。</p>
     <div class="meal-row">
-      <div><div class="meal-name">今日水果</div><div class="meal-target" id="fruitTgt">目标 2 份</div></div>
+      <div><div class="meal-name" data-i18n="fruit_today">今日水果</div><div class="meal-target" id="fruitTgt">目标 2 份</div></div>
       <div class="stepper">
         <button class="step-btn minus" onclick="stepFruit(-1)">−</button>
         <span class="count" id="fruitCount">0</span>
@@ -175,11 +208,11 @@
   </div>
 
   <div class="card">
-    <h2>🥗 蛋白质 & 蔬菜</h2>
-    <p class="hint">吃了就点一下。蛋白质约手掌／火柴盒大小（鱼、鸡肉、豆腐、蛋）。</p>
-    <div style="font-weight:700;margin:4px 0 8px;">蛋白质</div>
+    <h2 data-i18n="pv_h">🥗 蛋白质 & 蔬菜</h2>
+    <p class="hint" data-i18n="pv_hint">吃了就点一下。蛋白质约手掌／火柴盒大小（鱼、鸡肉、豆腐、蛋）。</p>
+    <div style="font-weight:700;margin:4px 0 8px;" data-i18n="prot">蛋白质</div>
     <div class="chk-row" id="proteinChks"></div>
-    <div style="font-weight:700;margin:16px 0 8px;">蔬菜（每餐约 2 碗）</div>
+    <div style="font-weight:700;margin:16px 0 8px;" data-i18n="veg">蔬菜（每餐约 2 碗）</div>
     <div class="chk-row" id="vegChks"></div>
   </div>
 </div>
@@ -187,17 +220,17 @@
 <!-- ================= BLOOD PRESSURE ================= -->
 <div class="page" id="page-bp">
   <div class="card">
-    <h2>🫀 血压记录</h2>
+    <h2 data-i18n="bp_h">🫀 血压记录</h2>
     <p class="hint" id="bpHint">医生建议一天测 2 次（早上起床后、晚上睡前）。</p>
     <div class="bar"><i id="bpBar" style="width:0%"></i></div>
     <div class="bar-label"><span id="bpCountLabel">今天已测 0 次</span><span id="bpTargetLabel">建议 2 次</span></div>
     <div class="two" style="margin-top:16px;">
-      <div class="field"><label>高压 (mmHg)</label><input id="bpSys" type="number" inputmode="numeric" placeholder="例如 128"></div>
-      <div class="field"><label>低压 (mmHg)</label><input id="bpDia" type="number" inputmode="numeric" placeholder="例如 78"></div>
+      <div class="field"><label data-i18n="sys">高压 (mmHg)</label><input id="bpSys" type="number" inputmode="numeric" placeholder="例如 128"></div>
+      <div class="field"><label data-i18n="dia">低压 (mmHg)</label><input id="bpDia" type="number" inputmode="numeric" placeholder="例如 78"></div>
     </div>
     <div class="two">
-      <div class="field" style="flex:1;"><label>脉搏（可不填）</label><input id="bpPulse" type="number" inputmode="numeric" placeholder="例如 66"></div>
-      <button class="save" style="align-self:flex-end; margin-bottom:14px;" onclick="saveBP()">记录</button>
+      <div class="field" style="flex:1;"><label data-i18n="pulse">脉搏（可不填）</label><input id="bpPulse" type="number" inputmode="numeric" placeholder="例如 66"></div>
+      <button class="save" style="align-self:flex-end; margin-bottom:14px;" onclick="saveBP()" data-i18n="rec_btn">记录</button>
     </div>
     <div class="glist" id="bpList"></div>
   </div>
@@ -206,15 +239,15 @@
 <!-- ================= GLUCOSE ================= -->
 <div class="page" id="page-glucose">
   <div class="card">
-    <h2>🩸 血糖记录</h2>
+    <h2 data-i18n="g_h">🩸 血糖记录</h2>
     <p class="hint" id="gHint">餐前目标 4.4–7.0，餐后 2 小时 4.4–8.5 mmol/L。</p>
     <div class="g-tags">
-      <div class="g-tag on" id="tagPre" onclick="setTag('餐前')">餐前</div>
-      <div class="g-tag" id="tagPost" onclick="setTag('餐后')">餐后 2 小时</div>
+      <div class="g-tag on" id="tagPre" onclick="setTag('餐前')" data-i18n="pre">餐前</div>
+      <div class="g-tag" id="tagPost" onclick="setTag('餐后')" data-i18n="post">餐后 2 小时</div>
     </div>
     <div class="g-input">
       <input id="gVal" type="number" inputmode="decimal" step="0.1" placeholder="例如 6.5">
-      <button class="save" onclick="saveGlucose()">记录</button>
+      <button class="save" onclick="saveGlucose()" data-i18n="rec_btn">记录</button>
     </div>
     <div class="glist" id="gList"></div>
   </div>
@@ -223,20 +256,56 @@
 <!-- ================= WEEKLY ================= -->
 <div class="page" id="page-week">
   <div class="card">
-    <h2>📊 最近 7 天</h2>
-    <p class="hint">给医生看的时候，可以打开这一页。</p>
+    <h2 data-i18n="wk_h">📊 记录回顾</h2>
+    <p class="hint" data-i18n="wk_hint">给医生看的时候，可以打开这一页。选择日子范围，「明细」可以看到每一笔记录和时间。</p>
+    <div class="chips" id="histChips">
+      <div class="chip on" data-d="7" onclick="setHist(7)" data-i18n="d7">7 天</div>
+      <div class="chip" data-d="30" onclick="setHist(30)" data-i18n="d30">30 天</div>
+      <div class="chip" data-d="90" onclick="setHist(90)" data-i18n="d90">3 个月</div>
+      <div class="chip" data-d="180" onclick="setHist(180)" data-i18n="d180">6 个月</div>
+    </div>
+    <div class="g-tags">
+      <div class="g-tag on" id="hmSum" onclick="setHistMode('sum')" data-i18n="m_sum">摘要</div>
+      <div class="g-tag" id="hmDet" onclick="setHistMode('det')" data-i18n="m_det">明细</div>
+    </div>
     <div id="weekBody"></div>
-    <button class="ghost" onclick="buildWeek()">🔄 刷新</button>
+    <button class="ghost" onclick="buildWeek()" data-i18n="refresh">🔄 刷新</button>
   </div>
-  <p class="foot">记录会保存在这台手机上；如果已连接云端，照护者也能同步看到。</p>
+  <p class="foot" data-i18n="foot">记录会保存在这台手机上；如果已连接云端，照护者也能同步看到。</p>
+</div>
+
+
+<!-- ================= MEDICAL ================= -->
+<div class="page" id="page-med">
+  <div class="card emer">
+    <h2 data-i18n="em_h">🆘 重要医疗信息</h2>
+    <p class="hint" data-i18n="em_hint">看医生或紧急时，直接把这一页给医护人员看。</p>
+    <div id="emerBody"></div>
+    <button class="ghost" onclick="editEmer()" data-i18n="em_edit">✏️ 修改内容（需密码）</button>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="ap_h">📅 复诊 & 检查安排</h2>
+    <p class="hint" data-i18n="ap_hint">下次复诊、抽血、检查的日期都记在这里。</p>
+    <div id="apptList"><p class="sub2">还没有安排。</p></div>
+    <button class="addbtn" onclick="openAppt()" data-i18n="ap_add">＋ 添加复诊／检查</button>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="rc_h">📁 医疗记录</h2>
+    <p class="hint" data-i18n="rc_hint">拍下检查报告、出院摘要、复诊卡，保存在这里。检查结果和治疗可以自己填写。</p>
+    <div id="recList"><p class="sub2">读取中…</p></div>
+    <button class="addbtn" onclick="openRec()" data-i18n="rc_add">＋ 添加记录（可拍照）</button>
+  </div>
 </div>
 
 <!-- ================= TABS ================= -->
 <nav class="tabbar">
-  <button class="tab on" data-p="today" onclick="go('today')"><span class="ic">🏠</span>今日</button>
-  <button class="tab" data-p="bp" onclick="go('bp')"><span class="ic">🫀</span>血压</button>
-  <button class="tab" data-p="glucose" onclick="go('glucose')"><span class="ic">🩸</span>血糖</button>
-  <button class="tab" data-p="week" onclick="go('week')"><span class="ic">📊</span>周报</button>
+  <button class="tab on" data-p="today" onclick="go('today')"><span class="ic">🏠</span><span data-i18n="tab_today">今日</span></button>
+  <button class="tab" data-p="bp" onclick="go('bp')"><span class="ic">🫀</span><span data-i18n="tab_bp">血压</span></button>
+  <button class="tab" data-p="glucose" onclick="go('glucose')"><span class="ic">🩸</span><span data-i18n="tab_g">血糖</span></button>
+  <button class="tab" data-p="week" onclick="go('week')"><span class="ic">📊</span><span data-i18n="tab_wk">周报</span></button>
+  <button class="tab" data-p="med" onclick="go('med')"><span class="ic">🏥</span><span data-i18n="tab_med">医疗</span></button>
 </nav>
 
 <!-- ================= CAREGIVER SHEET ================= -->
@@ -244,69 +313,132 @@
   <div class="sheet" id="careSheet">
     <!-- password gate -->
     <div id="gate">
-      <h3>照护者设置</h3>
-      <p class="hint">修改目标数值需要密码。这是给家人／照护者用的。</p>
-      <div class="field"><label>密码</label><input id="carePass" type="password" inputmode="numeric" placeholder="输入密码"></div>
-      <button class="primary" onclick="checkPass()">进入</button>
-      <button class="link" onclick="closeCare()">取消</button>
+      <h3 data-i18n="cg_h">照护者设置</h3>
+      <p class="hint" data-i18n="cg_hint">修改目标数值需要密码。这是给家人／照护者用的。</p>
+      <div class="field"><label data-i18n="pw">密码</label><input id="carePass" type="password" inputmode="numeric" placeholder="输入密码"></div>
+      <button class="primary" onclick="checkPass()" data-i18n="enter">进入</button>
+      <button class="link" onclick="closeCare()" data-i18n="cancel">取消</button>
     </div>
     <!-- settings form -->
     <div id="settingsForm" style="display:none;">
-      <h3>调整目标</h3>
-      <p class="hint">医生更新建议后，在这里修改。改完记得按「保存」。</p>
+      <h3 data-i18n="st_h">调整目标</h3>
+      <p class="hint" data-i18n="st_hint">医生更新建议后，在这里修改。改完记得按「保存」。</p>
 
-      <div class="grp"><div class="gt">💧 喝水</div>
-        <div class="field"><label>每天上限（毫升）</label><input id="s_fluid" type="number" inputmode="numeric"></div>
+      <div class="grp"><div class="gt" data-i18n="st_fluid">💧 喝水</div>
+        <div class="field"><label data-i18n="st_fmax">每天上限（毫升）</label><input id="s_fluid" type="number" inputmode="numeric"></div>
         <div class="two">
-          <div class="field"><label>起床时间</label><input id="s_wake" type="number" inputmode="numeric" placeholder="7"></div>
-          <div class="field"><label>睡觉时间</label><input id="s_sleep" type="number" inputmode="numeric" placeholder="21"></div>
+          <div class="field"><label data-i18n="st_wake">起床时间</label><input id="s_wake" type="number" inputmode="numeric" placeholder="7"></div>
+          <div class="field"><label data-i18n="st_sleep">睡觉时间</label><input id="s_sleep" type="number" inputmode="numeric" placeholder="21"></div>
         </div>
       </div>
 
-      <div class="grp"><div class="gt">🍚 主食（份）</div>
-        <div class="field"><label>每天总份数</label><input id="s_carbTotal" type="number" inputmode="numeric"></div>
+      <div class="grp"><div class="gt" data-i18n="st_carb">🍚 主食（份）</div>
+        <div class="field"><label data-i18n="st_ctotal">每天总份数</label><input id="s_carbTotal" type="number" inputmode="numeric"></div>
         <div class="two">
-          <div class="field"><label>早餐</label><input id="s_c1" type="text"></div>
-          <div class="field"><label>午餐</label><input id="s_c2" type="text"></div>
+          <div class="field"><label data-i18n="meal_早餐">早餐</label><input id="s_c1" type="text"></div>
+          <div class="field"><label data-i18n="meal_午餐">午餐</label><input id="s_c2" type="text"></div>
         </div>
         <div class="two">
-          <div class="field"><label>下午点</label><input id="s_c3" type="text"></div>
-          <div class="field"><label>晚餐</label><input id="s_c4" type="text"></div>
-        </div>
-      </div>
-
-      <div class="grp"><div class="gt">🍎 水果</div>
-        <div class="field"><label>每天份数</label><input id="s_fruit" type="number" inputmode="numeric"></div>
-      </div>
-
-      <div class="grp"><div class="gt">🫀 血压</div>
-        <div class="field"><label>每天测量次数</label><input id="s_bpPerDay" type="number" inputmode="numeric"></div>
-        <div class="two">
-          <div class="field"><label>高压偏高 ≥</label><input id="s_sysHi" type="number" inputmode="numeric"></div>
-          <div class="field"><label>低压偏高 ≥</label><input id="s_diaHi" type="number" inputmode="numeric"></div>
-        </div>
-        <div class="two">
-          <div class="field"><label>高压偏低 <</label><input id="s_sysLo" type="number" inputmode="numeric"></div>
-          <div class="field"><label>低压偏低 <</label><input id="s_diaLo" type="number" inputmode="numeric"></div>
+          <div class="field"><label data-i18n="meal_下午点">下午点</label><input id="s_c3" type="text"></div>
+          <div class="field"><label data-i18n="meal_晚餐">晚餐</label><input id="s_c4" type="text"></div>
         </div>
       </div>
 
-      <div class="grp"><div class="gt">🩸 血糖 (mmol/L)</div>
+      <div class="grp"><div class="gt" data-i18n="fruit_h">🍎 水果</div>
+        <div class="field"><label data-i18n="st_fperday">每天份数</label><input id="s_fruit" type="number" inputmode="numeric"></div>
+      </div>
+
+      <div class="grp"><div class="gt" data-i18n="tab_bp">🫀 血压</div>
+        <div class="field"><label data-i18n="st_bpn">每天测量次数</label><input id="s_bpPerDay" type="number" inputmode="numeric"></div>
         <div class="two">
-          <div class="field"><label>餐前 下限</label><input id="s_preLo" type="number" step="0.1" inputmode="decimal"></div>
-          <div class="field"><label>餐前 上限</label><input id="s_preHi" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="st_syshi">高压偏高 ≥</label><input id="s_sysHi" type="number" inputmode="numeric"></div>
+          <div class="field"><label data-i18n="st_diahi">低压偏高 ≥</label><input id="s_diaHi" type="number" inputmode="numeric"></div>
         </div>
         <div class="two">
-          <div class="field"><label>餐后 下限</label><input id="s_postLo" type="number" step="0.1" inputmode="decimal"></div>
-          <div class="field"><label>餐后 上限</label><input id="s_postHi" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="st_syslo">高压偏低 <</label><input id="s_sysLo" type="number" inputmode="numeric"></div>
+          <div class="field"><label data-i18n="st_dialo">低压偏低 <</label><input id="s_diaLo" type="number" inputmode="numeric"></div>
         </div>
       </div>
 
-      <button class="primary" onclick="saveSettings()">保存</button>
-      <button class="link" onclick="closeCare()">关闭</button>
+      <div class="grp"><div class="gt" data-i18n="st_g">🩸 血糖 (mmol/L)</div>
+        <div class="two">
+          <div class="field"><label data-i18n="st_prelo">餐前 下限</label><input id="s_preLo" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="st_prehi">餐前 上限</label><input id="s_preHi" type="number" step="0.1" inputmode="decimal"></div>
+        </div>
+        <div class="two">
+          <div class="field"><label data-i18n="st_postlo">餐后 下限</label><input id="s_postLo" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label data-i18n="st_posthi">餐后 上限</label><input id="s_postHi" type="number" step="0.1" inputmode="decimal"></div>
+        </div>
+      </div>
+
+      <div class="gt" data-i18n="st_ai">🤖 AI 识别</div>
+    <div class="field"><label data-i18n="st_aikey">AI Key（只保存在这台设备）</label><input id="s_gemkey" type="password" autocomplete="off" placeholder="AIza…"></div>
+    <p class="hint" data-i18n="st_aihint">在 aistudio.google.com 免费申请。留空则隐藏 AI 按钮。</p>
+    <button class="primary" onclick="saveSettings()" data-i18n="save">保存</button>
+      <button class="link" onclick="closeCare()" data-i18n="close">关闭</button>
     </div>
   </div>
 </div>
+
+
+<!-- appointment sheet -->
+<div class="mask" id="apptMask">
+  <div class="sheet">
+    <h3 data-i18n="ap_new">添加复诊／检查</h3>
+    <div class="two">
+      <div class="field"><label data-i18n="date">日期</label><input id="ap_date" type="date"></div>
+      <div class="field"><label data-i18n="time_opt">时间（可不填）</label><input id="ap_time" type="time"></div>
+    </div>
+    <div class="field"><label data-i18n="place">医院／诊所</label><input id="ap_place" type="text" placeholder="例如 心脏专科中心"></div>
+    <div class="field"><label data-i18n="doc_opt">科室／医生（可不填）</label><input id="ap_doc" type="text" placeholder="例如 心内科 · 陈医生"></div>
+    <div class="field"><label data-i18n="note_opt">备注（可不填）</label><input id="ap_note" type="text" placeholder="例如 要空腹抽血"></div>
+    <button class="primary" onclick="saveAppt()" data-i18n="save">保存</button>
+    <button class="link" onclick="closeMask('apptMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
+<!-- medical record sheet -->
+<div class="mask" id="recMask">
+  <div class="sheet">
+    <h3 data-i18n="rc_new">添加医疗记录</h3>
+    <div class="two">
+      <div class="field"><label data-i18n="date">日期</label><input id="rc_date" type="date"></div>
+      <div class="field"><label data-i18n="rtype">类型</label><input id="rc_type" type="text" placeholder="例如 抽血报告"></div>
+    </div>
+    <div class="field"><label data-i18n="rtitle">标题</label><input id="rc_title" type="text" placeholder="例如 心脏复诊 · 陈医生"></div>
+    <div class="field"><label data-i18n="rfind">检查结果／医生说了什么（可不填）</label><textarea id="rc_find"></textarea></div>
+    <div class="field"><label data-i18n="rtreat">治疗／药物调整（可不填）</label><textarea id="rc_treat"></textarea></div>
+    <div class="field"><label data-i18n="rphoto">拍照或选择照片（可不填）</label>
+      <input id="rc_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;">
+      <img id="rc_prev" class="photo-prev">
+      <button class="ghost" id="rc_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiRead()" data-i18n="ai_btn">🤖 AI 帮我读这份报告</button>
+      <p class="sub2" id="rc_ainote" style="display:none;margin-top:8px;line-height:1.5;"></p>
+    </div>
+    <button class="primary" id="rc_save" onclick="saveRec()" data-i18n="save">保存</button>
+    <button class="link" onclick="closeMask('recMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
+<!-- emergency edit sheet -->
+<div class="mask" id="emerMask">
+  <div class="sheet">
+    <h3 data-i18n="em_edit_h">修改重要医疗信息</h3>
+    <p class="hint" data-i18n="em_edit_hint">这些内容会给医护人员看，请确认准确。</p>
+    <div class="field"><label data-i18n="em_diag">主要病史／诊断</label><textarea id="em_diag" style="min-height:120px;"></textarea></div>
+    <div class="field"><label data-i18n="em_warn">⚠️ 特别注意事项</label><textarea id="em_warn" style="min-height:100px;"></textarea></div>
+    <div class="field"><label data-i18n="em_allergy">过敏史</label><textarea id="em_allergy"></textarea></div>
+    <div class="field"><label data-i18n="em_meds">目前用药</label><textarea id="em_meds"></textarea></div>
+    <div class="two">
+      <div class="field"><label data-i18n="em_blood">血型</label><input id="em_blood" type="text"></div>
+      <div class="field"><label data-i18n="em_contact">紧急联络人</label><input id="em_contact" type="text"></div>
+    </div>
+    <button class="primary" onclick="saveEmer()" data-i18n="save">保存</button>
+    <button class="link" onclick="closeMask('emerMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
+<!-- fullscreen photo -->
+<div class="photo-mask" id="photoMask" onclick="this.classList.remove('on')"><img id="photoBig"></div>
 
 <script type="module">
 /* ============================================================
@@ -321,6 +453,10 @@ const FIREBASE_CONFIG = {
   appId: "1:157389297242:web:923a554ff1a6c5be286a63"
 };
 const CAREGIVER_PASSWORD = "6171";
+/* AI key: do NOT paste it here (this file is public on GitHub!). Enter it once
+   inside the app: ⚙️ → password → AI key field. Stored only on that device. */
+const GEMINI_API_KEY = "";
+const gemKey=()=> GEMINI_API_KEY || (lget('gemkey')||'');
 const PATIENT_ID = "WWP";            // folder name in the cloud database
 
 /* Default targets (used first time; caregiver can change in-app) */
@@ -362,6 +498,125 @@ function cloudWatch(path,cb){ return fx.onSnapshot(fx.doc(db,...path), s=>cb(s.e
 /* ============================================================
    3) STATE
    ============================================================ */
+/* ---------- i18n ---------- */
+let LANG = (function(){ try{ return JSON.parse(localStorage.getItem('lang'))||'zh'; }catch(e){ return 'zh'; } })();
+const TT = {
+zh:{}, /* Chinese = source text already in HTML/keys below */
+en:{
+ greet:'Take good care of yourself today 🌿', cloud_on:'☁️ Cloud connected', cloud_off:'Local mode (no cloud)',
+ tab_today:'Today', tab_bp:'BP', tab_g:'Glucose', tab_wk:'History', tab_med:'Medical',
+ fluid_h:'💧 Water Today', ml_left:'ml remaining',
+ fl1:'Glass of water<small>250 ml</small>', fl2:'Half glass<small>125 ml</small>', fl3:'Bowl of soup/porridge<small>200 ml</small>',
+ fl4:'Tea cup<small>150 ml</small>', fl5:'Medication water<small>30 ml</small>', fl6:'Other amount<small>enter yourself</small>',
+ undo:'↩ Undo last', carb_h:'🍚 Staples (Carbs)', eaten:'Eaten today',
+ fruit_h:'🍎 Fruit', fruit_today:"Today's fruit",
+ pv_h:'🥗 Protein & Vegetables', pv_hint:'Tap when eaten. Protein ≈ palm/matchbox size (fish, chicken, tofu, egg).',
+ prot:'Protein', veg:'Vegetables (~2 bowls per meal)',
+ bp_h:'🫀 Blood Pressure', sys:'Systolic (mmHg)', dia:'Diastolic (mmHg)', pulse:'Pulse (optional)', rec_btn:'Save',
+ g_h:'🩸 Blood Glucose', pre:'Before meal', post:'2h after meal',
+ wk_h:'📊 History', wk_hint:'Show this page to the doctor. Pick a range; "Details" shows every record with its time.',
+ d7:'7 days', d30:'30 days', d90:'3 months', d180:'6 months', m_sum:'Summary', m_det:'Details', refresh:'🔄 Refresh',
+ foot:'Records are saved on this phone; if cloud is connected, caregivers see them in sync.',
+ em_h:'🆘 Key Medical Information', em_hint:'At the clinic or in an emergency, show this page to medical staff.',
+ em_edit:'✏️ Edit content (password)',
+ ap_h:'📅 Appointments & Tests', ap_hint:'Record upcoming visits, blood tests and check-ups here.', ap_add:'＋ Add appointment/test',
+ rc_h:'📁 Medical Records', rc_hint:'Photograph reports, discharge summaries and appointment cards. Findings and treatment can be typed in.',
+ rc_add:'＋ Add record (photo)', ai_btn:'🤖 AI, read this report',
+ cg_h:'Caregiver Settings', cg_hint:'A password is needed to change targets. This is for family/caregivers.',
+ pw:'Password', enter:'Enter', cancel:'Cancel', close:'Close', save:'Save',
+ st_h:'Adjust Targets', st_hint:'Update here when the doctor changes advice. Remember to press "Save".',
+ st_fluid:'💧 Water', st_fmax:'Daily limit (ml)', st_wake:'Wake time', st_sleep:'Bed time',
+ st_carb:'🍚 Staples (portions)', st_ctotal:'Total per day',
+ 'meal_早餐':'Breakfast','meal_午餐':'Lunch','meal_下午点':'Afternoon snack','meal_晚餐':'Dinner',
+ st_fperday:'Portions per day', st_bpn:'Readings per day', st_syshi:'Systolic high ≥', st_diahi:'Diastolic high ≥',
+ st_syslo:'Systolic low <', st_dialo:'Diastolic low <', st_g:'🩸 Glucose (mmol/L)',
+ st_ai:'🤖 AI reading', st_aikey:'AI key (stored on this device only)', st_aihint:'Free at aistudio.google.com. Leave empty to hide the AI button.', st_prelo:'Pre-meal low', st_prehi:'Pre-meal high', st_postlo:'Post-meal low', st_posthi:'Post-meal high',
+ ap_new:'Add appointment/test', date:'Date', time_opt:'Time (optional)', place:'Hospital/Clinic',
+ doc_opt:'Dept/Doctor (optional)', note_opt:'Notes (optional)',
+ rc_new:'Add medical record', rtype:'Type', rtitle:'Title', rfind:'Findings / what the doctor said (optional)',
+ rtreat:'Treatment / medication changes (optional)', rphoto:'Take or choose a photo (optional)',
+ em_edit_h:'Edit key medical information', em_edit_hint:'Medical staff will read this. Please make sure it is accurate.',
+ em_diag:'Medical history / diagnoses', em_warn:'⚠️ Important warnings', em_allergy:'Allergies', em_meds:'Current medications',
+ em_blood:'Blood type', em_contact:'Emergency contact',
+ /* dynamic */
+ fluid_hint:"Doctor's limit: no more than {0} ml per day. Soup, porridge and medication water all count.",
+ used:'{0} ml taken', warn_over:'⚠️ Over the daily limit — stop drinking for now', warn_near:'Close to the limit — sip slowly',
+ pace:'About {0} hrs to bedtime — roughly {1} ml per hour',
+ carb_hint:'{0} portions a day. 1 portion ≈ ¼ bowl rice, 1 slice bread, ⅓ bowl noodles.',
+ target:'Target {0}', n_of:'{0} / {1}', fruit_hint:'{0} a day. e.g. 1 apple, 8 grapes.',
+ bp_hint:'Doctor advises {0} readings a day (after waking, before bed).', bp_n:'Measured {0} today', bp_t:'Target {0}',
+ g_hint:'Pre-meal target {0}–{1}, 2h post-meal {2}–{3} mmol/L.',
+ f_ok:'Normal', f_hi:'High', f_lo:'Low', tag_餐前:'Pre-meal', tag_餐后:'Post-meal', pulse_s:'Pulse',
+ loading:'Loading…', none:'No records yet.', none_range:'No records in this period.',
+ s_avgw:'Avg daily water', s_lim:'Limit {0} ml', s_over:'Days over water limit', s_days:'{0} days recorded',
+ s_pre:'Pre-meal glucose avg', s_post:'Post-meal glucose avg', s_n_hi:'{0} readings · {1} high',
+ s_bp:'BP average', s_carb:'Carb target met', s_near:'about {0} portions', s_dd:'{0} / {1} days', s_d:'days',
+ dt_bp:'BP', dt_g:'Glucose', dt_w:'Water ({0}×)', dt_carb:'Staples', dt_fruit:'Fruit', ml:'ml',
+ ap_none:'No appointments yet.', ap_past:'Past ({0})', ap_visit:'Appointment', ap_del:'Delete this appointment?',
+ ap_needdate:'Please choose a date',
+ rc_none:'No records yet. Tap the button below to photograph a report.', rc_del:'Delete this record? (photo included)',
+ del:'Delete', saving:'Saving…', saved:'Saved ✓', wrongpw:'Wrong password', enterpw:'Enter caregiver password',
+ nospace:'Not enough local space — photo too large', photofail:'Could not read the photo, please try again',
+ custom_prompt:'How many ml? (number)', custom_lbl:'custom',
+ ai_reading:'🤖 Reading… (~10 s)',
+ ai_done:'✅ AI filled in the fields above. AI can misread — check dates and numbers against the original before saving.',
+ ai_fail:'❌ AI reading failed ({0}). You can type it in yourself, or try again.',
+ ai_emer_q:'AI thinks this is important for emergencies:\n\n"{0}"\n\nAdd it to 🆘 Important warnings? (caregiver password needed)',
+ ai_added:'Added ✓ Please open the Medical tab and confirm it is correct.', ai_notadd:'Wrong password — not added.',
+ mon:'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec', wd:'Sun,Mon,Tue,Wed,Thu,Fri,Sat'
+}};
+TT.zh = {
+ fluid_hint:'医生建议每天不超过 {0} 毫升。汤、粥水、吃药的水，都要算进去。', used:'已喝 {0} 毫升',
+ warn_over:'⚠️ 已超过今天的上限，先别再喝了', warn_near:'快到上限了，接下来慢慢喝',
+ pace:'到睡前大约还有 {0} 小时，每小时大约 {1} 毫升',
+ carb_hint:'一天 {0} 份。1 份 ≈ ¼ 碗饭、1 片面包、⅓ 碗米粉。', target:'目标 {0} 份', n_of:'{0} / {1} 份',
+ fruit_hint:'一天 {0} 份。例如 1 粒苹果、8 粒葡萄。',
+ bp_hint:'医生建议一天测 {0} 次（早上起床后、晚上睡前）。', bp_n:'今天已测 {0} 次', bp_t:'建议 {0} 次',
+ g_hint:'餐前目标 {0}–{1}，餐后 2 小时 {2}–{3} mmol/L。',
+ f_ok:'正常', f_hi:'偏高', f_lo:'偏低', tag_餐前:'餐前', tag_餐后:'餐后', pulse_s:'脉搏',
+ 'meal_早餐':'早餐','meal_午餐':'午餐','meal_下午点':'下午点','meal_晚餐':'晚餐',
+ loading:'读取中…', none:'还没有记录。', none_range:'这段时间还没有记录。',
+ s_avgw:'平均每天喝水', s_lim:'上限 {0} 毫升', s_over:'超过喝水上限', s_days:'共记录 {0} 天',
+ s_pre:'餐前血糖 平均', s_post:'餐后血糖 平均', s_n_hi:'{0} 次 · 偏高 {1} 次',
+ s_bp:'血压 平均', s_carb:'主食达标', s_near:'接近 {0} 份', s_dd:'{0} / {1} 天', s_d:'天',
+ dt_bp:'血压', dt_g:'血糖', dt_w:'喝水（{0} 次）', dt_carb:'主食', dt_fruit:'水果', ml:'毫升',
+ ap_none:'还没有安排。', ap_past:'过去的（{0}）', ap_visit:'复诊', ap_del:'删除这个安排？', ap_needdate:'请选择日期',
+ rc_none:'还没有记录。按下面的按钮，把报告拍下来。', rc_del:'删除这条记录？（照片也会一起删除）',
+ del:'删除', saving:'保存中…', saved:'已保存 ✓', wrongpw:'密码不正确', enterpw:'输入照护者密码',
+ nospace:'本地空间不足，照片太大', photofail:'照片读取失败，请再试一次',
+ custom_prompt:'喝了多少毫升？（数字）', custom_lbl:'自己填',
+ ai_reading:'🤖 正在读取…（约 10 秒）',
+ ai_done:'✅ AI 已填好上面的栏目。AI 可能会读错——保存前请对照原件检查日期和数值。',
+ ai_fail:'❌ AI 读取失败（{0}）。可以自己填写，或再试一次。',
+ ai_emer_q:'AI 认为这条信息对急救很重要：\n\n「{0}」\n\n要加进 🆘 重要医疗信息的「特别注意」吗？（需要照护者密码）',
+ ai_added:'已加入 ✓ 请到 医疗 页确认内容正确。', ai_notadd:'密码不正确，未加入。',
+ cloud_on:'☁️ 云端已连接', cloud_off:'本地模式（未连云端）',
+ wd:'日,一,二,三,四,五,六'
+};
+function t(k,...a){ let s=(TT[LANG]&&TT[LANG][k]!==undefined)?TT[LANG][k]:(TT.zh[k]!==undefined?TT.zh[k]:null);
+  if(s===null){ const el=document.querySelector('[data-i18n="'+k+'"],[data-i18n-h="'+k+'"]'); s=el?el.textContent:k; }
+  a.forEach((x,i)=>{ s=s.split('{'+i+'}').join(x); }); return s; }
+const ZH_STATIC={};  // captured from HTML on first load
+function applyLang(){
+  document.documentElement.lang=(LANG==='zh'?'zh-CN':'en');
+  const lb=document.getElementById('langBtn'); if(lb) lb.textContent=(LANG==='zh'?'EN':'中文');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n;
+    if(!(k in ZH_STATIC)) ZH_STATIC[k]=el.textContent;
+    el.textContent=(LANG==='zh')?ZH_STATIC[k]:(TT.en[k]??ZH_STATIC[k]); });
+  document.querySelectorAll('[data-i18n-h]').forEach(el=>{ const k=el.dataset.i18nH;
+    if(!(k in ZH_STATIC)) ZH_STATIC[k]=el.innerHTML;
+    el.innerHTML=(LANG==='zh')?ZH_STATIC[k]:(TT.en[k]??ZH_STATIC[k]); });
+  setHead(); renderAll();
+  if(document.getElementById('page-med').classList.contains('on')){ renderEmer(); renderAppts(); if(mrecs!==null){ renderRecords(); } }
+  if(document.getElementById('page-week').classList.contains('on')) buildWeek();
+}
+window.toggleLang=function(){ LANG=(LANG==='zh')?'en':'zh'; lset('lang',LANG); applyLang(); };
+function setHead(){ const d=new Date();
+  if(LANG==='zh'){ const wk=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+    document.getElementById('date').textContent=(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · '+wk[d.getDay()];
+  } else { const mo=TT.en.mon.split(','), wd=TT.en.wd.split(',');
+    document.getElementById('date').textContent=wd[d.getDay()]+', '+mo[d.getMonth()]+' '+d.getDate(); } }
+
 const CARB_KEYS=['早餐','午餐','下午点','晚餐'];
 const PROT=['早餐','午餐','晚餐'], VEGM=['午餐','晚餐'];
 let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
@@ -386,14 +641,11 @@ async function saveSet(){ lset('settings',settings); if(cloud){ try{ await cloud
 /* ============================================================
    4) INIT
    ============================================================ */
-(function head(){
-  const d=new Date(), wk=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-  document.getElementById('date').textContent=(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · '+wk[d.getDay()];
-})();
+setHead();
 
 await initCloud();
 document.getElementById('cloudTag').className='cloud-tag '+(cloud?'cloud-on':'cloud-off');
-document.getElementById('cloudTag').textContent= cloud?'☁️ 云端已连接':'本地模式（未连云端）';
+document.getElementById('cloudTag').textContent= cloud?t('cloud_on'):t('cloud_off');
 
 // load settings
 let ls=lget('settings'); if(ls) settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),ls);
@@ -404,7 +656,8 @@ if(cloud){ try{ const cd=await cloudGet(dayPath(TODAY)); if(cd) data=Object.assi
   cloudWatch(dayPath(TODAY), d=>{ if(d){ data=Object.assign(blankDay(),d); renderAll(); }});
   cloudWatch(setPath, s=>{ if(s){ settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),s); renderAll(); }});
 }
-renderAll();
+applyLang();
+
 
 /* ============================================================
    5) TAB NAV
@@ -414,6 +667,7 @@ window.go=function(p){
   document.getElementById('page-'+p).classList.add('on');
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p===p));
   if(p==='week') buildWeek();
+  if(p==='med'){ renderEmer(); renderAppts(); renderRecords(); }
   window.scrollTo(0,0);
 };
 
@@ -422,17 +676,17 @@ window.go=function(p){
    ============================================================ */
 window.addFluid=function(ml,label){ data.fluid.total+=ml; data.fluid.log.push({ml,label,t:Date.now()}); saveDay(); renderFluid(); };
 window.undoFluid=function(){ const l=data.fluid.log.pop(); if(l){ data.fluid.total=Math.max(0,data.fluid.total-l.ml); saveDay(); renderFluid(); } };
-window.addCustomFluid=function(){ const v=parseInt(prompt('喝了多少毫升？（数字）'),10); if(v>0) addFluid(v,'自己填'); };
+window.addCustomFluid=function(){ const v=parseInt(prompt(t('custom_prompt')),10); if(v>0) addFluid(v,'自己填'); };
 function renderFluid(){
   const T=settings.fluidTarget, used=data.fluid.total, remain=T-used;
-  document.getElementById('fluidHint').textContent='医生建议每天不超过 '+T+' 毫升。汤、粥水、吃药的水，都要算进去。';
+  document.getElementById('fluidHint').textContent=t('fluid_hint',T);
   document.getElementById('fluidRemain').textContent= remain>=0?remain:0;
-  document.getElementById('fluidUsed').textContent='已喝 '+used+' 毫升';
+  document.getElementById('fluidUsed').textContent=t('used',used);
   const pct=Math.min(used/T,1), fill=document.getElementById('ringFill');
   fill.style.strokeDashoffset=RING*(1-pct);
   let col='#3E8E7E', warn='';
-  if(used>T){ col='#D66A5A'; warn='⚠️ 已超过今天的上限，先别再喝了'; }
-  else if(used>=T*0.8){ col='#DFA24E'; warn='快到上限了，接下来慢慢喝'; }
+  if(used>T){ col='#D66A5A'; warn=t('warn_over'); }
+  else if(used>=T*0.8){ col='#DFA24E'; warn=t('warn_near'); }
   fill.setAttribute('stroke',col);
   document.getElementById('fluidRemain').style.color=col;
   const w=document.getElementById('fluidWarn'); w.textContent=warn; w.style.color=col;
@@ -441,7 +695,7 @@ function renderFluid(){
   const pace=document.getElementById('fluidPace');
   if(remain>0 && hr<settings.sleep){
     const hrsLeft=Math.max(settings.sleep-hr,0.5);
-    pace.textContent='到睡前大约还有 '+hrsLeft.toFixed(1)+' 小时，每小时大约 '+Math.round(remain/hrsLeft)+' 毫升';
+    pace.textContent=t('pace',hrsLeft.toFixed(1),Math.round(remain/hrsLeft));
   } else pace.textContent='';
 }
 
@@ -449,11 +703,11 @@ function renderFluid(){
    7) CARBS / FRUIT / CHECKS
    ============================================================ */
 function renderCarbs(){
-  document.getElementById('carbHint').textContent='一天 '+settings.carbTotal+' 份。1 份 ≈ ¼ 碗饭、1 片面包、⅓ 碗米粉。';
+  document.getElementById('carbHint').textContent=t('carb_hint',settings.carbTotal);
   const wrap=document.getElementById('carbRows'); wrap.innerHTML='';
   CARB_KEYS.forEach(k=>{
     const row=document.createElement('div'); row.className='meal-row';
-    row.innerHTML=`<div><div class="meal-name">${k}</div><div class="meal-target">目标 ${settings.carbMeals[k]} 份</div></div>
+    row.innerHTML=`<div><div class="meal-name">${t('meal_'+k)}</div><div class="meal-target">${t('target',settings.carbMeals[k])}</div></div>
       <div class="stepper"><button class="step-btn minus">−</button><span class="count">${data.carbs[k]}</span><button class="step-btn">＋</button></div>`;
     const [mi,pl]=row.querySelectorAll('.step-btn'); const c=row.querySelector('.count');
     mi.onclick=()=>{ data.carbs[k]=Math.max(0,data.carbs[k]-1); c.textContent=data.carbs[k]; saveDay(); carbTotal(); };
@@ -463,21 +717,21 @@ function renderCarbs(){
   carbTotal();
 }
 function carbTotal(){
-  let t=0; CARB_KEYS.forEach(k=>t+=data.carbs[k]); const T=settings.carbTotal;
-  document.getElementById('carbTotal').textContent=t+' / '+T+' 份';
-  const b=document.getElementById('carbBar'); b.style.width=Math.min(t/T,1)*100+'%';
-  b.style.background= t>T?'#D66A5A':(t>=T?'#DFA24E':'#3E8E7E');
+  let tot=0; CARB_KEYS.forEach(k=>tot+=data.carbs[k]); const T=settings.carbTotal;
+  document.getElementById('carbTotal').textContent=t('n_of',tot,T);
+  const b=document.getElementById('carbBar'); b.style.width=Math.min(tot/T,1)*100+'%';
+  b.style.background= tot>T?'#D66A5A':(tot>=T?'#DFA24E':'#3E8E7E');
 }
 window.stepFruit=function(n){ data.fruit=Math.max(0,data.fruit+n); document.getElementById('fruitCount').textContent=data.fruit; saveDay(); };
-function renderFruit(){ document.getElementById('fruitTgt').textContent='目标 '+settings.fruitTarget+' 份';
-  document.getElementById('fruitHint').textContent='一天 '+settings.fruitTarget+' 份。例如 1 粒苹果、8 粒葡萄。';
+function renderFruit(){ document.getElementById('fruitTgt').textContent=t('target',settings.fruitTarget);
+  document.getElementById('fruitHint').textContent=t('fruit_hint',settings.fruitTarget);
   document.getElementById('fruitCount').textContent=data.fruit; }
 function renderChecks(){
   const pw=document.getElementById('proteinChks'); pw.innerHTML='';
-  PROT.forEach(m=>{ const b=document.createElement('div'); b.className='chk'+(data.protein[m]?' on':''); b.textContent=m;
+  PROT.forEach(m=>{ const b=document.createElement('div'); b.className='chk'+(data.protein[m]?' on':''); b.textContent=t('meal_'+m);
     b.onclick=()=>{ data.protein[m]=!data.protein[m]; b.classList.toggle('on'); saveDay(); }; pw.appendChild(b); });
   const vw=document.getElementById('vegChks'); vw.innerHTML='';
-  VEGM.forEach(m=>{ const b=document.createElement('div'); b.className='chk'+(data.veg[m]?' on':''); b.textContent=m;
+  VEGM.forEach(m=>{ const b=document.createElement('div'); b.className='chk'+(data.veg[m]?' on':''); b.textContent=t('meal_'+m);
     b.onclick=()=>{ data.veg[m]=!data.veg[m]; b.classList.toggle('on'); saveDay(); }; vw.appendChild(b); });
 }
 
@@ -495,15 +749,15 @@ window.saveBP=function(){
 };
 function bpFlag(sys,dia){
   const b=settings.bp;
-  if(sys>=b.sysHi||dia>=b.diaHi) return {t:'偏高',c:'hi'};
-  if(sys<b.sysLo||dia<b.diaLo) return {t:'偏低',c:'lo'};
-  return {t:'正常',c:'ok'};
+  if(sys>=b.sysHi||dia>=b.diaHi) return {c:'hi'};
+  if(sys<b.sysLo||dia<b.diaLo) return {c:'lo'};
+  return {c:'ok'};
 }
 function renderBP(){
-  document.getElementById('bpHint').textContent='医生建议一天测 '+settings.bpPerDay+' 次（早上起床后、晚上睡前）。';
+  document.getElementById('bpHint').textContent=t('bp_hint',settings.bpPerDay);
   const n=data.bp.length, T=settings.bpPerDay;
-  document.getElementById('bpCountLabel').textContent='今天已测 '+n+' 次';
-  document.getElementById('bpTargetLabel').textContent='建议 '+T+' 次';
+  document.getElementById('bpCountLabel').textContent=t('bp_n',n);
+  document.getElementById('bpTargetLabel').textContent=t('bp_t',T);
   const bar=document.getElementById('bpBar'); bar.style.width=Math.min(n/T,1)*100+'%';
   bar.style.background= n>=T?'#3E8E7E':'#DFA24E';
   const wrap=document.getElementById('bpList'); wrap.innerHTML='';
@@ -511,8 +765,8 @@ function renderBP(){
     const d=new Date(r.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     const f=bpFlag(r.sys,r.dia);
     const it=document.createElement('div'); it.className='gitem';
-    it.innerHTML=`<span>${hh}${r.pulse?' · 脉搏 '+r.pulse:''}</span>
-      <span><span class="gval">${r.sys}/${r.dia}</span> <span class="pill ${f.c}">${f.t}</span></span>`;
+    it.innerHTML=`<span>${hh}${r.pulse?' · '+t('pulse_s')+' '+r.pulse:''}</span>
+      <span><span class="gval">${r.sys}/${r.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span>`;
     wrap.appendChild(it);
   });
 }
@@ -525,49 +779,274 @@ window.saveGlucose=function(){ const el=document.getElementById('gVal'), v=parse
   if(!(v>0)){ el.focus(); return; } data.glucose.push({value:v,tag:curTag,t:Date.now()}); el.value=''; saveDay(); renderGlucose(); };
 function gFlag(v,tag){ const g=settings.glucose;
   const lo=tag==='餐前'?g.preLo:g.postLo, hi=tag==='餐前'?g.preHi:g.postHi;
-  if(v>hi) return {t:'偏高',c:'hi'}; if(v<lo) return {t:'偏低',c:'lo'}; return {t:'正常',c:'ok'}; }
+  if(v>hi) return {c:'hi'}; if(v<lo) return {c:'lo'}; return {c:'ok'}; }
 function renderGlucose(){
   const g=settings.glucose;
-  document.getElementById('gHint').textContent=`餐前目标 ${g.preLo}–${g.preHi}，餐后 2 小时 ${g.postLo}–${g.postHi} mmol/L。`;
+  document.getElementById('gHint').textContent=t('g_hint',g.preLo,g.preHi,g.postLo,g.postHi);
   const wrap=document.getElementById('gList'); wrap.innerHTML='';
   [...data.glucose].reverse().forEach(x=>{ const d=new Date(x.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     const f=gFlag(x.value,x.tag); const it=document.createElement('div'); it.className='gitem';
-    it.innerHTML=`<span>${x.tag} · ${hh}</span><span><span class="gval">${x.value.toFixed(1)}</span> <span class="pill ${f.c}">${f.t}</span></span>`;
+    it.innerHTML=`<span>${t('tag_'+x.tag)} · ${hh}</span><span><span class="gval">${x.value.toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span>`;
     wrap.appendChild(it); });
 }
 
 /* ============================================================
-   10) WEEKLY SUMMARY
+   10) HISTORY (7/30/90/180 days · summary + detail)
    ============================================================ */
+let histDays=7, histMode='sum';
+window.setHist=function(d){ histDays=d;
+  document.querySelectorAll('#histChips .chip').forEach(c=>c.classList.toggle('on',+c.dataset.d===d));
+  buildWeek(); };
+window.setHistMode=function(m){ histMode=m;
+  document.getElementById('hmSum').classList.toggle('on',m==='sum');
+  document.getElementById('hmDet').classList.toggle('on',m==='det');
+  buildWeek(); };
+
+async function fetchRange(days){
+  const out={};
+  for(let i=0;i<days;i++){ const dt=dkey(new Date(Date.now()-i*864e5)); const r=lget('day:'+dt); if(r) out[dt]=r; }
+  if(cloud){ try{
+    const start=dkey(new Date(Date.now()-(days-1)*864e5));
+    const q=fx.query(fx.collection(db,'patients',PATIENT_ID,'days'), fx.where(fx.documentId(),'>=',start));
+    const ss=await fx.getDocs(q); ss.forEach(s=>{ out[s.id]=s.data().d; });
+  }catch(e){ console.warn('range',e); } }
+  out[TODAY]=data;
+  return out;
+}
+const hm=ts=>{ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
+function dayTitle(dt){ const d=new Date(dt+'T00:00:00');
+  if(LANG==='zh'){ const W=TT.zh.wd.split(','); return (d.getMonth()+1)+'月'+d.getDate()+'日 · 星期'+W[d.getDay()]; }
+  const mo=TT.en.mon.split(','), wd=TT.en.wd.split(',');
+  return wd[d.getDay()]+', '+mo[d.getMonth()]+' '+d.getDate(); }
+
 window.buildWeek=async function(){
-  const wrap=document.getElementById('weekBody'); wrap.innerHTML='<p class="sub2">读取中…</p>';
-  const days=[]; for(let i=0;i<7;i++){ const d=new Date(); d.setDate(d.getDate()-i); days.push(dkey(d)); }
-  const recs={};
-  for(const dt of days){
-    let r=lget('day:'+dt);
-    if(!r && cloud){ try{ r=await cloudGet(dayPath(dt)); }catch(e){} }
-    if(dt===TODAY) r=data;
-    if(r) recs[dt]=r;
-  }
-  const ks=Object.keys(recs);
-  if(!ks.length){ wrap.innerHTML='<p class="sub2">还没有记录。</p>'; return; }
-  let fluidSum=0, fluidOver=0, gPre=[], gPost=[], bpS=[], bpD=[], carbDays=0, fluidDays=0;
+  const wrap=document.getElementById('weekBody'); wrap.innerHTML='<p class="sub2">'+t('loading')+'</p>';
+  const recs=await fetchRange(histDays);
+  const ks=Object.keys(recs).sort().reverse();
+  if(!ks.length){ wrap.innerHTML='<p class="sub2">'+t('none')+'</p>'; return; }
+  if(histMode==='sum') renderSummary(recs,ks,wrap); else renderDetail(recs,ks,wrap);
+};
+function renderSummary(recs,ks,wrap){
+  let fluidSum=0, fluidOver=0, gPre=[], gPost=[], gPreHi=0, gPostHi=0, bpS=[], bpD=[], bpHi=0, carbDays=0, fluidDays=0;
   ks.forEach(dt=>{ const r=recs[dt];
     if(r.fluid){ fluidSum+=r.fluid.total; fluidDays++; if(r.fluid.total>settings.fluidTarget) fluidOver++; }
-    (r.glucose||[]).forEach(x=>{ (x.tag==='餐前'?gPre:gPost).push(x.value); });
-    (r.bp||[]).forEach(x=>{ bpS.push(x.sys); bpD.push(x.dia); });
+    (r.glucose||[]).forEach(x=>{ const f=gFlag(x.value,x.tag);
+      if(x.tag==='餐前'){ gPre.push(x.value); if(f.c==='hi') gPreHi++; } else { gPost.push(x.value); if(f.c==='hi') gPostHi++; } });
+    (r.bp||[]).forEach(x=>{ bpS.push(x.sys); bpD.push(x.dia); if(bpFlag(x.sys,x.dia).c==='hi') bpHi++; });
     let ct=0; CARB_KEYS.forEach(k=>ct+=(r.carbs?.[k]||0)); if(Math.abs(ct-settings.carbTotal)<=1) carbDays++;
   });
   const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):null;
   const row=(k,v,s)=>`<div class="sum"><div><div class="k">${k}</div>${s?`<div class="sub2">${s}</div>`:''}</div><div class="v">${v}</div></div>`;
-  let html='';
-  html+=row('平均每天喝水', fluidDays?Math.round(fluidSum/fluidDays)+' 毫升':'—', '上限 '+settings.fluidTarget+' 毫升');
-  html+=row('超过喝水上限', fluidOver+' 天', '共记录 '+fluidDays+' 天');
-  html+=row('餐前血糖 平均', avg(gPre)?avg(gPre).toFixed(1):'—', '目标 '+settings.glucose.preLo+'–'+settings.glucose.preHi);
-  html+=row('餐后血糖 平均', avg(gPost)?avg(gPost).toFixed(1):'—', '目标 '+settings.glucose.postLo+'–'+settings.glucose.postHi);
-  html+=row('血压 平均', (avg(bpS)&&avg(bpD))?Math.round(avg(bpS))+'/'+Math.round(avg(bpD)):'—', bpS.length+' 次记录');
-  html+=row('主食达标', carbDays+' / '+ks.length+' 天', '接近 '+settings.carbTotal+' 份');
-  wrap.innerHTML=html;
+  let h='';
+  h+=row(t('s_avgw'), fluidDays?Math.round(fluidSum/fluidDays)+' '+t('ml'):'—', t('s_lim',settings.fluidTarget));
+  h+=row(t('s_over'), fluidOver+' '+t('s_d'), t('s_days',fluidDays));
+  h+=row(t('s_pre'), avg(gPre)?avg(gPre).toFixed(1):'—', t('s_n_hi',gPre.length,gPreHi));
+  h+=row(t('s_post'), avg(gPost)?avg(gPost).toFixed(1):'—', t('s_n_hi',gPost.length,gPostHi));
+  h+=row(t('s_bp'), (avg(bpS)&&avg(bpD))?Math.round(avg(bpS))+'/'+Math.round(avg(bpD)):'—', t('s_n_hi',bpS.length,bpHi));
+  h+=row(t('s_carb'), t('s_dd',carbDays,ks.length), t('s_near',settings.carbTotal));
+  wrap.innerHTML=h;
+}
+function renderDetail(recs,ks,wrap){
+  let h='';
+  ks.forEach(dt=>{ const r=recs[dt]; let rows='';
+    (r.bp||[]).forEach(x=>{ const f=bpFlag(x.sys,x.dia);
+      rows+=`<div class="hrow"><span class="ht">${hm(x.t)} ${t('dt_bp')}${x.pulse?' · '+t('pulse_s')+' '+x.pulse:''}</span><span><span class="hv">${x.sys}/${x.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span></div>`; });
+    (r.glucose||[]).forEach(x=>{ const f=gFlag(x.value,x.tag);
+      rows+=`<div class="hrow"><span class="ht">${hm(x.t)} ${t('dt_g')} · ${t('tag_'+x.tag)}</span><span><span class="hv">${(+x.value).toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span></div>`; });
+    if(r.fluid && (r.fluid.total>0 || (r.fluid.log||[]).length)){
+      const over=r.fluid.total>settings.fluidTarget;
+      rows+=`<div class="hrow"><span class="ht">${t('dt_w',(r.fluid.log||[]).length)}</span><span class="hv" style="color:${over?'#D66A5A':'inherit'}">${r.fluid.total} ${t('ml')}${over?' ⚠️':''}</span></div>`; }
+    let ct=0; CARB_KEYS.forEach(k=>ct+=(r.carbs?.[k]||0));
+    if(ct>0) rows+=`<div class="hrow"><span class="ht">${t('dt_carb')}</span><span class="hv">${t('n_of',ct,settings.carbTotal)}</span></div>`;
+    if(r.fruit>0) rows+=`<div class="hrow"><span class="ht">${t('dt_fruit')}</span><span class="hv">${r.fruit}</span></div>`;
+    if(rows) h+=`<div class="day-h">${dayTitle(dt)}</div>`+rows;
+  });
+  wrap.innerHTML=h||'<p class="sub2">'+t('none_range')+'</p>';
+}
+
+/* ============================================================
+   10b) APPOINTMENTS
+   ============================================================ */
+const apptPath=['patients',PATIENT_ID,'meta','appts'];
+let appts=[];
+async function saveApptsAll(){ lset('appts',appts); if(cloud){ try{ await cloudSet(apptPath,appts);}catch(e){} } }
+window.openAppt=function(){ document.getElementById('ap_date').value=''; document.getElementById('ap_time').value='';
+  ['ap_place','ap_doc','ap_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('apptMask').classList.add('on'); };
+window.closeMask=function(id){ document.getElementById(id).classList.remove('on'); };
+window.saveAppt=async function(){
+  const date=document.getElementById('ap_date').value;
+  if(!date){ alert(t('ap_needdate')); return; }
+  appts.push({ id:'a'+Date.now(), date, time:document.getElementById('ap_time').value||'',
+    place:document.getElementById('ap_place').value||'', doc:document.getElementById('ap_doc').value||'',
+    note:document.getElementById('ap_note').value||'' });
+  await saveApptsAll(); closeMask('apptMask'); renderAppts();
+};
+window.delAppt=async function(id){ if(!confirm(t('ap_del'))) return;
+  appts=appts.filter(a=>a.id!==id); await saveApptsAll(); renderAppts(); };
+function renderAppts(){
+  const wrap=document.getElementById('apptList');
+  if(!appts.length){ wrap.innerHTML='<p class="sub2">'+t('ap_none')+'</p>'; return; }
+  const up=appts.filter(a=>a.date>=TODAY).sort((a,b)=>a.date.localeCompare(b.date));
+  const past=appts.filter(a=>a.date<TODAY).sort((a,b)=>b.date.localeCompare(a.date));
+  const item=(a,cls)=>{ const d=new Date(a.date+'T00:00:00');
+    const dlab=(LANG==='zh')?((d.getMonth()+1)+'月'+d.getDate()+'日'):(TT.en.mon.split(',')[d.getMonth()]+' '+d.getDate());
+    const tlab=a.time||((LANG==='zh')?('星期'+TT.zh.wd.split(',')[d.getDay()]):TT.en.wd.split(',')[d.getDay()]);
+    return `<div class="appt ${cls}"><div class="ad">${dlab}<br>${tlab}</div>
+      <div class="ai"><b>${a.place||t('ap_visit')}</b>${a.doc?`<div class="sub2">${a.doc}</div>`:''}${a.note?`<div class="sub2">📝 ${a.note}</div>`:''}</div>
+      <button class="del" onclick="delAppt('${a.id}')">🗑</button></div>`; };
+  let h=up.map(a=>item(a,'')).join('');
+  if(past.length) h+=`<p class="sub2" style="margin:12px 0 2px;">${t('ap_past',past.length)}</p>`+past.slice(0,10).map(a=>item(a,'past')).join('');
+  wrap.innerHTML=h;
+}
+
+/* ============================================================
+   10c) MEDICAL RECORDS (photo → compressed, stored in cloud)
+   ============================================================ */
+let mrecs=null, pendingPhoto=null;
+function compressImage(file){ return new Promise(res=>{
+  const img=new Image(), url=URL.createObjectURL(file);
+  img.onload=()=>{ let w=img.width,h=img.height; const M=1280;
+    if(Math.max(w,h)>M){ const k=M/Math.max(w,h); w=Math.round(w*k); h=Math.round(h*k); }
+    const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    cv.getContext('2d').drawImage(img,0,0,w,h);
+    let q=0.72, out=cv.toDataURL('image/jpeg',q);
+    while(out.length>900000 && q>0.3){ q-=0.12; out=cv.toDataURL('image/jpeg',q); }
+    URL.revokeObjectURL(url); res(out); };
+  img.onerror=()=>res(null);
+  img.src=url; }); }
+document.getElementById('rc_photo').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  pendingPhoto=await compressImage(f);
+  const p=document.getElementById('rc_prev');
+  if(pendingPhoto){ p.src=pendingPhoto; p.style.display='block';
+    if(gemKey()) document.getElementById('rc_ai').style.display='block';
+  } else { p.style.display='none'; alert(t('photofail')); }
+});
+window.openRec=function(){ pendingPhoto=null;
+  ['rc_date','rc_type','rc_title','rc_find','rc_treat','rc_photo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rc_date').value=TODAY;
+  document.getElementById('rc_prev').style.display='none';
+  document.getElementById('recMask').classList.add('on'); };
+window.saveRec=async function(){
+  const rec={ date:document.getElementById('rc_date').value||TODAY,
+    type:document.getElementById('rc_type').value||'', title:document.getElementById('rc_title').value||'医疗记录',
+    find:document.getElementById('rc_find').value||'', treat:document.getElementById('rc_treat').value||'',
+    photo:pendingPhoto||null, created:Date.now() };
+  const btn=document.getElementById('rc_save'); btn.textContent=t('saving'); btn.disabled=true;
+  let ok=false;
+  if(cloud){ try{ await fx.addDoc(fx.collection(db,'patients',PATIENT_ID,'records'),{d:rec}); ok=true; }catch(e){ console.warn(e); } }
+  if(!ok){ const arr=lget('mrecords')||[]; arr.push(Object.assign({id:'l'+Date.now()},rec));
+    try{ lset('mrecords',arr); ok=true; }catch(e){ alert(t('nospace')); } }
+  btn.textContent=t('save'); btn.disabled=false;
+  if(ok){ closeMask('recMask'); mrecs=null; renderRecords(); }
+};
+window.delRec=async function(id){ if(!confirm(t('rc_del'))) return;
+  if(id.startsWith('l')){ let arr=lget('mrecords')||[]; arr=arr.filter(r=>r.id!==id); lset('mrecords',arr); }
+  else if(cloud){ try{ await fx.deleteDoc(fx.doc(db,'patients',PATIENT_ID,'records',id)); }catch(e){} }
+  mrecs=null; renderRecords(); };
+window.viewPhoto=function(id){ const r=(mrecs||[]).find(x=>x.id===id);
+  if(r&&r.photo){ document.getElementById('photoBig').src=r.photo; document.getElementById('photoMask').classList.add('on'); } };
+async function renderRecords(){
+  const wrap=document.getElementById('recList');
+  if(mrecs===null){ wrap.innerHTML='<p class="sub2">'+t('loading')+'</p>';
+    let arr=lget('mrecords')||[];
+    if(cloud){ try{ const ss=await fx.getDocs(fx.collection(db,'patients',PATIENT_ID,'records'));
+      const cl=[]; ss.forEach(s=>cl.push(Object.assign({id:s.id},s.data().d)));
+      arr=cl.concat(arr.filter(r=>String(r.id).startsWith('l')));
+    }catch(e){ console.warn(e); } }
+    arr.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0));
+    mrecs=arr; }
+  if(!mrecs.length){ wrap.innerHTML='<p class="sub2">'+t('rc_none')+'</p>'; return; }
+  wrap.innerHTML=mrecs.map(r=>{
+    const d=r.date?new Date(r.date+'T00:00:00'):null;
+    const ds=d?((LANG==='zh')?(d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'):(TT.en.mon.split(',')[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear())):'';
+    let body=''; if(r.find) body+='🔍 '+r.find; if(r.treat) body+=(body?'\n':'')+'💊 '+r.treat;
+    return `<div class="rec"><div class="rt"><div style="min-width:0;">
+      <div class="sub2">${ds}${r.type?' · '+r.type:''}</div><b style="font-size:17px;">${r.title}</b>
+      ${body?`<div class="rb">${body}</div>`:''}</div>
+      ${r.photo?`<img src="${r.photo}" onclick="viewPhoto('${r.id}')">`:''}</div>
+      <button class="link" style="text-align:right;margin-top:4px;" onclick="delRec('${r.id}')">${t('del')}</button></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   10c-2) AI READING OF REPORT PHOTOS (Gemini)
+   ============================================================ */
+window.aiRead=async function(){
+  if(!pendingPhoto || !gemKey()) return;
+  const btn=document.getElementById('rc_ai'), note=document.getElementById('rc_ainote');
+  btn.textContent=t('ai_reading'); btn.disabled=true;
+  note.style.display='none';
+  const prompt='你是一位帮助家属整理病历的助手。请阅读这张医疗文件照片（可能是检查报告、出院摘要或复诊卡，语言可能是英文、马来文或中文），只回复一个 JSON 对象，不要任何其他文字或markdown，格式：{"date":"YYYY-MM-DD 文件上的日期，找不到则空字符串","type":"文件类型（中文，如 抽血报告/复诊卡/出院摘要）","title":"简短标题（简体中文）","find":"主要发现/结果摘要（简体中文，2-4行，包含关键数值）","treat":"治疗或药物调整（简体中文，没有则空字符串）","emer_note":"如有对急救人员重要的新信息（新诊断、药物更改、过敏），用一行简体中文写出；否则空字符串"}';
+  try{
+    const b64=pendingPhoto.split(',')[1];
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+gemKey(),{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:'image/jpeg',data:b64}}]}]})});
+    if(!res.ok) throw new Error('API '+res.status);
+    const j=await res.json();
+    let txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+    txt=txt.replace(/```json|```/g,'').trim();
+    const out=JSON.parse(txt);
+    if(out.date && /^\d{4}-\d{2}-\d{2}$/.test(out.date)) document.getElementById('rc_date').value=out.date;
+    if(out.type) document.getElementById('rc_type').value=out.type;
+    if(out.title) document.getElementById('rc_title').value=out.title;
+    if(out.find) document.getElementById('rc_find').value=out.find;
+    if(out.treat) document.getElementById('rc_treat').value=out.treat;
+    note.textContent=t('ai_done');
+    note.style.display='block';
+    if(out.emer_note){
+      if(confirm(t('ai_emer_q',out.emer_note))){
+        const p=prompt(t('enterpw'));
+        if(p===CAREGIVER_PASSWORD){
+          emer.warn=(emer.warn?emer.warn+'\n':'')+out.emer_note;
+          lset('emergency',emer); if(cloud){ try{ await cloudSet(emerPath,emer);}catch(e){} }
+          alert(t('ai_added'));
+        } else if(p!==null) alert(t('ai_notadd'));
+      }
+    }
+  }catch(e){ console.warn('ai',e);
+    note.textContent=t('ai_fail',e.message||'network');
+    note.style.display='block';
+  }
+  btn.textContent=t('ai_btn'); btn.disabled=false;
+};
+
+/* ============================================================
+   10d) EMERGENCY INFO
+   ============================================================ */
+const emerPath=['patients',PATIENT_ID,'meta','emergency'];
+const OLD_V1_DIAG='心脏骤停后，已植入 ICD（植入式除颤器）\n冠状动脉搭桥手术（2012 年）\n心功能 EF 约 45%\n2 型糖尿病\n慢性低钾血症（血钾偏低）\n肾结石';
+const DEFAULT_EMER={ v:2,
+  diag:'心脏骤停后，已植入 ICD 除颤器\nPost cardiac arrest — ICD (defibrillator) implanted\n冠状动脉搭桥手术（2012 年）\nCoronary bypass surgery / CABG (2012)\n心功能 EF 约 45% / Heart function EF ~45%\n2 型糖尿病 / Type 2 diabetes\n慢性低钾血症（血钾偏低）\nChronic hypokalemia (LOW potassium)\n肾结石 / Kidney stones',
+  warn:'体内有 ICD — 做 MRI 或接触磁性设备前必须告知医护人员\nICD in situ — inform staff before MRI or magnetic devices\n每日饮水上限 1500 毫升（医嘱）\nFluid restriction: max 1500 ml per day (doctor\u2019s order)\n血钾偏低 — 请勿限制钾摄取\nLOW potassium — do NOT restrict potassium intake',
+  allergy:'（请家人填写 / to be filled in by family）', meds:'（请家人填写 / to be filled in by family）',
+  blood:'（请填写 / please fill in）', contact:'（请填写 / please fill in）'
+};
+function migrateEmer(e){ if(e && e.v!==2 && e.diag===OLD_V1_DIAG) return JSON.parse(JSON.stringify(DEFAULT_EMER)); return e; }
+let emer=JSON.parse(JSON.stringify(DEFAULT_EMER));
+function renderEmer(){
+  const e=emer, s=(h,b)=>`<div class="et">${h}</div><div class="eb">${b}</div>`;
+  document.getElementById('emerBody').innerHTML=
+    s('主要病史 / MEDICAL HISTORY',e.diag)+s('⚠️ 特别注意 / IMPORTANT WARNINGS',e.warn)+
+    s('过敏史 / ALLERGIES',e.allergy)+s('目前用药 / CURRENT MEDICATIONS',e.meds)+
+    s('血型 / BLOOD TYPE',e.blood)+s('紧急联络 / EMERGENCY CONTACT',e.contact);
+}
+window.editEmer=function(){
+  const p=prompt(t('enterpw')); if(p===null) return;
+  if(p!==CAREGIVER_PASSWORD){ alert(t('wrongpw')); return; }
+  document.getElementById('em_diag').value=emer.diag; document.getElementById('em_warn').value=emer.warn;
+  document.getElementById('em_allergy').value=emer.allergy; document.getElementById('em_meds').value=emer.meds;
+  document.getElementById('em_blood').value=emer.blood; document.getElementById('em_contact').value=emer.contact;
+  document.getElementById('emerMask').classList.add('on');
+};
+window.saveEmer=async function(){
+  emer={ v:2, diag:document.getElementById('em_diag').value, warn:document.getElementById('em_warn').value,
+    allergy:document.getElementById('em_allergy').value, meds:document.getElementById('em_meds').value,
+    blood:document.getElementById('em_blood').value, contact:document.getElementById('em_contact').value };
+  lset('emergency',emer); if(cloud){ try{ await cloudSet(emerPath,emer);}catch(e){} }
+  closeMask('emerMask'); renderEmer(); alert(t('saved'));
 };
 
 /* ============================================================
@@ -581,10 +1060,11 @@ window.checkPass=function(){
   if(document.getElementById('carePass').value===CAREGIVER_PASSWORD){
     document.getElementById('gate').style.display='none';
     document.getElementById('settingsForm').style.display='block'; fillForm();
-  } else { alert('密码不正确'); }
+  } else { alert(t('wrongpw')); }
 };
 function fillForm(){
   const S=settings;
+  document.getElementById('s_gemkey').value=lget('gemkey')||'';
   document.getElementById('s_fluid').value=S.fluidTarget;
   document.getElementById('s_wake').value=S.wake; document.getElementById('s_sleep').value=S.sleep;
   document.getElementById('s_carbTotal').value=S.carbTotal;
@@ -606,14 +1086,28 @@ window.saveSettings=async function(){
   settings.fruitTarget=num('s_fruit',2); settings.bpPerDay=num('s_bpPerDay',2);
   settings.bp={sysHi:num('s_sysHi',135),diaHi:num('s_diaHi',85),sysLo:num('s_sysLo',100),diaLo:num('s_diaLo',60)};
   settings.glucose={preLo:num('s_preLo',4.4),preHi:num('s_preHi',7.0),postLo:num('s_postLo',4.4),postHi:num('s_postHi',8.5)};
-  await saveSet(); renderAll(); closeCare(); alert('已保存 ✓');
+  lset('gemkey',document.getElementById('s_gemkey').value.trim());
+  await saveSet(); renderAll(); closeCare(); alert(t('saved'));
 };
 
 /* ============================================================
    12) RENDER ALL
    ============================================================ */
 function renderAll(){ renderFluid(); renderCarbs(); renderFruit(); renderChecks(); renderBP(); renderGlucose(); }
-window.buildWeek=window.buildWeek;
+
+/* ============================================================
+   13) LOAD APPOINTMENTS + EMERGENCY (after all declarations)
+   ============================================================ */
+{ const la=lget('appts'); if(la) appts=la;
+  let le=lget('emergency'); le=migrateEmer(le); if(le) emer=Object.assign(JSON.parse(JSON.stringify(DEFAULT_EMER)),le); }
+if(cloud){
+  try{ const ca=await cloudGet(apptPath); if(ca){ appts=ca; lset('appts',ca); } }catch(e){}
+  try{ let ce=await cloudGet(emerPath); const mg=migrateEmer(ce);
+    if(mg!==ce){ ce=mg; await cloudSet(emerPath,ce); }
+    if(ce){ emer=Object.assign(JSON.parse(JSON.stringify(DEFAULT_EMER)),ce); lset('emergency',emer); } else { await cloudSet(emerPath,emer); } }catch(e){}
+  cloudWatch(apptPath, a=>{ if(a){ appts=a; lset('appts',a); if(document.getElementById('page-med').classList.contains('on')) renderAppts(); } });
+  cloudWatch(emerPath, e=>{ if(e){ emer=Object.assign(JSON.parse(JSON.stringify(DEFAULT_EMER)),e); lset('emergency',emer); if(document.getElementById('page-med').classList.contains('on')) renderEmer(); } });
+}
 </script>
 </body>
 </html>
