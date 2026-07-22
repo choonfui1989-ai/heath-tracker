@@ -141,6 +141,41 @@
   .photo-mask img{max-width:96%;max-height:92%;border-radius:8px;}
   .addbtn{width:100%;border:2px dashed var(--jade);background:var(--jade-soft);color:var(--jade);border-radius:14px;padding:13px;font-size:16px;font-weight:800;cursor:pointer;margin-top:12px;}
   .photo-prev{width:100%;max-height:180px;object-fit:contain;border-radius:12px;border:1px solid var(--line);margin-top:8px;display:none;}
+
+  /* device tab */
+  .acc{border:2px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+  .acc>summary{list-style:none;cursor:pointer;padding:15px;font-size:17px;font-weight:800;display:flex;justify-content:space-between;align-items:center;background:#fff;}
+  .acc>summary::-webkit-details-marker{display:none;}
+  .acc>summary::after{content:'▾';color:var(--sub);font-size:16px;transition:transform .2s;}
+  .acc[open]>summary::after{transform:rotate(180deg);}
+  .acc .body{padding:2px 15px 15px;}
+  .sec-t{font-size:14px;font-weight:800;color:var(--jade);margin:14px 0 6px;letter-spacing:.3px;}
+  .li{padding:9px 0;border-bottom:1px dashed var(--line);font-size:16px;line-height:1.5;}
+  .li:last-child{border-bottom:none;}
+  .li b{display:block;} .li .en{color:var(--sub);font-size:14px;font-weight:600;}
+  .li .why{color:var(--sub);font-size:14px;margin-top:3px;line-height:1.45;}
+  .li.no{border-left:4px solid var(--coral);padding-left:10px;background:#FDF3F1;border-radius:0 8px 8px 0;margin:6px 0;border-bottom:none;}
+  .li.yes{border-left:4px solid var(--jade);padding-left:10px;background:var(--jade-soft);border-radius:0 8px 8px 0;margin:6px 0;border-bottom:none;}
+  .li.ok2{border-left:4px solid #A9C7BE;padding-left:10px;}
+  .shock{border:3px solid var(--coral);background:#FFF6F4;}
+  .shock h2{color:var(--coral);}
+  .sc{border-radius:12px;padding:12px;margin:9px 0;background:#fff;border:2px solid var(--line);}
+  .sc .cs{font-size:16px;font-weight:800;} .sc .cs .en{display:block;color:var(--sub);font-size:13px;font-weight:600;}
+  .sc .act{margin-top:7px;font-size:16px;font-weight:800;padding:8px 10px;border-radius:9px;}
+  .sc.now .act{background:#FCE9E5;color:#C4442F;} .sc.soon .act{background:#FBF0DC;color:#B7802F;}
+  .sc.ok .act{background:var(--jade-soft);color:var(--jade);}
+  .princ{background:var(--jade-soft);border-radius:12px;padding:13px;font-size:16px;line-height:1.6;margin-bottom:12px;}
+  .princ b{color:var(--jade);}
+  .wt-row{display:flex;gap:10px;align-items:flex-end;}
+  .wt-row .field{flex:1;margin-bottom:0;}
+  .mood{display:flex;gap:8px;margin-top:10px;}
+  .mood div{flex:1;text-align:center;padding:12px 4px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;background:#fff;}
+  .mood div.on{border-color:var(--jade);background:var(--jade-soft);color:var(--jade);}
+  .wt-alert{margin-top:10px;padding:12px;border-radius:12px;font-size:16px;font-weight:700;line-height:1.5;display:none;}
+  .wt-alert.on{display:block;background:#FCE9E5;color:#C4442F;border:2px solid var(--coral);}
+  .pass{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:16px;}
+  .pass .pk{color:var(--sub);font-weight:600;} .pass .pv{font-weight:800;word-break:break-word;}
+  .shocklog{font-size:15px;padding:9px 0;border-bottom:1px dashed var(--line);}
 </style>
 </head>
 <body>
@@ -158,6 +193,22 @@
 
 <!-- ================= TODAY ================= -->
 <div class="page on" id="page-today">
+  <div class="card">
+    <h2 data-i18n="wt_h">⚖️ 今天的体重 & 感觉</h2>
+    <p class="hint" data-i18n="wt_hint">每天早上起床、上厕所后、吃早餐前量，穿差不多的衣服。体重突然增加，是身体积水的最早信号。</p>
+    <div class="wt-row">
+      <div class="field" style="margin-bottom:0;"><label data-i18n="wt_kg">体重（公斤）</label><input id="wtVal" type="number" step="0.1" inputmode="decimal" placeholder="65.0"></div>
+      <button class="primary" style="flex:none;width:auto;padding:14px 22px;margin:0;" onclick="saveWeight()" data-i18n="rec_btn">记录</button>
+    </div>
+    <div class="mood" id="moodRow">
+      <div onclick="setMood('好')" data-i18n="mood_good">😊 很好</div>
+      <div onclick="setMood('一般')" data-i18n="mood_ok">😐 一般</div>
+      <div onclick="setMood('不舒服')" data-i18n="mood_bad">😟 不舒服</div>
+    </div>
+    <div class="wt-alert" id="wtAlert"></div>
+    <p class="sub2" id="wtHistory" style="margin-top:10px;"></p>
+  </div>
+
   <div class="card">
     <h2 data-i18n="fluid_h">💧 今日喝水</h2>
     <p class="hint" id="fluidHint">医生建议每天不超过 1500 毫升。汤、粥水、吃药的水，都要算进去。</p>
@@ -299,12 +350,75 @@
   </div>
 </div>
 
+
+<!-- ================= DEVICE ================= -->
+<div class="page" id="page-dev">
+
+  <div class="card shock">
+    <h2 data-i18n="sk_h">⚡ 电击应对 / IF THE ICD SHOCKS</h2>
+    <div class="sc ok"><div class="cs">电击 1 次，之后感觉还好<span class="en">One shock, feels well afterwards</span></div>
+      <div class="act">坐下休息 → 告诉家人 → 24 小时内联络诊所<br><span style="font-size:14px;">Sit down, rest, tell family, contact clinic within 24 hours</span></div></div>
+    <div class="sc now"><div class="cs">电击 1 次，但不舒服（胸痛、气喘、头晕、昏倒）<span class="en">One shock WITH chest pain, breathlessness, dizziness or fainting</span></div>
+      <div class="act">🚑 立刻去急诊 / 叫救护车 999<br><span style="font-size:14px;">Go to A&amp;E now / call 999</span></div></div>
+    <div class="sc now"><div class="cs">24 小时内电击 2 次或以上<span class="en">Two or more shocks in 24 hours</span></div>
+      <div class="act">🚑 立刻去急诊，即使中间感觉正常<br><span style="font-size:14px;">Go to A&amp;E now, even if he feels fine in between</span></div></div>
+    <div class="sc now"><div class="cs">昏倒不醒<span class="en">Collapsed and unresponsive</span></div>
+      <div class="act">🚑 打 999，开始心肺复苏（CPR）<br><span style="font-size:14px;">Call 999, start CPR</span></div></div>
+    <div class="princ" style="background:#fff;border:2px solid var(--line);">
+      👐 <b>电击时碰到病人是安全的</b> — 家人可能只感觉到轻微刺麻，不会受伤。请放心扶住他。<br>
+      <span class="sub2">It is SAFE to touch him during a shock — a bystander may feel a slight tingle, nothing more.</span>
+    </div>
+    <button class="primary" onclick="logShock()" data-i18n="sk_log">⚡ 记录一次电击</button>
+    <div id="shockList"></div>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="rf_h">🚨 什么时候要求医 / WHEN TO SEEK HELP</h2>
+    <div class="li no"><b>昏倒、快要昏倒 <span class="en">Fainting or near-fainting</span></b><div class="why">🚑 立刻 / Immediately</div></div>
+    <div class="li no"><b>心跳乱跳超过几分钟 <span class="en">Palpitations lasting more than a few minutes</span></b><div class="why">🚑 立刻 / Immediately</div></div>
+    <div class="li no"><b>休息时也气喘、脚肿越来越厉害 <span class="en">Breathless at rest, worsening ankle swelling</span></b><div class="why">🚑 立刻 / Immediately</div></div>
+    <div class="li no"><b>装置持续「哔哔」响或震动 <span class="en">Device beeping or vibrating continuously</span></b><div class="why">📞 尽快联络诊所 / Contact clinic promptly</div></div>
+    <div class="li no"><b>伤口红、肿、热、有分泌物、发烧 <span class="en">Implant site red, swollen, warm, discharging; fever</span></b><div class="why">📞 24 小时内 / Within 24 hours</div></div>
+    <div class="li no"><b>2 天内重了 1.5 公斤，或 1 周内重了 2 公斤 <span class="en">Weight up 1.5&nbsp;kg in 2 days or 2&nbsp;kg in a week</span></b><div class="why">📞 联络诊所 — 身体在积水 / Fluid building up, contact clinic</div></div>
+    <p class="hint" data-i18n="rf_note">血钾偏低也会引起心律不整 — 抽血复诊对他特别重要，不要拖。</p>
+  </div>
+
+  <details class="acc" open><summary>⚠️ 装置注意事项 / Device precautions</summary><div class="body">
+    <div class="princ" id="princBox"></div>
+    <div id="precBody"></div>
+    <button class="ghost" onclick="editPrec()" data-i18n="pr_edit">✏️ 修改这些内容（需密码）</button>
+    <p class="hint" data-i18n="pr_note">这些是一般建议。<b>医生说的最准</b> — 医生交代过的，请在这里改成他说的。</p>
+  </div></details>
+
+  <details class="acc"><summary>📡 远程监测（传输器）/ Remote monitoring</summary><div class="body">
+    <div id="rmBody"></div>
+    <button class="ghost" onclick="editRM()" data-i18n="pr_edit">✏️ 修改这些内容（需密码）</button>
+  </div></details>
+
+  <details class="acc"><summary>❤️ 日常照护 &amp; 长期保养 / Daily care &amp; living well</summary><div class="body">
+    <div id="careBody"></div>
+    <button class="ghost" onclick="editCare()" data-i18n="pr_edit">✏️ 修改这些内容（需密码）</button>
+  </div></details>
+
+  <div class="card">
+    <h2 data-i18n="pp_h">📋 装置资料 / DEVICE PASSPORT</h2>
+    <p class="hint" data-i18n="pp_hint">急诊或看新医生时要用到。请照着装置卡填写。</p>
+    <div id="passBody"></div>
+    <button class="ghost" onclick="editPass()" data-i18n="pp_edit">✏️ 填写／修改（需密码）</button>
+  </div>
+
+  <details class="acc"><summary>🩺 复诊要问医生 / Questions for the clinic</summary><div class="body">
+    <div id="clinicQ"></div>
+  </div></details>
+</div>
+
 <!-- ================= TABS ================= -->
 <nav class="tabbar">
   <button class="tab on" data-p="today" onclick="go('today')"><span class="ic">🏠</span><span data-i18n="tab_today">今日</span></button>
   <button class="tab" data-p="bp" onclick="go('bp')"><span class="ic">🫀</span><span data-i18n="tab_bp">血压</span></button>
   <button class="tab" data-p="glucose" onclick="go('glucose')"><span class="ic">🩸</span><span data-i18n="tab_g">血糖</span></button>
   <button class="tab" data-p="week" onclick="go('week')"><span class="ic">📊</span><span data-i18n="tab_wk">周报</span></button>
+  <button class="tab" data-p="dev" onclick="go('dev')"><span class="ic">💓</span><span data-i18n="tab_dev">装置</span></button>
   <button class="tab" data-p="med" onclick="go('med')"><span class="ic">🏥</span><span data-i18n="tab_med">医疗</span></button>
 </nav>
 
@@ -440,6 +554,50 @@
 <!-- fullscreen photo -->
 <div class="photo-mask" id="photoMask" onclick="this.classList.remove('on')"><img id="photoBig"></div>
 
+
+<!-- device passport sheet -->
+<div class="mask" id="passMask">
+  <div class="sheet">
+    <h3 data-i18n="pp_edit_h">装置资料 / Device passport</h3>
+    <div class="field"><label data-i18n="pp_model">装置型号 / Model</label><input id="pp_model" type="text" placeholder="e.g. Medtronic Cobalt XT VR"></div>
+    <div class="field"><label data-i18n="pp_serial">序号 / Serial no.</label><input id="pp_serial" type="text"></div>
+    <div class="two">
+      <div class="field"><label data-i18n="pp_date">植入日期 / Implant date</label><input id="pp_date" type="date"></div>
+      <div class="field"><label data-i18n="pp_side">位置 / Side</label><input id="pp_side" type="text" value="左 / Left"></div>
+    </div>
+    <div class="field"><label data-i18n="pp_hosp">医院 / Hospital</label><input id="pp_hosp" type="text"></div>
+    <div class="field"><label data-i18n="pp_doc">心脏科医生 / Cardiologist</label><input id="pp_doc" type="text"></div>
+    <div class="field"><label data-i18n="pp_tel">诊所电话 / Clinic phone</label><input id="pp_tel" type="tel"></div>
+    <div class="field"><label data-i18n="pp_mri">可以做 MRI 吗 / MRI-conditional</label><input id="pp_mri" type="text" placeholder="是 / 否 / 不确定 — 问医生"></div>
+    <div class="field"><label data-i18n="pp_tx">传输器型号 / Transmitter</label><input id="pp_tx" type="text" placeholder="e.g. MyCareLink"></div>
+    <div class="field"><label data-i18n="pp_next">下次检查 / Next device check</label><input id="pp_next" type="date"></div>
+    <div class="field"><label data-i18n="pp_note">医生的特别交代（开车、运动等）/ Doctor's notes</label><textarea id="pp_note"></textarea></div>
+    <button class="primary" onclick="savePass()" data-i18n="save">保存</button>
+    <button class="link" onclick="closeMask('passMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
+
+<!-- guidance item editor -->
+<div class="mask" id="itemMask">
+  <div class="sheet">
+    <h3 id="itemTitle">修改</h3>
+    <div class="field"><label data-i18n="it_kind">类型 / Type</label>
+      <select id="it_kind" style="width:100%;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:12px;font-weight:700;">
+        <option value="no">🚫 要避免 / Avoid</option>
+        <option value="yes">✅ 要做 / Do</option>
+        <option value="ok2">ℹ️ 安全／提醒 / Safe or note</option>
+      </select></div>
+    <div class="field"><label data-i18n="it_grp">分类 / Group</label><input id="it_grp" type="text" placeholder="家里 / 外出 / 医疗场所 / 身体与习惯"></div>
+    <div class="field"><label data-i18n="it_zh">中文</label><textarea id="it_zh" style="min-height:60px;"></textarea></div>
+    <div class="field"><label data-i18n="it_en">English</label><textarea id="it_en" style="min-height:60px;"></textarea></div>
+    <div class="field"><label data-i18n="it_why">为什么 / Why (optional)</label><textarea id="it_why" style="min-height:60px;"></textarea></div>
+    <button class="primary" onclick="saveItem()" data-i18n="save">保存</button>
+    <button class="ghost" id="it_del" onclick="deleteItem()" style="border-color:var(--coral);color:var(--coral);" data-i18n="del">删除</button>
+    <button class="link" onclick="closeMask('itemMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
 <script type="module">
 /* ============================================================
    1) CONFIG  —  PASTE YOUR FIREBASE KEYS + SET PASSWORD HERE
@@ -530,6 +688,34 @@ en:{
  'meal_早餐':'Breakfast','meal_午餐':'Lunch','meal_下午点':'Afternoon snack','meal_晚餐':'Dinner',
  st_fperday:'Portions per day', st_bpn:'Readings per day', st_syshi:'Systolic high ≥', st_diahi:'Diastolic high ≥',
  st_syslo:'Systolic low <', st_dialo:'Diastolic low <', st_g:'🩸 Glucose (mmol/L)',
+ tab_dev:'Device',
+ pr_edit:'✏️ Edit these items (password)', pr_add:'Add an item',
+ pr_note:'These are general suggestions. <b>The doctor knows best</b> — if his doctor said something different, tap any line to change it.',
+ pr_how:'Tap any line to edit or delete it, or tap "＋ Add an item" at the bottom. A password is required.',
+ it_edit:'Edit item', it_add:'Add item', it_kind:'Type', it_grp:'Group', it_zh:'Chinese', it_en:'English',
+ it_why:'Why (optional)', it_empty:'Please enter the text', it_del_q:'Delete this item?',
+ wt_h:'⚖️ Weight & how you feel today', wt_hint:'Weigh each morning after the toilet, before breakfast, in similar clothing. A sudden rise is the earliest sign of fluid building up.',
+ wt_kg:'Weight (kg)', mood_good:'😊 Good', mood_ok:'😐 So-so', mood_bad:'😟 Unwell',
+ wt_bad:'Please enter a valid weight', wt_prev:'Last recorded: {0} kg on {1}',
+ wt_alert2:'Up {0} kg in 2 days — this usually means fluid is building up. Please contact the clinic.',
+ wt_alert7:'Up {0} kg this week — this usually means fluid is building up. Please contact the clinic.',
+ sk_h:'⚡ If the ICD shocks', sk_log:'⚡ Log a shock',
+ sk_q1:'What was he doing at the time? (optional)', sk_q2:'How did he feel afterwards? (optional)',
+ sk_saved:'Shock logged. Follow the action plan above — if in doubt, go to A&E.', sk_today:'Logged today',
+ rf_h:'🚨 When to seek help', rf_note:'Low potassium can also trigger arrhythmias — his blood tests matter more than average. Do not postpone them.',
+ pp_h:'📋 Device passport', pp_hint:'Needed in an emergency or when seeing a new doctor. Copy from his device ID card.',
+ pp_edit:'✏️ Fill in / edit (password)', pp_edit_h:'Device passport',
+ pp_model:'Model', pp_serial:'Serial no.', pp_date:'Implant date', pp_side:'Side', pp_hosp:'Hospital',
+ pp_doc:'Cardiologist', pp_tel:'Clinic phone', pp_mri:'MRI-conditional', pp_tx:'Transmitter', pp_next:'Next device check',
+ pp_note:"Doctor's notes (driving, exercise)",
+ cq_mine:'From his records', cq_std:'Always worth asking',
+ cq_shock:'⚡ {0} shock(s) logged since the last visit — show the dates.',
+ cq_weight:'⚖️ Weight rose sharply on at least one occasion — ask whether the fluid plan needs adjusting.',
+ cq_fluid:'💧 Over the fluid limit on {0} day(s).', cq_glu:'🩸 {0} high glucose readings.', cq_bp:'🫀 {0} high BP readings.',
+ cq_none:'No alerts in this period 🌿',
+ cq1:'🔋 How is the battery, and when is replacement likely?', cq2:'🚗 Can he drive? Any restrictions?',
+ cq3:'🏃 How much activity is safe? Anything to avoid?', cq4:'🧲 Is this device MRI-conditional?',
+ cq5:'🧪 How are his potassium levels? How often should he test?', cq6:'😟 Any anxiety or fear of shocks — is help available?',
  st_ai:'🤖 AI reading', st_aikey:'AI key (stored on this device only)', st_aihint:'Free at aistudio.google.com. Leave empty to hide the AI button.', st_prelo:'Pre-meal low', st_prehi:'Pre-meal high', st_postlo:'Post-meal low', st_posthi:'Post-meal high',
  ap_new:'Add appointment/test', date:'Date', time_opt:'Time (optional)', place:'Hospital/Clinic',
  doc_opt:'Dept/Doctor (optional)', note_opt:'Notes (optional)',
@@ -590,6 +776,25 @@ TT.zh = {
  ai_fail:'❌ AI 读取失败（{0}）。可以自己填写，或再试一次。',
  ai_emer_q:'AI 认为这条信息对急救很重要：\n\n「{0}」\n\n要加进 🆘 重要医疗信息的「特别注意」吗？（需要照护者密码）',
  ai_added:'已加入 ✓ 请到 医疗 页确认内容正确。', ai_notadd:'密码不正确，未加入。',
+ pr_add:'加一项', pr_how:'点任何一行就可以修改或删除，最下面可以「加一项」。需要密码。',
+ it_edit:'修改', it_add:'加一项', it_kind:'类型', it_grp:'分类', it_zh:'中文', it_en:'English',
+ it_why:'为什么（可不填）', it_empty:'请填写内容', it_del_q:'删除这一项？',
+ wt_bad:'请输入正确的体重', wt_prev:'上次记录：{0} 公斤（{1}）',
+ wt_alert2:'2 天内重了 {0} 公斤 — 通常表示身体在积水，请联络诊所。',
+ wt_alert7:'这星期重了 {0} 公斤 — 通常表示身体在积水，请联络诊所。',
+ sk_q1:'当时在做什么？（可不填）', sk_q2:'之后感觉怎样？（可不填）',
+ sk_saved:'已记录。请照上面的步骤处理 — 不确定就去急诊。', sk_today:'今天的记录',
+ pp_model:'装置型号', pp_serial:'序号', pp_date:'植入日期', pp_side:'位置', pp_hosp:'医院',
+ pp_doc:'心脏科医生', pp_tel:'诊所电话', pp_mri:'可以做 MRI 吗', pp_tx:'传输器', pp_next:'下次检查',
+ pp_note:'医生的特别交代',
+ cq_mine:'从他的记录来看', cq_std:'每次都值得问',
+ cq_shock:'⚡ 上次复诊后有 {0} 次电击记录 — 把日期给医生看。',
+ cq_weight:'⚖️ 体重曾经突然增加 — 问医生要不要调整利尿药或喝水量。',
+ cq_fluid:'💧 有 {0} 天超过喝水上限。', cq_glu:'🩸 有 {0} 次血糖偏高。', cq_bp:'🫀 有 {0} 次血压偏高。',
+ cq_none:'这段时间没有特别警示 🌿',
+ cq1:'🔋 电池还可以用多久？什么时候要换？', cq2:'🚗 可以开车吗？有什么限制？',
+ cq3:'🏃 可以运动到什么程度？有什么要避免？', cq4:'🧲 这个装置可以做 MRI 吗？',
+ cq5:'🧪 血钾现在怎样？多久要验一次？', cq6:'😟 会不会怕再被电击、心情低落 — 有什么帮助？',
  cloud_on:'☁️ 云端已连接', cloud_off:'本地模式（未连云端）',
  wd:'日,一,二,三,四,五,六'
 };
@@ -609,6 +814,7 @@ function applyLang(){
   setHead(); renderAll();
   if(document.getElementById('page-med').classList.contains('on')){ renderEmer(); renderAppts(); if(mrecs!==null){ renderRecords(); } }
   if(document.getElementById('page-week').classList.contains('on')) buildWeek();
+  if(document.getElementById('page-dev').classList.contains('on')){ renderGuide(); renderPass(); renderShocks(); renderClinicQ(); }
 }
 window.toggleLang=function(){ LANG=(LANG==='zh')?'en':'zh'; lset('lang',LANG); applyLang(); };
 function setHead(){ const d=new Date();
@@ -629,7 +835,7 @@ function blankDay(){
   const c={}; CARB_KEYS.forEach(k=>c[k]=0);
   const p={}; PROT.forEach(k=>p[k]=false);
   const v={}; VEGM.forEach(k=>v[k]=false);
-  return {fluid:{total:0,log:[]}, carbs:c, fruit:0, protein:p, veg:v, glucose:[], bp:[]};
+  return {fluid:{total:0,log:[]}, carbs:c, fruit:0, protein:p, veg:v, glucose:[], bp:[], weight:null, mood:null, shocks:[]};
 }
 const TODAY=dkey();
 const dayPath=(dt)=>['patients',PATIENT_ID,'days',dt];
@@ -668,6 +874,7 @@ window.go=function(p){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.p===p));
   if(p==='week') buildWeek();
   if(p==='med'){ renderEmer(); renderAppts(); renderRecords(); }
+  if(p==='dev'){ renderGuide(); renderPass(); renderShocks(); renderClinicQ(); }
   window.scrollTo(0,0);
 };
 
@@ -1014,6 +1221,225 @@ window.aiRead=async function(){
 };
 
 /* ============================================================
+   10e) WEIGHT · MOOD · SHOCK LOG · DEVICE PASSPORT
+   ============================================================ */
+window.saveWeight=async function(){
+  const v=parseFloat(document.getElementById('wtVal').value);
+  if(!(v>0)){ alert(t('wt_bad')); return; }
+  data.weight=v; await saveDay(); renderWeight(); alert(t('saved'));
+};
+window.setMood=async function(m){ data.mood=m; await saveDay(); renderWeight(); };
+async function weightSeries(n){
+  const out=[];
+  for(let i=0;i<n;i++){ const dt=dkey(new Date(Date.now()-i*864e5));
+    const r=(dt===TODAY)?data:lget('day:'+dt); if(r&&r.weight) out.push({dt,w:r.weight}); }
+  return out;
+}
+async function renderWeight(){
+  document.getElementById('wtVal').value=data.weight??'';
+  document.querySelectorAll('#moodRow div').forEach((d,i)=>{
+    const m=['好','一般','不舒服'][i]; d.classList.toggle('on', data.mood===m); });
+  const s=await weightSeries(10);
+  const box=document.getElementById('wtAlert'); box.classList.remove('on');
+  if(s.length>=2){
+    const now=s[0].w;
+    const d2=s.find(x=>x.dt===dkey(new Date(Date.now()-2*864e5)));
+    const d7=s[s.length-1];
+    let msg='';
+    if(d2 && now-d2.w>=1.5) msg=t('wt_alert2',(now-d2.w).toFixed(1));
+    else if(d7 && (Date.now()-new Date(d7.dt+'T00:00:00'))/864e5>=5 && now-d7.w>=2) msg=t('wt_alert7',(now-d7.w).toFixed(1));
+    if(msg){ box.textContent='⚠️ '+msg; box.classList.add('on'); }
+  }
+  document.getElementById('wtHistory').textContent = s.length>1
+    ? t('wt_prev', s[1].w, s[1].dt.slice(5)) : '';
+}
+/* shock log */
+window.logShock=async function(){
+  const what=prompt(t('sk_q1')); if(what===null) return;
+  const how=prompt(t('sk_q2'))||'';
+  data.shocks=data.shocks||[];
+  data.shocks.push({t:Date.now(), what:what||'', how:how});
+  await saveDay(); renderShocks();
+  alert(t('sk_saved'));
+};
+function renderShocks(){
+  const box=document.getElementById('shockList');
+  const arr=data.shocks||[];
+  box.innerHTML = arr.length ? '<div class="sec-t">'+t('sk_today')+'</div>'+arr.map(s=>
+    `<div class="shocklog">⚡ ${hm(s.t)}${s.what?' · '+s.what:''}${s.how?' · '+s.how:''}</div>`).join('') : '';
+}
+/* device passport */
+const passPath=['patients',PATIENT_ID,'meta','device'];
+const DEFAULT_PASS={model:'',serial:'',date:'',side:'左 / Left',hosp:'',doc:'',tel:'',mri:'',tx:'',next:'',note:''};
+let devpass=JSON.parse(JSON.stringify(DEFAULT_PASS));
+function renderPass(){
+  const p=devpass, L=[['pp_model',p.model],['pp_serial',p.serial],['pp_date',p.date],['pp_side',p.side],
+    ['pp_hosp',p.hosp],['pp_doc',p.doc],['pp_tel',p.tel],['pp_mri',p.mri],['pp_tx',p.tx],['pp_next',p.next]];
+  let h='<div class="pass">';
+  L.forEach(([k,v])=>{ h+=`<div class="pk">${t(k)}</div><div class="pv">${v||'—'}</div>`; });
+  h+='</div>';
+  if(p.note) h+=`<div class="li yes" style="margin-top:10px;"><b>${t('pp_note')}</b><div class="why">${p.note}</div></div>`;
+  document.getElementById('passBody').innerHTML=h;
+}
+window.editPass=function(){
+  const pw=prompt(t('enterpw')); if(pw===null) return;
+  if(pw!==CAREGIVER_PASSWORD){ alert(t('wrongpw')); return; }
+  ['model','serial','date','side','hosp','doc','tel','mri','tx','next','note'].forEach(k=>
+    document.getElementById('pp_'+k).value=devpass[k]||'');
+  document.getElementById('passMask').classList.add('on');
+};
+window.savePass=async function(){
+  ['model','serial','date','side','hosp','doc','tel','mri','tx','next','note'].forEach(k=>
+    devpass[k]=document.getElementById('pp_'+k).value);
+  lset('device',devpass); if(cloud){ try{ await cloudSet(passPath,devpass);}catch(e){} }
+  closeMask('passMask'); renderPass(); alert(t('saved'));
+};
+/* clinic questions — generated from his own data */
+async function renderClinicQ(){
+  const box=document.getElementById('clinicQ'); if(!box) return;
+  const recs=await fetchRange(90);
+  let shocks=0, over=0, gHi=0, bpHi=0, wAlert=false, prevW=null;
+  Object.keys(recs).sort().reverse().forEach(dt=>{ const r=recs[dt];
+    shocks+=(r.shocks||[]).length;
+    if(r.fluid && r.fluid.total>settings.fluidTarget) over++;
+    (r.glucose||[]).forEach(x=>{ if(gFlag(x.value,x.tag).c==='hi') gHi++; });
+    (r.bp||[]).forEach(x=>{ if(bpFlag(x.sys,x.dia).c==='hi') bpHi++; });
+    if(r.weight){ if(prevW && r.weight-prevW>=1.5) wAlert=true; prevW=r.weight; }
+  });
+  let h='<div class="sec-t">'+t('cq_mine')+'</div>';
+  if(shocks) h+=`<div class="li no"><b>${t('cq_shock',shocks)}</b></div>`;
+  if(wAlert) h+=`<div class="li no"><b>${t('cq_weight')}</b></div>`;
+  if(over) h+=`<div class="li"><b>${t('cq_fluid',over)}</b></div>`;
+  if(gHi) h+=`<div class="li"><b>${t('cq_glu',gHi)}</b></div>`;
+  if(bpHi) h+=`<div class="li"><b>${t('cq_bp',bpHi)}</b></div>`;
+  if(!shocks&&!wAlert&&!over&&!gHi&&!bpHi) h+=`<div class="li ok2">${t('cq_none')}</div>`;
+  h+='<div class="sec-t">'+t('cq_std')+'</div>';
+  ['cq1','cq2','cq3','cq4','cq5','cq6'].forEach(k=>{ h+=`<div class="li">${t(k)}</div>`; });
+  box.innerHTML=h;
+}
+
+/* ============================================================
+   10f) EDITABLE GUIDANCE (precautions / remote monitoring / daily care)
+   ============================================================ */
+const guidePath=['patients',PATIENT_ID,'meta','guidance'];
+const DEFAULT_GUIDE={ v:1,
+princ:{zh:'📏 一个原则：手机和小电器离装置<b>一个手掌宽（15 公分）</b>；马达、磁铁、大喇叭离<b>30 公分以上</b>；不要在强电流旁边久留。装置在<b>左边</b>。',
+       en:"One rule: a hand-span (15 cm) from phones and small electronics, 30 cm+ from motors, magnets and large speakers, and don't linger near strong sources. Device is on the LEFT."},
+prec:[
+{k:'no',g:'家里 / At home',zh:'微波炉 — 医生交代要避免',en:'Microwave oven — his doctor advised avoiding it',why:'医生的话最准。一般来说使用中不要靠在炉门前，旧的或门封坏的更要小心。'},
+{k:'no',g:'家里 / At home',zh:'电磁炉',en:'Induction cooktop',why:'站远约 60 公分，不要弯身趴在炉上。'},
+{k:'no',g:'家里 / At home',zh:'磁铁类：MagSafe 手机壳、无线耳机盒、磁吸支架、磁扣包、智能手表充电器',en:'Magnets: MagSafe cases, earbud cases, magnetic mounts, bag clasps, watch chargers',why:'现在最常见的问题。不要放胸前口袋或放在胸口上。'},
+{k:'no',g:'家里 / At home',zh:'无线充电板放在胸口',en:'Wireless charging pad on the chest',why:''},
+{k:'no',g:'家里 / At home',zh:'按摩枪、震动按摩椅（胸口位置）',en:'Massage gun, vibrating massage chair over the chest',why:''},
+{k:'no',g:'家里 / At home',zh:'大喇叭、卡拉OK音响抱在胸前',en:'Large speakers or karaoke sets against the chest',why:'里面有强磁铁。'},
+{k:'no',g:'家里 / At home',zh:'电钻、角磨机、电锯等大马达工具',en:'Power tools with large motors',why:'马达离胸口远一点。'},
+{k:'no',g:'家里 / At home',zh:'电热毯／热敷垫直接压在装置上',en:'Electric blanket or heat pad directly over the device',why:''},
+{k:'ok2',g:'家里 / At home',zh:'一般安全：电视、电脑、WiFi、遥控器、吹风机、电动剃须刀、电饭煲、缝纫机、跑步机',en:'Generally safe: TV, computer, WiFi, remote control, hair dryer, shaver, rice cooker, sewing machine, treadmill',why:'如果医生另有交代，以医生为准。'},
+{k:'no',g:'外出 / Out',zh:'机场安检：出示装置卡，要求人手检查；不要停在安检门里；不可以让扫描棒在装置上挥',en:'Airport security: show the device card, ask for a hand search, do not linger in the archway, never let a wand pass over the device',why:''},
+{k:'no',g:'外出 / Out',zh:'商场防盗门 — 正常速度走过，不要停留或靠着',en:'Shop anti-theft gates — walk through at normal pace, do not stop or lean',why:''},
+{k:'no',g:'外出 / Out',zh:'不要弯身在发动中的车／摩托引擎上；不要帮人接电启动',en:'Do not lean over a running engine; avoid jump-starting cars',why:''},
+{k:'no',g:'外出 / Out',zh:'电焊（连在旁边看也要避开）',en:'Arc welding — including standing nearby',why:''},
+{k:'no',g:'外出 / Out',zh:'大型发电机、变压器房、电房、通讯塔',en:'Large generators, transformer rooms, substations, telecom towers',why:''},
+{k:'no',g:'外出 / Out',zh:'游乐场强力弹射类机动游戏',en:'Amusement rides with strong magnetic launch systems',why:''},
+{k:'ok2',g:'外出 / Out',zh:'一般安全：LRT/MRT 闸门、Touch \u2019n Go、扫 QR、加油站、公共 WiFi',en:"Generally safe: transit gates, contactless cards, QR scanners, petrol stations, public WiFi",why:''},
+{k:'no',g:'医疗场所 / Medical',zh:'MRI 磁力共振 — 必须先由心脏科确认型号并调整设定',en:'MRI — only after cardiology confirms the device and adjusts settings',why:'不可以自己决定。'},
+{k:'no',g:'医疗场所 / Medical',zh:'物理治疗电疗／短波热疗（diathermy）',en:'Physiotherapy diathermy (short-wave heat treatment)',why:'很多人以为只是烤电而忽略。'},
+{k:'no',g:'医疗场所 / Medical',zh:'碎石手术（肾结石）— 一定要先告诉泌尿科他有 ICD',en:'Lithotripsy for kidney stones — tell the urologist about the ICD first',why:'他有肾结石病史，特别相关。'},
+{k:'no',g:'医疗场所 / Medical',zh:'手术电刀、放射治疗、TENS 电疗贴、电针灸、瘦身电流带',en:'Surgical cautery, radiotherapy, TENS, electro-acupuncture, EMS slimming belts',why:'都要先经心脏科同意。'},
+{k:'no',g:'医疗场所 / Medical',zh:'健身房体脂磅／体成分分析仪',en:'Gym body-fat / bioimpedance scales',why:'普通体重磅没问题。'},
+{k:'no',g:'医疗场所 / Medical',zh:'看牙医也要讲 — 超声波洗牙、电烧',en:'Tell the dentist too — ultrasonic scaler, electrosurgery',why:''},
+{k:'no',g:'身体与习惯 / Body',zh:'手机不要放左边胸口口袋；用右边耳朵听电话',en:'No phone in the LEFT chest pocket; use the right ear',why:'装置在左边。'},
+{k:'no',g:'身体与习惯 / Body',zh:'不要用手按、搓、玩装置',en:"Don't press, rub or fiddle with the device",why:'反复拨弄可能扯到导线。'},
+{k:'no',g:'身体与习惯 / Body',zh:'左肩不要提重物、背重背包带；避免碰撞性运动',en:'No heavy lifting or backpack straps on the left; avoid contact sports',why:''},
+{k:'no',g:'身体与习惯 / Body',zh:'装置位置不要纹身、针灸、大力按摩',en:'No tattoos, acupuncture or deep massage over the device',why:''},
+{k:'no',g:'身体与习惯 / Body',zh:'不要一个人游泳；不要泡很久的热水澡',en:'Do not swim alone; avoid long hot baths',why:''},
+{k:'yes',g:'身体与习惯 / Body',zh:'安全带垫一条小毛巾，但一定要系安全带',en:'Pad the seatbelt over the scar — but always wear it',why:''},
+{k:'yes',g:'身体与习惯 / Body',zh:'伤口好了之后，左手要正常活动、慢慢举高',en:'Once healed, move the left arm normally and raise it gradually',why:'太保护反而会五十肩，常见但可以避免。'}],
+rm:[
+{k:'yes',g:'',zh:'传输器一直插着电，放在床边',en:'Keep the transmitter plugged in beside the bed',why:'晚上自动传资料给诊所 — 最省力、最有价值的习惯。'},
+{k:'yes',g:'',zh:'出门、回乡、出国都带着（记得带电源线）',en:'Take it when travelling (remember the power cable)',why:'有些型号需要手机信号或 WiFi。'},
+{k:'no',g:'',zh:'⚠️ 它不是紧急警报器',en:'It is NOT an emergency alarm',why:'没有人 24 小时盯着。被电击还是要照「电击应对」处理。'},
+{k:'ok2',g:'',zh:'偶尔看一下指示灯；连续几天错误就打给诊所',en:'Check the status light; call the clinic if it shows an error for days',why:''}],
+care:[
+{k:'yes',g:'要做 / DO',zh:'按时吃药，不要自己停药',en:'Take medications exactly as prescribed',why:'所有事情里最重要的一件。'},
+{k:'yes',g:'要做 / DO',zh:'每天早上量体重',en:'Weigh every morning',why:'突然增加是积水最早的信号，比气喘早几天。'},
+{k:'yes',g:'要做 / DO',zh:'每天喝水不超过 1500 毫升',en:'Keep to the 1500 ml daily fluid limit',why:''},
+{k:'yes',g:'要做 / DO',zh:'控制血糖、少盐',en:'Control blood sugar, reduce salt',why:'糖尿病控制好，心脏长期结果差很多。'},
+{k:'yes',g:'要做 / DO',zh:'每天散步（医生允许的范围内）',en:'Walk daily, within the limits his doctor set',why:'不动比动更伤心脏。'},
+{k:'yes',g:'要做 / DO',zh:'参加心脏复健课程（如果医院有）',en:'Attend cardiac rehabilitation if offered',why:'心脏骤停后证据最强、但最多人错过的一项。'},
+{k:'yes',g:'要做 / DO',zh:'打流感、肺炎疫苗；保持口腔卫生',en:'Flu and pneumococcal vaccines; good dental hygiene',why:'身体里有植入装置，感染要特别小心。'},
+{k:'yes',g:'要做 / DO',zh:'按时抽血查血钾',en:'Keep potassium blood tests on schedule',why:'他血钾偏低，低血钾会引起心律不整。'},
+{k:'yes',g:'要做 / DO',zh:'情绪不好、怕再被电击 → 要讲出来',en:'Speak up about anxiety or fear of shocks',why:'很常见，而且可以治疗 — 不是想太多。'},
+{k:'no',g:'不要 / DON\u2019T',zh:'抽烟',en:'Smoking',why:''},
+{k:'no',g:'不要 / DON\u2019T',zh:'自己加减药、乱吃补品',en:'Changing medication or taking supplements without asking',why:''},
+{k:'no',g:'不要 / DON\u2019T',zh:'忍着不舒服不讲',en:'Hiding symptoms to avoid worrying the family',why:''},
+{k:'ok2',g:'不要 / DON\u2019T',zh:'🚗 开车 / 运动强度：请医生写下他的建议，记在「装置资料」的备注',en:'Driving and exercise limits: ask the cardiologist and note it in the device passport',why:''}]
+};
+let guide=JSON.parse(JSON.stringify(DEFAULT_GUIDE));
+async function saveGuide(){ lset('guidance',guide); if(cloud){ try{ await cloudSet(guidePath,guide);}catch(e){} } }
+const ICON={no:'🚫',yes:'✅',ok2:'ℹ️'};
+function itemHTML(it,list,i){
+  const txt=(LANG==='zh')?it.zh:(it.en||it.zh), alt=(LANG==='zh')?(it.en||''):(it.zh||'');
+  return `<div class="li ${it.k}" onclick="editItem('${list}',${i})" style="cursor:pointer;">
+    <b>${ICON[it.k]||''} ${txt}${alt?` <span class="en">${alt}</span>`:''}</b>
+    ${it.why?`<div class="why">${it.why}</div>`:''}</div>`;
+}
+function renderGuide(){
+  const pb=document.getElementById('princBox');
+  if(pb) pb.innerHTML=(LANG==='zh'?guide.princ.zh:guide.princ.en)+'<br><span class="sub2">'+(LANG==='zh'?guide.princ.en:guide.princ.zh)+'</span>';
+  const box=document.getElementById('precBody');
+  if(box){ const groups={};
+    guide.prec.forEach((it,i)=>{ (groups[it.g]=groups[it.g]||[]).push([it,i]); });
+    let h=''; Object.keys(groups).forEach(g=>{ h+=`<div class="sec-t">${g}</div>`;
+      groups[g].forEach(([it,i])=>h+=itemHTML(it,'prec',i)); });
+    h+=`<div class="li ok2" style="cursor:pointer;opacity:.75;" onclick="addItem('prec')"><b>＋ ${t('pr_add')}</b></div>`;
+    box.innerHTML=h; }
+  const rb=document.getElementById('rmBody');
+  if(rb) rb.innerHTML=guide.rm.map((it,i)=>itemHTML(it,'rm',i)).join('')+
+    `<div class="li ok2" style="cursor:pointer;opacity:.75;" onclick="addItem('rm')"><b>＋ ${t('pr_add')}</b></div>`;
+  const cb=document.getElementById('careBody');
+  if(cb){ const groups={};
+    guide.care.forEach((it,i)=>{ (groups[it.g]=groups[it.g]||[]).push([it,i]); });
+    let h=''; Object.keys(groups).forEach(g=>{ h+=`<div class="sec-t">${g}</div>`;
+      groups[g].forEach(([it,i])=>h+=itemHTML(it,'care',i)); });
+    h+=`<div class="li ok2" style="cursor:pointer;opacity:.75;" onclick="addItem('care')"><b>＋ ${t('pr_add')}</b></div>`;
+    cb.innerHTML=h; }
+}
+/* editing */
+let editCtx={list:null,idx:null};
+function askPW(){ const p=prompt(t('enterpw')); if(p===null) return false;
+  if(p!==CAREGIVER_PASSWORD){ alert(t('wrongpw')); return false; } return true; }
+window.editItem=function(list,i){ if(!askPW()) return;
+  editCtx={list,idx:i}; const it=guide[list][i];
+  document.getElementById('itemTitle').textContent=t('it_edit');
+  document.getElementById('it_kind').value=it.k; document.getElementById('it_grp').value=it.g||'';
+  document.getElementById('it_zh').value=it.zh||''; document.getElementById('it_en').value=it.en||'';
+  document.getElementById('it_why').value=it.why||'';
+  document.getElementById('it_del').style.display='block';
+  document.getElementById('itemMask').classList.add('on'); };
+window.addItem=function(list){ if(!askPW()) return;
+  editCtx={list,idx:null};
+  document.getElementById('itemTitle').textContent=t('it_add');
+  document.getElementById('it_kind').value='no';
+  document.getElementById('it_grp').value=(guide[list].length?guide[list][guide[list].length-1].g:'');
+  ['it_zh','it_en','it_why'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('it_del').style.display='none';
+  document.getElementById('itemMask').classList.add('on'); };
+window.saveItem=async function(){
+  const it={ k:document.getElementById('it_kind').value, g:document.getElementById('it_grp').value,
+    zh:document.getElementById('it_zh').value, en:document.getElementById('it_en').value,
+    why:document.getElementById('it_why').value };
+  if(!it.zh && !it.en){ alert(t('it_empty')); return; }
+  if(editCtx.idx===null) guide[editCtx.list].push(it); else guide[editCtx.list][editCtx.idx]=it;
+  await saveGuide(); closeMask('itemMask'); renderGuide(); };
+window.deleteItem=async function(){ if(editCtx.idx===null) return;
+  if(!confirm(t('it_del_q'))) return;
+  guide[editCtx.list].splice(editCtx.idx,1);
+  await saveGuide(); closeMask('itemMask'); renderGuide(); };
+window.editPrec=function(){ alert(t('pr_how')); };
+window.editRM=window.editPrec; window.editCare=window.editPrec;
+
+/* ============================================================
    10d) EMERGENCY INFO
    ============================================================ */
 const emerPath=['patients',PATIENT_ID,'meta','emergency'];
@@ -1093,12 +1519,14 @@ window.saveSettings=async function(){
 /* ============================================================
    12) RENDER ALL
    ============================================================ */
-function renderAll(){ renderFluid(); renderCarbs(); renderFruit(); renderChecks(); renderBP(); renderGlucose(); }
+function renderAll(){ renderFluid(); renderCarbs(); renderFruit(); renderChecks(); renderBP(); renderGlucose(); renderWeight(); }
 
 /* ============================================================
    13) LOAD APPOINTMENTS + EMERGENCY (after all declarations)
    ============================================================ */
-{ const la=lget('appts'); if(la) appts=la;
+{ const lgd=lget('guidance'); if(lgd && lgd.v===DEFAULT_GUIDE.v) guide=lgd;
+  const lp=lget('device'); if(lp) devpass=Object.assign(JSON.parse(JSON.stringify(DEFAULT_PASS)),lp);
+  const la=lget('appts'); if(la) appts=la;
   let le=lget('emergency'); le=migrateEmer(le); if(le) emer=Object.assign(JSON.parse(JSON.stringify(DEFAULT_EMER)),le); }
 if(cloud){
   try{ const ca=await cloudGet(apptPath); if(ca){ appts=ca; lset('appts',ca); } }catch(e){}
@@ -1106,6 +1534,13 @@ if(cloud){
     if(mg!==ce){ ce=mg; await cloudSet(emerPath,ce); }
     if(ce){ emer=Object.assign(JSON.parse(JSON.stringify(DEFAULT_EMER)),ce); lset('emergency',emer); } else { await cloudSet(emerPath,emer); } }catch(e){}
   cloudWatch(apptPath, a=>{ if(a){ appts=a; lset('appts',a); if(document.getElementById('page-med').classList.contains('on')) renderAppts(); } });
+  try{ const cg=await cloudGet(guidePath);
+    if(cg && cg.v===DEFAULT_GUIDE.v){ guide=cg; lset('guidance',cg); } else { await cloudSet(guidePath,guide); } }catch(e){}
+  cloudWatch(guidePath, g=>{ if(g && g.v===DEFAULT_GUIDE.v){ guide=g; lset('guidance',g);
+    if(document.getElementById('page-dev').classList.contains('on')) renderGuide(); } });
+  try{ const cp=await cloudGet(passPath); if(cp){ devpass=Object.assign(JSON.parse(JSON.stringify(DEFAULT_PASS)),cp); lset('device',devpass); } }catch(e){}
+  cloudWatch(passPath, p=>{ if(p){ devpass=Object.assign(JSON.parse(JSON.stringify(DEFAULT_PASS)),p); lset('device',devpass);
+    if(document.getElementById('page-dev').classList.contains('on')) renderPass(); } });
   cloudWatch(emerPath, e=>{ if(e){ emer=Object.assign(JSON.parse(JSON.stringify(DEFAULT_EMER)),e); lset('emergency',emer); if(document.getElementById('page-med').classList.contains('on')) renderEmer(); } });
 }
 </script>
