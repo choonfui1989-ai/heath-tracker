@@ -548,8 +548,8 @@
           <input id="fam_email" type="email" inputmode="email" autocomplete="off" placeholder="family@example.com"></div>
         <div class="field"><label>角色 / Role</label>
           <select id="fam_role" style="width:100%;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:12px;font-weight:700;">
-            <option value="patient">🧑 病人 Patient — 简单界面 simple view</option>
-            <option value="caregiver">👩‍⚕️ 照护者 Caregiver — 完整功能 full access</option>
+            <option value="patient">🧑 本人（病人）/ The patient</option>
+            <option value="caregiver">👩‍⚕️ 家人 / 照护者 Family / caregiver</option>
           </select></div>
         <button class="ghost" onclick="addFamily()">＋ 邀请家人 / Invite family</button>
         <p class="sub2" id="famMsg" style="margin-top:8px;line-height:1.5;"></p>
@@ -1252,10 +1252,9 @@ function authErrText(code){
    patient  → Today / BP / Glucose / 🆘 emergency card only, large & simple, no editing.
    caregiver/owner → everything, including logging the patient's data on his behalf. */
 function applyRoleUI(){
-  const patient=(myRole==='patient');
-  document.body.classList.toggle('role-patient', patient);   // CSS hides gear + week/dev tabs + med extras
-  // if a patient somehow lands on a now-hidden tab, send them home
-  if(patient){ const on=document.querySelector('.page.on'); if(on&&(on.id==='page-week'||on.id==='page-dev')) go('today'); }
+  // Owner's decision: BOTH the patient and caregivers get the FULL app (no stripped-down view).
+  // Roles are kept only for security/membership + labelling.
+  document.body.classList.remove('role-patient');
 }
 
 /* ---- Family / members (owner + caregiver manage; caregivers can log for the patient) ---- */
