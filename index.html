@@ -1083,7 +1083,16 @@ function setPatientPaths(){
   refPath   =['patients',PATIENT_ID,'meta','references'];
 }
 
-async function saveDay(){ lset('day:'+TODAY,data); if(cloud){ try{ await cloudSet(dayPath(TODAY),data);}catch(e){} } }
+/* Order-independent signature of a day's meaningful state — used to skip re-rendering
+   when Firestore echoes back our OWN write (the main source of tap lag). */
+function daySig(dd){ dd=dd||{}; return [
+  dd.fluid&&dd.fluid.total, dd.fruit, dd.weight, dd.mood,
+  ...PROT.map(k=>proteinCount(dd.protein&&dd.protein[k])),
+  ...CARB_KEYS.map(k=>(dd.carbs&&+dd.carbs[k])||0),
+  ...VEGM.map(k=>(dd.veg&&dd.veg[k])?1:0),
+  (dd.glucose||[]).length, (dd.bp||[]).length, (dd.shocks||[]).length ].join('|'); }
+let _daySig=null;
+async function saveDay(){ lset('day:'+TODAY,data); _daySig=daySig(data); if(cloud){ try{ await cloudSet(dayPath(TODAY),data);}catch(e){} } }
 async function saveSet(){ lset('settings',settings); if(cloud){ try{ await cloudSet(setPath,settings);}catch(e){} } }
 
 /* ============================================================
@@ -1117,7 +1126,7 @@ async function bootPatient(){
   if(cloud){ try{ const cs=await cloudGet(setPath); if(cs) settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),cs); else await cloudSet(setPath,settings);}catch(e){} }
   let ld=lget('day:'+TODAY); if(ld) data=mergeDay(ld);
   if(cloud){ try{ const cd=await cloudGet(dayPath(TODAY)); if(cd) data=mergeDay(cd);}catch(e){}
-    cloudWatch(dayPath(TODAY), d=>{ if(d){ data=mergeDay(d); renderAll(); }});
+    cloudWatch(dayPath(TODAY), d=>{ if(d){ if(daySig(d)===_daySig) return; data=mergeDay(d); _daySig=daySig(data); renderAll(); }});
     cloudWatch(setPath, s=>{ if(s){ settings=Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),s); renderAll(); }});
   }
   await loadReferences();
@@ -1257,53 +1266,67 @@ function applyRoleUI(){
   document.body.classList.remove('role-patient');
 }
 
-/* ---- Family / members (owner + caregiver manage; caregivers can log for the patient) ---- */
+/* ---- Family / members (owner + caregiver manage; caregivers can log for the patient) ----
+   Invited emails are kept on the patient doc's authorizedEmails map (which any member can
+   read), so the admin can always see who's been invited — even before they've joined. */
+function roleLabel(r){ return r==='owner'?'管理者 Admin':(r==='patient'?'本人 Patient':'照护者 Caregiver'); }
+async function readAuthEmails(){
+  try{ const pd=await cloudGet(['patients',PATIENT_ID]); return (pd&&pd.authorizedEmails)||{}; }catch(e){ return {}; }
+}
+async function writeAuthEmail(email, role){   // role=null → remove
+  const ref=fx.doc(db,'patients',PATIENT_ID);
+  const snap=await fx.getDoc(ref);
+  const pd=snap.exists()?(snap.data().d||{}):{ownerUid:(authUser&&authUser.uid)||''};
+  pd.authorizedEmails=pd.authorizedEmails||{};
+  if(role===null) delete pd.authorizedEmails[email]; else pd.authorizedEmails[email]=role;
+  await fx.setDoc(ref,{d:pd});
+}
 async function renderMembers(){
   const wrap=document.getElementById('memberList');
   document.getElementById('acctEmail').textContent=(authUser&&authUser.email)?('已登录 / Signed in: '+authUser.email+'　·　'+roleLabel(myRole)):'';
   if(!cloud||!PATIENT_ID){ wrap.innerHTML='<p class="sub2">—</p>'; return; }
   wrap.innerHTML='<p class="sub2">…</p>';
   try{
-    const rows=[];
+    const byEmail={};
+    // invited emails (from the patient doc) — shows everyone invited, joined or not
+    const auth=await readAuthEmails();
+    Object.entries(auth).forEach(([em,role])=>{ byEmail[em]={email:em, role, joined:false}; });
+    // members who have actually signed up
     const ms=await fx.getDocs(fx.collection(db,'patients',PATIENT_ID,'members'));
-    ms.forEach(s=>{ const d=s.data().d||{}; rows.push({type:'member', uid:s.id, email:d.email||'', role:d.role||'caregiver'}); });
-    try{ const iq=fx.query(fx.collection(db,'invites'), fx.where('d.patientId','==',PATIENT_ID));
-      const is=await fx.getDocs(iq);
-      is.forEach(s=>{ const email=s.id, d=s.data().d||{};
-        if(!rows.some(r=>r.email && r.email.toLowerCase()===email)) rows.push({type:'invite', email, role:d.role||'caregiver'}); });
-    }catch(e){ console.warn('invite query',e); }
+    ms.forEach(s=>{ const d=s.data().d||{}; const em=(d.email||'').toLowerCase();
+      const row=byEmail[em]||{email:em||('('+s.id.slice(0,6)+'…)')}; row.joined=true; row.role=d.role||row.role||'caregiver'; row.uid=s.id; byEmail[em||s.id]=row; });
+    const rows=Object.values(byEmail).sort((a,b)=>(a.role==='owner'?-1:0)-(b.role==='owner'?-1:0));
     wrap.innerHTML = rows.length ? rows.map(r=>{
-      const isMe = r.type==='member' && authUser && r.uid===authUser.uid;
-      const cls = r.type==='invite'?'pending':(r.role==='patient'?'patient':'');
-      const lbl = r.type==='invite'?'待接受 Pending':roleLabel(r.role);
+      const isMe = authUser && (r.uid===authUser.uid || (r.email&&authUser.email&&r.email===authUser.email.toLowerCase()));
+      const cls = !r.joined?'pending':(r.role==='patient'?'patient':'');
+      const lbl = r.joined?roleLabel(r.role):'待接受 Pending';
       const canDel = !isMe && r.role!=='owner' && isCaregiver();
-      const del = canDel ? `<button class="mdel" title="移除 Remove" onclick="removeFamily('${r.type}','${(r.email||'').replace(/['"\\]/g,'')}','${r.uid||''}')">✕</button>` : '';
+      const del = canDel ? `<button class="mdel" title="移除 Remove" onclick="removeFamily('${(r.email||'').replace(/['"\\]/g,'')}','${r.uid||''}')">✕</button>` : '';
       return `<div class="member"><div class="mi"><b>${r.email||'(no email)'}</b>${isMe?' <span class="sub2">(你 / you)</span>':''}</div>
         <div style="display:flex;align-items:center;gap:8px;"><span class="rolepill ${cls}">${lbl}</span>${del}</div></div>`;
     }).join('') : '<p class="sub2">还没有其他家人 / No family added yet</p>';
   }catch(e){ console.warn(e); wrap.innerHTML='<p class="sub2">读取失败 / Could not load</p>'; }
 }
-function roleLabel(r){ return r==='owner'?'管理者 Owner':(r==='patient'?'病人 Patient':'照护者 Caregiver'); }
 window.addFamily=async function(){
   const msg=document.getElementById('famMsg');
   const email=(document.getElementById('fam_email').value||'').trim().toLowerCase();
   const role=document.getElementById('fam_role').value||'caregiver';
   if(!email||email.indexOf('@')<1){ msg.textContent='请输入正确的邮箱 / Enter a valid email'; return; }
   if(!cloud||!PATIENT_ID){ msg.textContent='云端未连接 / Not connected'; return; }
-  if(!isCaregiver()){ msg.textContent='只有照护者可以邀请 / Only caregivers can invite'; return; }
+  if(!isCaregiver()){ msg.textContent='只有管理者可以邀请 / Only the admin/caregiver can invite'; return; }
   try{
     await cloudSet(['invites',email], {patientId:PATIENT_ID, role, invitedBy:(authUser&&authUser.uid)||'', createdAt:Date.now()});
+    await writeAuthEmail(email, role);   // record on patient doc so the admin can see it
     document.getElementById('fam_email').value='';
     msg.textContent='✅ 已邀请 '+email+'。请他用这个邮箱在 App 上注册即可自动加入。 / Invited — ask them to sign up with this email.';
     renderMembers();
   }catch(e){ console.warn(e); msg.textContent='邀请失败 / Could not invite: '+(e&&e.message||e); }
 };
-window.removeFamily=async function(type,email,uid){
+window.removeFamily=async function(email,uid){
   if(!confirm('确定移除这个人吗？/ Remove this person?')) return;
   try{
-    if(type==='invite'){ await fx.deleteDoc(fx.doc(db,'invites',email)); }
-    else { if(uid) await fx.deleteDoc(fx.doc(db,'patients',PATIENT_ID,'members',uid));
-           if(email){ try{ await fx.deleteDoc(fx.doc(db,'invites',email)); }catch(e){} } }
+    if(uid){ try{ await fx.deleteDoc(fx.doc(db,'patients',PATIENT_ID,'members',uid)); }catch(e){} }
+    if(email){ try{ await fx.deleteDoc(fx.doc(db,'invites',email)); }catch(e){} await writeAuthEmail(email, null); }
     renderMembers();
   }catch(e){ console.warn(e); alert('移除失败 / Could not remove'); }
 };
@@ -1509,8 +1532,9 @@ window.quickAdd=function(set,id){
   if(set==='protein'){ const m=mealByTime(PROT); data.protein[m]=(data.protein[m]||0)+1; }
   else if(set==='carbs'){ const m=mealByTime(CARB_KEYS); data.carbs[m]=(data.carbs[m]||0)+1; }
   else if(set==='fruit'){ data.fruit=(data.fruit||0)+1; }
-  if(it.countsAsFluid && it.fluidMl>0){ data.fluid.total+=it.fluidMl; data.fluid.log.push({ml:it.fluidMl,label:refItemLabel(it),t:Date.now()}); }
-  saveDay(); renderAll();
+  if(it.countsAsFluid && it.fluidMl>0){ data.fluid.total+=it.fluidMl; data.fluid.log.push({ml:it.fluidMl,label:refItemLabel(it),t:Date.now()}); renderFluid(); }
+  saveDay();
+  if(set==='protein') renderProtein(); else if(set==='carbs') renderCarbs(); else renderFruit();  // targeted, not full re-render
   toast('已记录 ＋'+refItemLabel(it)+(it.countsAsFluid?' ＋'+it.fluidMl+'ml💧':'')+' / Added');
 };
 function toast(msg){ let el=document.getElementById('toast');
