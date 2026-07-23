@@ -444,6 +444,13 @@
     </div>
     <!-- settings form -->
     <div id="settingsForm" style="display:none;">
+      <!-- TEMP: Build 0 backup button — remove after full backup export lands in Build 1 -->
+      <div class="grp" id="tempBackupBox" style="border:2px solid var(--jade);background:#eef6f3;">
+        <div class="gt" style="color:var(--jade);">💾 备份全部数据 / Full data backup</div>
+        <p class="hint" style="margin-top:0;">下载云端全部数据（含照片）为一个 JSON 文件，保存到手机／电脑。<br>Downloads ALL cloud data (including report photos) as one JSON file. Save it before any upgrade.</p>
+        <button class="primary" id="backupBtn" onclick="doBackup()" style="background:var(--jade);">💾 下载备份 / Download backup</button>
+        <p class="sub2" id="backupStatus" style="margin-top:8px;line-height:1.5;"></p>
+      </div>
       <h3 data-i18n="st_h">调整目标</h3>
       <p class="hint" data-i18n="st_hint">医生更新建议后，在这里修改。改完记得按「保存」。</p>
 
@@ -1523,6 +1530,69 @@ window.saveSettings=async function(){
   settings.glucose={preLo:num('s_preLo',4.4),preHi:num('s_preHi',7.0),postLo:num('s_postLo',4.4),postHi:num('s_postHi',8.5)};
   lset('gemkey',document.getElementById('s_gemkey').value.trim());
   await saveSet(); renderAll(); closeCare(); alert(t('saved'));
+};
+
+/* TEMP (Build 0): full backup of everything under patients/WWP → single JSON file.
+   Reads collections generically (getDocs) so nothing is missed, including photo
+   base64 inside records. Becomes the permanent caregiver export in Build 1. */
+window.doBackup=async function(){
+  const btn=document.getElementById('backupBtn');
+  const status=document.getElementById('backupStatus');
+  const setStatus=(zh,en)=>{ status.textContent=zh+' / '+en; };
+  if(!cloud||!fx||!db){
+    setStatus('云端未连接，无法备份','Cloud not connected — cannot back up');
+    return;
+  }
+  btn.disabled=true; btn.textContent='… 备份中 / Backing up';
+  try{
+    const base=['patients',PATIENT_ID];
+    const readColl=async(name)=>{
+      const snap=await fx.getDocs(fx.collection(db,...base,name));
+      const out={};
+      snap.forEach(s=>{ out[s.id]=s.data(); });
+      return out;
+    };
+    const [days,meta,records]=await Promise.all([
+      readColl('days'), readColl('meta'), readColl('records')
+    ]);
+    let patientDoc=null;
+    try{ const ps=await fx.getDoc(fx.doc(db,...base)); if(ps.exists()) patientDoc=ps.data(); }catch(e){}
+    // count photos inside records
+    let photoCount=0;
+    Object.values(records).forEach(r=>{ const rec=r&&r.d; if(rec&&rec.photo) photoCount++; });
+    const backup={
+      _backup:'health-tracker full backup',
+      _version:1,
+      patientId:PATIENT_ID,
+      createdAt:new Date().toISOString(),
+      counts:{
+        days:Object.keys(days).length,
+        meta:Object.keys(meta).length,
+        records:Object.keys(records).length,
+        photos:photoCount
+      },
+      patient:patientDoc,
+      days, meta, records
+    };
+    const json=JSON.stringify(backup,null,2);
+    const blob=new Blob([json],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+    const a=document.createElement('a');
+    a.href=url; a.download='health-tracker-backup-'+PATIENT_ID+'-'+stamp+'.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    const c=backup.counts;
+    setStatus(
+      '✅ 已下载：'+c.days+' 天 · '+c.meta+' 设置 · '+c.records+' 记录 · '+c.photos+' 张照片',
+      c.days+' days · '+c.meta+' meta · '+c.records+' records · '+c.photos+' photos'
+    );
+  }catch(e){
+    console.error(e);
+    setStatus('备份失败：'+(e&&e.message||e),'Backup failed — see console');
+  }finally{
+    btn.disabled=false; btn.textContent='💾 下载备份 / Download backup';
+  }
 };
 
 /* ============================================================
