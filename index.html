@@ -727,6 +727,7 @@
 <div class="mask" id="apptMask">
   <div class="sheet">
     <h3 id="apptTitle" data-i18n="ap_new">添加复诊／检查</h3>
+    <div id="apptSingleFields">
     <div class="two">
       <div class="field"><label data-i18n="date">日期</label><input id="ap_date" type="date"></div>
       <div class="field"><label data-i18n="time_opt">时间（可不填）</label><input id="ap_time" type="time"></div>
@@ -734,6 +735,11 @@
     <div class="field"><label data-i18n="place">医院／诊所</label><input id="ap_place" type="text" placeholder="例如 心脏专科中心"></div>
     <div class="field"><label data-i18n="doc_opt">科室／医生（可不填）</label><input id="ap_doc" type="text" placeholder="例如 心内科 · 陈医生"></div>
     <div class="field"><label data-i18n="note_opt">备注（可不填）</label><input id="ap_note" type="text" placeholder="例如 要空腹抽血"></div>
+    </div>
+    <div id="apptBatchWrap" style="display:none;">
+      <div class="sec-t" id="apptBatchTitle"></div>
+      <div id="apptBatchList"></div>
+    </div>
     <div class="field"><label data-i18n="ap_photo">拍照，或上传照片／PDF 文件（可不填）</label>
       <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="ap_photohint">可以拍照，也可以从相册或文件里选照片或 PDF。选好后会出现 🤖 按钮自动填写上面的资料（需先在 ⚙️ 里填 AI Key）。</p>
       <input id="ap_photo" type="file" accept="image/*,application/pdf" style="font-size:15px;">
@@ -742,7 +748,8 @@
       <button class="ghost" id="ap_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiReadAppt()" data-i18n="ap_ai_btn">🤖 AI 帮我读这张卡</button>
       <p class="sub2" id="ap_ainote" style="display:none;margin-top:8px;line-height:1.5;"></p>
     </div>
-    <button class="primary" onclick="saveAppt()" data-i18n="save">保存</button>
+    <button class="primary" id="apptSaveBtn" onclick="saveAppt()" data-i18n="save">保存</button>
+    <button class="primary" id="apptBatchSaveBtn" style="display:none;" onclick="saveAllAppts()"></button>
     <button class="link" onclick="closeMask('apptMask')" data-i18n="cancel">取消</button>
   </div>
 </div>
@@ -1100,6 +1107,9 @@ en:{
  ap_edit:'Edit appointment/test', rc_edit:'Edit medical record', rc_editbtn:'✏️ Edit',
  ap_photo:'Take a photo, or upload a photo / PDF (optional)', ap_ai_btn:'🤖 AI, read this card',
  ap_viewscan:'View scan', ap_replacescan:'pick a new photo to replace', ap_scan:'Scan',
+ ap_ai_multi:'Found {0} appointments — review below and save them all.', ap_ai_found:'AI found {0} appointments',
+ ap_ai_none:'No appointments found — please enter it manually.', ap_nodate:'No date',
+ ap_saveall:'✓ Save all ({0})', ap_savedn:'Saved {0} appointments ✓',
  em_ai_btn:'🤖 Suggest update from records (password)', em_ai_h:'Suggested update',
  bk_h:'💾 Full data backup', bk_hint:'Downloads ALL cloud data (including report photos) as one JSON file. Save it before any upgrade.', bk_btn:'💾 Download backup',
  mig_h:'📦 Import old data', mig_hint:'Copies ALL old-app data into this account (days, glucose, BP, weight, settings, emergency info, records &amp; photos). <b>The originals are never touched.</b> Safe to run more than once.', mig_btn:'📦 Start import',
@@ -1171,6 +1181,9 @@ TT.zh = {
  ap_edit:'修改复诊／检查', rc_edit:'修改医疗记录', rc_editbtn:'✏️ 修改',
  ap_photo:'拍照或选择预约卡（可不填）', ap_ai_btn:'🤖 AI 帮我读这张卡',
  ap_viewscan:'查看扫描件', ap_replacescan:'选新照片可替换', ap_scan:'扫描件',
+ ap_ai_multi:'找到 {0} 个安排，请在下面检查后一次全部保存。', ap_ai_found:'AI 找到 {0} 个复诊安排',
+ ap_ai_none:'没有找到复诊安排，请手动填写。', ap_nodate:'没有日期',
+ ap_saveall:'✓ 全部保存（{0}）', ap_savedn:'已保存 {0} 个复诊安排 ✓',
  em_ai_btn:'🤖 根据记录建议更新（需密码）', em_ai_h:'AI 建议的更新',
  em_ai_note:'AI 根据病历记录提出建议。请先逐项检查，确认无误再套用 —— AI 可能出错，医生的话最准。',
  em_ai_apply:'✓ 检查无误，套用', em_ai_nokey:'请先到 ⚙️ 设置里填写 AI Key。',
@@ -2440,14 +2453,22 @@ window.printReport=function(){ window.print(); };
    ============================================================ */
 let appts=[]; let apEditId=null;
 let pendingApptPhoto=null, apptPhotoTouched=false;   // Build 4: scan of the appt card
+let apptBatch=null;   // AI-extracted list when a card lists several appointments
 const apptPhotoPath=id=>['patients',PATIENT_ID,'apptPhotos',id];
+/* toggle between single-entry form and the multi-appointment review list */
+function apptBatchMode(on){
+  document.getElementById('apptSingleFields').style.display=on?'none':'';
+  document.getElementById('apptSaveBtn').style.display=on?'none':'';
+  document.getElementById('apptBatchWrap').style.display=on?'block':'none';
+  document.getElementById('apptBatchSaveBtn').style.display=on?'block':'none';
+}
 async function saveApptsAll(){ lset('appts',appts); if(cloud){ try{ await cloudSet(apptPath,appts);}catch(e){} } }
 async function loadApptPhoto(id){
   let p=lget('apptphoto:'+id);
   if(cloud){ try{ const cp=await cloudGet(apptPhotoPath(id)); if(cp) p=cp; }catch(e){} }
   return p;
 }
-function resetApptPhotoUI(){ pendingApptPhoto=null; apptPhotoTouched=false;
+function resetApptPhotoUI(){ pendingApptPhoto=null; apptPhotoTouched=false; apptBatch=null; apptBatchMode(false);
   const el=document.getElementById('ap_photo'); if(el) el.value='';
   showUploadPreview('ap_prev','ap_prevdoc',null);
   document.getElementById('ap_ai').style.display='none';
@@ -2477,7 +2498,7 @@ window.aiReadAppt=async function(){
   if(!pendingApptPhoto || !gemKey()) return;
   const btn=document.getElementById('ap_ai'), note=document.getElementById('ap_ainote');
   btn.textContent=t('ai_reading'); btn.disabled=true; note.style.display='none';
-  const prompt='你是帮助家属整理复诊安排的助手。请阅读这张预约卡/复诊卡照片（语言可能是英文、马来文或中文），只回复一个 JSON 对象，不要任何其他文字或markdown：{"date":"YYYY-MM-DD 预约日期，找不到则空字符串","time":"HH:MM 24小时制，找不到则空字符串","place":"医院或诊所名称","doc":"科室或医生，可空","note":"其他备注例如需要空腹、带旧报告（简体中文，可空）"}';
+  const prompt='你是帮助家属整理复诊安排的助手。请阅读这张预约卡/复诊卡照片或文件（语言可能是英文、马来文或中文），找出上面**所有**的复诊/检查安排（同一张卡可能列出好几个日期，请全部找出，不要遗漏）。只回复一个 JSON 数组，不要任何其他文字或markdown。数组的每个元素格式：{"date":"YYYY-MM-DD 日期","time":"HH:MM 24小时制，可空","place":"医院或诊所名称","doc":"科室或医生，可空","note":"备注例如需要空腹、带旧报告（简体中文，可空）"}。如果只有一个安排，就返回只含一个元素的数组。';
   try{
     const parts=[{text:prompt}].concat(photoPages(pendingApptPhoto).map(pg=>
       ({inline_data:{mime_type:isPdfData(pg)?'application/pdf':'image/jpeg', data:pg.split(',')[1]}})));
@@ -2488,15 +2509,55 @@ window.aiReadAppt=async function(){
     const j=await res.json();
     let txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
     txt=txt.replace(/```json|```/g,'').trim();
-    const out=JSON.parse(txt);
-    if(out.date && /^\d{4}-\d{2}-\d{2}$/.test(out.date)) document.getElementById('ap_date').value=out.date;
-    if(out.time && /^\d{1,2}:\d{2}$/.test(out.time)) document.getElementById('ap_time').value=out.time;
-    if(out.place) document.getElementById('ap_place').value=out.place;
-    if(out.doc) document.getElementById('ap_doc').value=out.doc;
-    if(out.note) document.getElementById('ap_note').value=out.note;
-    note.textContent=t('ai_done'); note.style.display='block';
+    let out=JSON.parse(txt);
+    let list = Array.isArray(out) ? out : (out&&Array.isArray(out.appointments) ? out.appointments : [out]);
+    list = list.filter(a=>a && (a.date||a.place||a.doc));
+    if(list.length>1){
+      apptBatch=list; renderApptBatch();
+      note.textContent=t('ap_ai_multi',list.length); note.style.display='block';
+    } else {
+      const a=list[0]||{};
+      if(a.date && /^\d{4}-\d{2}-\d{2}$/.test(a.date)) document.getElementById('ap_date').value=a.date;
+      if(a.time && /^\d{1,2}:\d{2}$/.test(a.time)) document.getElementById('ap_time').value=a.time;
+      if(a.place) document.getElementById('ap_place').value=a.place;
+      if(a.doc) document.getElementById('ap_doc').value=a.doc;
+      if(a.note) document.getElementById('ap_note').value=a.note;
+      note.textContent=list.length?t('ai_done'):t('ap_ai_none'); note.style.display='block';
+    }
   }catch(e){ console.warn('aiAppt',e); note.textContent=t('ai_fail',e.message||'network'); note.style.display='block'; }
   btn.textContent=t('ap_ai_btn'); btn.disabled=false;
+};
+function apptRowLabel(a){ const bits=[a.date||('⚠️ '+t('ap_nodate'))]; if(a.time) bits.push(a.time);
+  if(a.place) bits.push(a.place); if(a.doc) bits.push(a.doc); return bits.join(' · '); }
+function renderApptBatch(){
+  apptBatchMode(true);
+  document.getElementById('apptBatchTitle').textContent=t('ap_ai_found',apptBatch.length);
+  document.getElementById('apptBatchList').innerHTML = apptBatch.map((a,i)=>
+    `<div class="hrow"><span class="ht" style="flex:1;">${esc(apptRowLabel(a))}${a.note?'<div class="sub2">📝 '+esc(a.note)+'</div>':''}</span>`+
+    `<button class="mdel" onclick="removeApptFromBatch(${i})">✕</button></div>`).join('');
+  document.getElementById('apptBatchSaveBtn').textContent=t('ap_saveall',apptBatch.filter(a=>/^\d{4}-\d{2}-\d{2}$/.test(a.date||'')).length);
+}
+window.removeApptFromBatch=function(i){ if(!apptBatch) return; apptBatch.splice(i,1);
+  if(apptBatch.length<=1){ apptBatch=null; apptBatchMode(false); } else renderApptBatch(); };
+/* create ONE appointment from a plain record + attach the current scan (shared card). */
+async function persistAppt(rec){
+  const a=Object.assign({id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)},rec);
+  appts.push(a);
+  if(apptPhotoTouched && pendingApptPhoto){ a.photo=true; lset('apptphoto:'+a.id, pendingApptPhoto);
+    if(cloud){ try{ await cloudSet(apptPhotoPath(a.id), pendingApptPhoto);}catch(e){ console.warn(e); } } }
+  return a;
+}
+window.saveAllAppts=async function(){
+  if(!apptBatch||!apptBatch.length) return;
+  const btn=document.getElementById('apptBatchSaveBtn'); btn.disabled=true; btn.textContent=t('saving');
+  let saved=0;
+  for(const rec of apptBatch){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(rec.date||'')) continue;
+    await persistAppt({ date:rec.date, time:(/^\d{1,2}:\d{2}$/.test(rec.time||'')?rec.time:''), place:rec.place||'', doc:rec.doc||'', note:rec.note||'' });
+    saved++;
+  }
+  await saveApptsAll(); btn.disabled=false; closeMask('apptMask'); renderAppts();
+  alert(saved?t('ap_savedn',saved):t('ap_nodate'));
 };
 window.viewApptScan=async function(id){ const p=await loadApptPhoto(id); if(p) openScan(p); };
 window.saveAppt=async function(){
