@@ -203,6 +203,8 @@
   .authmsg.err{background:var(--coral-soft); color:var(--coral);}
   .authmsg.info{background:var(--jade-soft); color:var(--jade);}
   .authfoot{font-size:14px; color:var(--sub); line-height:1.6; text-align:center; margin:18px 4px 0;}
+  .authlang{position:absolute;top:calc(16px + env(safe-area-inset-top));right:18px;background:#fff;border:1.5px solid var(--line);border-radius:12px;height:42px;padding:0 16px;font-size:15px;font-weight:800;color:var(--jade);cursor:pointer;z-index:1;}
+  .authlang:active{transform:scale(.95);}
   .authspin{width:34px;height:34px;border-radius:50%;border:4px solid var(--jade-soft);border-top-color:var(--jade);margin:0 auto;animation:authspin .8s linear infinite;}
   @keyframes authspin{to{transform:rotate(360deg);}}
 
@@ -222,6 +224,15 @@
   .rolepill.patient{background:var(--coral-soft);color:var(--coral);}
   .mdel{border:none;background:none;color:var(--sub);font-size:18px;cursor:pointer;padding:4px 6px;}
 
+  /* ---- Build 2: tappable / editable entries ---- */
+  .gitem.tap{cursor:pointer;border-radius:10px;margin:0 -6px;padding-left:6px;padding-right:6px;transition:background .15s;}
+  .gitem.tap:active{background:var(--paper);}
+  .hrow.tap{cursor:pointer;border-radius:8px;transition:background .15s;}
+  .hrow.tap:active{background:var(--paper);}
+  .tapedit{opacity:.35;font-size:13px;margin-left:6px;}
+  .edit-note{font-size:13px;color:var(--sub);line-height:1.5;margin:0 0 14px;}
+  .del-badge{font-size:12px;font-weight:800;color:var(--coral);}
+
   /* ---- portion references / quick-add ---- */
   .cardhead{display:flex;justify-content:space-between;align-items:center;gap:10px;}
   .iref{background:var(--jade-soft);border:none;border-radius:12px;width:42px;height:42px;font-size:18px;cursor:pointer;flex:none;}
@@ -239,33 +250,75 @@
   .refitem .ri-act{display:flex;gap:4px;flex:none;}
   .refitem .ri-act button{border:none;background:var(--paper);border-radius:8px;width:34px;height:34px;font-size:15px;cursor:pointer;}
   .sheetphoto{width:100%;max-height:150px;object-fit:contain;border-radius:12px;border:1px solid var(--line);margin:6px 0;display:none;background:var(--paper);}
+
+  /* ---- Build 3: charts & doctor report ---- */
+  .metricchips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
+  .metricchips .chip{flex:none;}
+  .chart-wrap{margin:6px 0 4px;}
+  .chart-wrap svg{width:100%;height:auto;display:block;}
+  .chart-cap{font-size:13px;color:var(--sub);text-align:center;margin:2px 0 10px;line-height:1.5;}
+  .statrow{display:flex;gap:8px;margin:12px 0 4px;}
+  .stat{flex:1;background:var(--paper);border-radius:14px;padding:11px 6px;text-align:center;}
+  .stat .sv{font-size:20px;font-weight:800;line-height:1.1;}
+  .stat .sk{font-size:12px;color:var(--sub);font-weight:700;margin-top:3px;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:8px 0 2px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--sub);}
+  .legend i{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  .bpgrid{display:flex;flex-direction:column;gap:6px;margin:8px 0;}
+  .bpgrid .bprow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:14px;}
+  .bpgrid .bprow .bpn{font-weight:800;} .bpgrid .bprow .bpr{color:var(--sub);font-weight:700;font-size:13px;}
+  .bpgrid .bprow.hit{border-color:var(--jade);background:var(--jade-soft);}
+  .emptybox{text-align:center;color:var(--sub);font-size:15px;padding:26px 10px;line-height:1.6;}
+  .repbtn{width:100%;background:var(--jade);color:#fff;border:none;border-radius:14px;padding:15px;font-size:17px;font-weight:800;cursor:pointer;margin-top:14px;}
+  .repbtn:active{transform:scale(.98);}
+
+  /* report overlay */
+  #reportMask{position:fixed;inset:0;background:var(--paper);z-index:120;overflow-y:auto;display:none;}
+  #reportMask.on{display:block;}
+  .report{max-width:760px;margin:0 auto;padding:20px 18px 60px;}
+  .report h1{font-size:22px;margin:0 0 4px;} .report h2{font-size:17px;color:var(--jade);border-bottom:2px solid var(--jade-soft);padding-bottom:4px;margin:22px 0 8px;}
+  .report .rmeta{font-size:14px;color:var(--sub);line-height:1.6;}
+  .report table{width:100%;border-collapse:collapse;font-size:14px;margin:6px 0;}
+  .report th,.report td{border:1px solid var(--line);padding:7px 9px;text-align:left;}
+  .report th{background:var(--jade-soft);color:var(--jade);font-size:13px;}
+  .report .repbar{position:sticky;top:0;background:var(--paper);padding:10px 0;display:flex;gap:10px;z-index:2;}
+  .report .repbar button{flex:1;border-radius:12px;padding:13px;font-size:16px;font-weight:800;cursor:pointer;border:none;}
+  .report .repbar .pr{background:var(--jade);color:#fff;} .report .repbar .cl{background:#fff;border:1.5px solid var(--line);color:var(--sub);}
+  @media print{
+    body>*{display:none !important;}
+    #reportMask{display:block !important;position:static;background:#fff;}
+    #reportMask .repbar{display:none !important;}
+    .report{max-width:none;padding:0;}
+    .report h2{break-after:avoid;} table,.chart-wrap{break-inside:avoid;}
+  }
 </style>
 </head>
 <body>
 
 <!-- ================= LOGIN GATE ================= -->
 <div class="authgate" id="authGate">
+  <button class="authlang" id="authLangBtn" onclick="authToggleLang()">EN</button>
   <div class="authbox">
     <img class="authlogo-img" src="data:image/png;base64,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" alt="康心 HeartWell">
     <h1>康心<br><span>HeartWell</span></h1>
     <!-- splash: shown while the saved session is checked (so returning users don't see a login flash) -->
     <div id="authSplash" style="text-align:center;padding:14px 0 4px;">
       <div class="authspin"></div>
-      <p class="sub2" style="margin-top:12px;">载入中… / Loading…</p>
+      <p class="sub2" id="au_loading" style="margin-top:12px;">载入中…</p>
     </div>
-    <!-- login form: revealed only if there is no saved session -->
+    <!-- login form: revealed only if there is no saved session. Texts set by renderAuthLang() -->
     <div id="authForm" style="display:none;">
       <div class="authmsg" id="authMsg"></div>
-      <div class="field"><label>邮箱 / Email</label>
+      <div class="field"><label id="au_email_lbl">邮箱</label>
         <input id="au_email" type="email" autocomplete="username" inputmode="email" placeholder="you@example.com"></div>
-      <div class="field"><label>密码 / Password</label>
+      <div class="field"><label id="au_pass_lbl">密码</label>
         <input id="au_pass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
-      <div class="field" id="au_pass2Wrap" style="display:none;"><label>再输一次密码 / Repeat password</label>
+      <div class="field" id="au_pass2Wrap" style="display:none;"><label id="au_pass2_lbl">再输一次密码</label>
         <input id="au_pass2" type="password" autocomplete="new-password" placeholder="••••••••"></div>
-      <button class="primary" id="au_submit" onclick="authSubmit()">登录 / Log in</button>
-      <button class="link" id="au_toggle" onclick="authToggleMode()">第一次使用？注册新账号 / First time? Create an account</button>
-      <button class="link" id="au_forgot" onclick="authForgot()">忘记密码 / Forgot password</button>
-      <p class="authfoot">登录一次后，这台手机会一直保持登录，不用每次都输入密码。<br>After one login, this phone stays signed in — no need to log in again.</p>
+      <button class="primary" id="au_submit" onclick="authSubmit()">登录</button>
+      <button class="link" id="au_toggle" onclick="authToggleMode()">第一次使用？注册新账号</button>
+      <button class="link" id="au_forgot" onclick="authForgot()">忘记密码</button>
+      <p class="authfoot" id="au_foot">登录一次后，这台手机会一直保持登录，不用每次都输入密码。</p>
     </div>
   </div>
 </div>
@@ -326,6 +379,7 @@
       <button class="fbtn" onclick="addCustomFluid()" data-i18n-h="fl6">其他份量<small>自己填</small></button>
     </div>
     <button class="ghost" onclick="undoFluid()" data-i18n="undo">↩ 撤销上一次</button>
+    <div id="fluidLog"></div>
   </div>
 
   <div class="card">
@@ -409,16 +463,26 @@
     <h2 data-i18n="wk_h">📊 记录回顾</h2>
     <p class="hint" data-i18n="wk_hint">给医生看的时候，可以打开这一页。选择日子范围，「明细」可以看到每一笔记录和时间。</p>
     <div class="chips" id="histChips">
-      <div class="chip on" data-d="7" onclick="setHist(7)" data-i18n="d7">7 天</div>
-      <div class="chip" data-d="30" onclick="setHist(30)" data-i18n="d30">30 天</div>
+      <div class="chip" data-d="1" onclick="setHist(1)" data-i18n="r_day">日</div>
+      <div class="chip on" data-d="7" onclick="setHist(7)" data-i18n="r_week">周</div>
+      <div class="chip" data-d="30" onclick="setHist(30)" data-i18n="r_month">月</div>
       <div class="chip" data-d="90" onclick="setHist(90)" data-i18n="d90">3 个月</div>
       <div class="chip" data-d="180" onclick="setHist(180)" data-i18n="d180">6 个月</div>
     </div>
-    <div class="g-tags">
-      <div class="g-tag on" id="hmSum" onclick="setHistMode('sum')" data-i18n="m_sum">摘要</div>
-      <div class="g-tag" id="hmDet" onclick="setHistMode('det')" data-i18n="m_det">明细</div>
+    <div class="metricchips" id="metricChips">
+      <div class="chip on" data-m="overview" onclick="setMetric('overview')" data-i18n="mt_over">总览</div>
+      <div class="chip" data-m="bp" onclick="setMetric('bp')" data-i18n="mt_bp">🫀 血压</div>
+      <div class="chip" data-m="glucose" onclick="setMetric('glucose')" data-i18n="mt_g">🩸 血糖</div>
+      <div class="chip" data-m="weight" onclick="setMetric('weight')" data-i18n="mt_wt">⚖️ 体重</div>
+      <div class="chip" data-m="fluid" onclick="setMetric('fluid')" data-i18n="mt_fl">💧 喝水</div>
+    </div>
+    <div class="g-tags" id="viewTabs" style="display:none;">
+      <div class="g-tag on" id="vwTrend" onclick="setView('trend')" data-i18n="vw_trend">趋势</div>
+      <div class="g-tag" id="vwDist" onclick="setView('dist')" data-i18n="vw_dist">分布</div>
+      <div class="g-tag" id="vwRec" onclick="setView('rec')" data-i18n="vw_rec">记录</div>
     </div>
     <div id="weekBody"></div>
+    <button class="repbtn" onclick="openReport()" data-i18n="rep_btn">🩺 生成医生报告 / Doctor report</button>
     <button class="ghost" onclick="buildWeek()" data-i18n="refresh">🔄 刷新</button>
   </div>
   <p class="foot" data-i18n="foot">记录会保存在这台手机上；如果已连接云端，照护者也能同步看到。</p>
@@ -645,7 +709,7 @@
 <!-- appointment sheet -->
 <div class="mask" id="apptMask">
   <div class="sheet">
-    <h3 data-i18n="ap_new">添加复诊／检查</h3>
+    <h3 id="apptTitle" data-i18n="ap_new">添加复诊／检查</h3>
     <div class="two">
       <div class="field"><label data-i18n="date">日期</label><input id="ap_date" type="date"></div>
       <div class="field"><label data-i18n="time_opt">时间（可不填）</label><input id="ap_time" type="time"></div>
@@ -661,7 +725,7 @@
 <!-- medical record sheet -->
 <div class="mask" id="recMask">
   <div class="sheet">
-    <h3 data-i18n="rc_new">添加医疗记录</h3>
+    <h3 id="recTitle" data-i18n="rc_new">添加医疗记录</h3>
     <div class="two">
       <div class="field"><label data-i18n="date">日期</label><input id="rc_date" type="date"></div>
       <div class="field"><label data-i18n="rtype">类型</label><input id="rc_type" type="text" placeholder="例如 抽血报告"></div>
@@ -701,6 +765,15 @@
 <!-- fullscreen photo -->
 <div class="photo-mask" id="photoMask" onclick="this.classList.remove('on')"><img id="photoBig"></div>
 
+<!-- Build 3: doctor report (printable) -->
+<div id="reportMask"><div class="report">
+  <div class="repbar">
+    <button class="pr" onclick="printReport()" data-i18n="rep_print">🖨 打印 / 存成 PDF</button>
+    <button class="cl" onclick="closeReport()" data-i18n="close">关闭</button>
+  </div>
+  <div id="reportBody"></div>
+</div></div>
+
 
 <!-- device passport sheet -->
 <div class="mask" id="passMask">
@@ -721,6 +794,19 @@
     <div class="field"><label data-i18n="pp_note">医生的特别交代（开车、运动等）/ Doctor's notes</label><textarea id="pp_note"></textarea></div>
     <button class="primary" onclick="savePass()" data-i18n="save">保存</button>
     <button class="link" onclick="closeMask('passMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
+<!-- Build 2: edit / delete a logged entry -->
+<div class="mask" id="editMask">
+  <div class="sheet">
+    <h3 id="edit_title">修改记录 / Edit entry</h3>
+    <p class="edit-note" id="edit_note"></p>
+    <div id="edit_fields"></div>
+    <div class="field"><label>时间 / Time</label><input id="edit_time" type="time"></div>
+    <button class="primary" onclick="saveEditEntry()">保存 / Save</button>
+    <button class="ghost" onclick="deleteEditEntry()" style="border-color:var(--coral);color:var(--coral);">🗑 删除这一笔 / Delete this entry</button>
+    <button class="link" onclick="closeMask('editMask')">取消 / Cancel</button>
   </div>
 </div>
 
@@ -967,6 +1053,27 @@ en:{
  s_pre:'Pre-meal glucose avg', s_post:'Post-meal glucose avg', s_n_hi:'{0} readings · {1} high',
  s_bp:'BP average', s_carb:'Carb target met', s_near:'about {0} portions', s_dd:'{0} / {1} days', s_d:'days',
  dt_bp:'BP', dt_g:'Glucose', dt_w:'Water ({0}×)', dt_carb:'Staples', dt_prot:'Protein', dt_fruit:'Fruit', ml:'ml',
+ dt_weight:'Weight', dt_mood:'Feeling', kg:'kg', fl_log:'💧 Drinks logged today',
+ mood_good_s:'Good', mood_ok_s:'OK', mood_bad_s:'Unwell',
+ ap_edit:'Edit appointment/test', rc_edit:'Edit medical record', rc_editbtn:'✏️ Edit',
+ r_day:'Day', r_week:'Week', r_month:'Month',
+ mt_over:'Overview', mt_bp:'🫀 BP', mt_g:'🩸 Glucose', mt_wt:'⚖️ Weight', mt_fl:'💧 Fluid',
+ vw_trend:'Trend', vw_dist:'Spread', vw_rec:'Records',
+ none_metric:'No records in this range yet.', d_count:'readings', dist_cap:'Share of readings in each zone for this range.',
+ st_avg:'Average', st_max:'Highest', st_min:'Lowest', st_cnt:'Readings', st_chg:'Change', st_avgd:'Avg/day', st_over:'Over limit', st_days:'Days',
+ cap_bp:'Green band = target. Dots: green normal · red high · amber low. Dashed lines = his limits.',
+ cap_g:'Green band = target range. Dots colour-coded by reading.',
+ cap_wt:'Green band = ±1.5 kg from the first reading (fluid-overload watch zone).',
+ cap_fl:'Bars = daily total. Red dashed line = daily limit; red bars are over.',
+ bpgrid_h:'Blood-pressure category (his average)', bp_his:'His', bpgrid_cap:'',
+ bpc0:'Low (hypotension)', bpc1:'Normal', bpc2:'Elevated', bpc3:'Stage 1', bpc4:'Stage 2', bpc5:'Crisis',
+ fl_ok:'Within limit', fl_over:'Over limit', fl_total:'Day total',
+ wt_stable:'Stable', wt_up:'Up >1.5kg', wt_down:'Down >1.5kg',
+ rep_btn:'🩺 Doctor report', rep_print:'🖨 Print / Save as PDF', rep_title:'Health Report',
+ rep_gen:'Generated', rep_range:'Range', rep_days:'days', rep_alerts:'weight alerts', rep_when:'When',
+ rep_noshock:'No shocks recorded in this range.', rep_limit:'limit',
+ rep_foot:'Descriptive record only — not medical advice. Please discuss with his cardiologist.',
+ sk_what:'Doing', sk_how:'Felt',
  ap_none:'No appointments yet.', ap_past:'Past ({0})', ap_visit:'Appointment', ap_del:'Delete this appointment?',
  ap_needdate:'Please choose a date',
  rc_none:'No records yet. Tap the button below to photograph a report.', rc_del:'Delete this record? (photo included)',
@@ -996,6 +1103,27 @@ TT.zh = {
  s_pre:'餐前血糖 平均', s_post:'餐后血糖 平均', s_n_hi:'{0} 次 · 偏高 {1} 次',
  s_bp:'血压 平均', s_carb:'主食达标', s_near:'接近 {0} 份', s_dd:'{0} / {1} 天', s_d:'天',
  dt_bp:'血压', dt_g:'血糖', dt_w:'喝水（{0} 次）', dt_carb:'主食', dt_prot:'蛋白质', dt_fruit:'水果', ml:'毫升',
+ dt_weight:'体重', dt_mood:'感觉', kg:'公斤', fl_log:'💧 今天喝过的',
+ mood_good_s:'很好', mood_ok_s:'一般', mood_bad_s:'不舒服',
+ ap_edit:'修改复诊／检查', rc_edit:'修改医疗记录', rc_editbtn:'✏️ 修改',
+ r_day:'日', r_week:'周', r_month:'月',
+ mt_over:'总览', mt_bp:'🫀 血压', mt_g:'🩸 血糖', mt_wt:'⚖️ 体重', mt_fl:'💧 喝水',
+ vw_trend:'趋势', vw_dist:'分布', vw_rec:'记录',
+ none_metric:'这段时间还没有记录。', d_count:'次', dist_cap:'这段时间各区间的次数占比。',
+ st_avg:'平均', st_max:'最高', st_min:'最低', st_cnt:'次数', st_chg:'变化', st_avgd:'每天平均', st_over:'超标', st_days:'天数',
+ cap_bp:'绿色区间＝目标。圆点：绿正常·红偏高·黄偏低。虚线＝他的上限。',
+ cap_g:'绿色区间＝目标范围。圆点按血糖高低上色。',
+ cap_wt:'绿色区间＝距首次记录 ±1.5 公斤（积水警戒区）。',
+ cap_fl:'柱子＝每天总量。红色虚线＝每天上限；红柱表示超标。',
+ bpgrid_h:'血压分级（他的平均值）', bp_his:'他', bpgrid_cap:'',
+ bpc0:'偏低（低血压）', bpc1:'正常', bpc2:'偏高', bpc3:'一级高血压', bpc4:'二级高血压', bpc5:'高血压危象',
+ fl_ok:'没超标', fl_over:'超标', fl_total:'当天总量',
+ wt_stable:'稳定', wt_up:'重了>1.5kg', wt_down:'轻了>1.5kg',
+ rep_btn:'🩺 生成医生报告', rep_print:'🖨 打印 / 存成 PDF', rep_title:'健康报告',
+ rep_gen:'生成时间', rep_range:'时间范围', rep_days:'天', rep_alerts:'次体重警示', rep_when:'时间',
+ rep_noshock:'这段时间没有电击记录。', rep_limit:'上限',
+ rep_foot:'只是数据记录，不构成医疗建议。请与他的心脏科医生讨论。',
+ sk_what:'在做什么', sk_how:'感觉',
  ap_none:'还没有安排。', ap_past:'过去的（{0}）', ap_visit:'复诊', ap_del:'删除这个安排？', ap_needdate:'请选择日期',
  rc_none:'还没有记录。按下面的按钮，把报告拍下来。', rc_del:'删除这条记录？（照片也会一起删除）',
  del:'删除', saving:'保存中…', saved:'已保存 ✓', wrongpw:'密码不正确', enterpw:'输入照护者密码',
@@ -1096,12 +1224,17 @@ function setPatientPaths(){
 
 /* Order-independent signature of a day's meaningful state — used to skip re-rendering
    when Firestore echoes back our OWN write (the main source of tap lag). */
-function daySig(dd){ dd=dd||{}; return [
+function daySig(dd){ dd=dd||{};
+  const bp=(dd.bp||[]).map(x=>x.t+':'+x.sys+'/'+x.dia+'/'+(x.pulse||'')+(x.del?'D':'')).join(',');
+  const gl=(dd.glucose||[]).map(x=>x.t+':'+x.value+x.tag+(x.del?'D':'')).join(',');
+  const sk=(dd.shocks||[]).map(x=>x.t+':'+(x.what||'')+'/'+(x.how||'')+(x.del?'D':'')).join(',');
+  const fl=((dd.fluid&&dd.fluid.log)||[]).map(x=>x.t+':'+x.ml+(x.del?'D':'')).join(',');
+  return [
   dd.fluid&&dd.fluid.total, dd.fruit, dd.weight, dd.mood,
   ...PROT.map(k=>proteinCount(dd.protein&&dd.protein[k])),
   ...CARB_KEYS.map(k=>(dd.carbs&&+dd.carbs[k])||0),
   ...VEGM.map(k=>(dd.veg&&dd.veg[k])?1:0),
-  (dd.glucose||[]).length, (dd.bp||[]).length, (dd.shocks||[]).length ].join('|'); }
+  bp, gl, sk, fl ].join('|'); }
 let _daySig=null;
 async function saveDay(){ lset('day:'+TODAY,data); _daySig=daySig(data); if(cloud){ try{ await cloudSet(dayPath(TODAY),data);}catch(e){} } }
 async function saveSet(){ lset('settings',settings); if(cloud){ try{ await cloudSet(setPath,settings);}catch(e){} } }
@@ -1197,30 +1330,49 @@ async function afterLogin(user){
 }
 
 /* ---- login screen behaviour ---- */
+/* Login screen shows ONE language at a time (toggle top-right), for a cleaner look. */
+const AUTHTXT={
+  zh:{ loading:'载入中…', wait:'… 请稍候', email:'邮箱', pass:'密码', pass2:'再输一次密码',
+    login:'登录', signup:'注册新账号', toLogin:'已有账号？登录', toSignup:'第一次使用？注册新账号',
+    forgot:'忘记密码', foot:'登录一次后，这台手机会一直保持登录，不用每次都输入密码。', notConn:'云端未连接' },
+  en:{ loading:'Loading…', wait:'… Please wait', email:'Email', pass:'Password', pass2:'Repeat password',
+    login:'Log in', signup:'Create account', toLogin:'Have an account? Log in', toSignup:'First time? Create an account',
+    forgot:'Forgot password', foot:'After one login, this phone stays signed in — no need to log in again.', notConn:'Not connected' }
+};
+function AT(){ return AUTHTXT[LANG]||AUTHTXT.zh; }
+function renderAuthLang(){
+  const L=AT(), signup=(authMode==='signup'), g=id=>document.getElementById(id);
+  const lb=g('authLangBtn'); if(lb) lb.textContent = LANG==='zh'?'EN':'中';
+  if(g('au_loading')) g('au_loading').textContent=L.loading;
+  if(g('au_email_lbl')) g('au_email_lbl').textContent=L.email;
+  if(g('au_pass_lbl')) g('au_pass_lbl').textContent=L.pass;
+  if(g('au_pass2_lbl')) g('au_pass2_lbl').textContent=L.pass2;
+  if(g('au_submit')) g('au_submit').textContent = signup?L.signup:L.login;
+  if(g('au_toggle')) g('au_toggle').textContent = signup?L.toLogin:L.toSignup;
+  if(g('au_forgot')) g('au_forgot').textContent = L.forgot;
+  if(g('au_foot')) g('au_foot').textContent = L.foot;
+}
+window.authToggleLang=function(){ LANG=(LANG==='zh')?'en':'zh'; lset('lang',LANG); renderAuthLang(); if(typeof applyLang==='function') applyLang(); };
 function showAuthGate(){ document.getElementById('authGate').style.display='flex';
   document.getElementById('authSplash').style.display='none';
-  document.getElementById('authForm').style.display='block'; }
+  document.getElementById('authForm').style.display='block'; renderAuthLang(); }
 function hideAuthGate(){ document.getElementById('authGate').style.display='none'; }
 function authError(msg){ const m=document.getElementById('authMsg'); m.className='authmsg on err'; m.textContent=msg; }
 function authInfo(msg){ const m=document.getElementById('authMsg'); m.className='authmsg on info'; m.textContent=msg; }
 function authClearMsg(){ const m=document.getElementById('authMsg'); m.className='authmsg'; m.textContent=''; }
 window.authToggleMode=function(){
   authMode=(authMode==='login')?'signup':'login'; authClearMsg();
-  const signup=(authMode==='signup');
-  document.getElementById('au_pass2Wrap').style.display=signup?'block':'none';
-  document.getElementById('au_submit').textContent=signup?'注册 / Create account':'登录 / Log in';
-  document.getElementById('au_toggle').textContent=signup
-    ?'已有账号？登录 / Have an account? Log in'
-    :'第一次使用？注册新账号 / First time? Create an account';
-  document.getElementById('au_pass').setAttribute('autocomplete', signup?'new-password':'current-password');
+  document.getElementById('au_pass2Wrap').style.display=(authMode==='signup')?'block':'none';
+  document.getElementById('au_pass').setAttribute('autocomplete', (authMode==='signup')?'new-password':'current-password');
+  renderAuthLang();
 };
 window.authSubmit=async function(){
-  if(!cloud||!auth){ authError('云端未连接 / Not connected'); return; }
+  if(!cloud||!auth){ authError(AT().notConn); return; }
   const email=(document.getElementById('au_email').value||'').trim();
   const pass=document.getElementById('au_pass').value||'';
-  if(!email||!pass){ authError('请输入邮箱和密码 / Enter email and password'); return; }
+  if(!email||!pass){ authError(LANG==='zh'?'请输入邮箱和密码':'Enter email and password'); return; }
   const btn=document.getElementById('au_submit'), label=btn.textContent;
-  btn.disabled=true; btn.textContent='… 请稍候 / Please wait'; authClearMsg();
+  btn.disabled=true; btn.textContent=AT().wait; authClearMsg();
   try{
     let cred;
     if(authMode==='signup'){
@@ -1238,11 +1390,11 @@ window.authSubmit=async function(){
   }
 };
 window.authForgot=async function(){
-  if(!cloud||!auth){ authError('云端未连接 / Not connected'); return; }
+  if(!cloud||!auth){ authError(AT().notConn); return; }
   const email=(document.getElementById('au_email').value||'').trim();
-  if(!email){ authError('请先输入邮箱 / Enter your email first'); return; }
+  if(!email){ authError(LANG==='zh'?'请先输入邮箱':'Enter your email first'); return; }
   try{ await authMod.sendPasswordResetEmail(auth,email);
-    authInfo('已发送重设密码的邮件，请查收。\nA password-reset email has been sent — check your inbox.');
+    authInfo(LANG==='zh'?'已发送重设密码的邮件，请查收。':'A password-reset email has been sent — check your inbox.');
   }catch(e){ authError(authErrText(e&&e.code)); }
 };
 window.doLogout=async function(){
@@ -1263,7 +1415,7 @@ function authErrText(code){
     'auth/operation-not-allowed':'Email login is not enabled yet (enable Email/Password in Firebase)',
     'auth/too-many-requests':'Too many attempts — try again later','auth/network-request-failed':'Network problem — check your connection',
     'app/pass-mismatch':'The two passwords do not match' };
-  return (zh[code]||'登录出错')+' / '+(en[code]||'Sign-in error');
+  return LANG==='zh' ? (zh[code]||'登录出错，请重试') : (en[code]||'Sign-in error, please try again');
 }
 
 /* ---- role-based UI ----
@@ -1453,6 +1605,16 @@ function renderFluid(){
     const hrsLeft=Math.max(settings.sleep-hr,0.5);
     pace.textContent=t('pace',hrsLeft.toFixed(1),Math.round(remain/hrsLeft));
   } else pace.textContent='';
+  // per-entry log — tap a row to edit / delete that drink (Build 2)
+  const lw=document.getElementById('fluidLog');
+  if(lw){
+    const items=live(data.fluid.log);
+    lw.innerHTML = items.length ? '<div class="sec-t">'+t('fl_log')+'</div>'+items.slice().reverse().map(x=>{
+      const attr = x.t ? `class="gitem tap" onclick="openEditEntry('fluid',${x.t},'${TODAY}')"` : 'class="gitem"';
+      return `<div ${attr}><span>${x.t?hm(x.t):''}${x.label?(x.t?' · ':'')+x.label:''}</span>`+
+        `<span><span class="gval">${x.ml} ${t('ml')}</span>${x.t?' <span class="tapedit">✏️</span>':''}</span></div>`;
+    }).join('') : '';
+  }
 }
 
 /* ============================================================
@@ -1664,21 +1826,24 @@ function bpFlag(sys,dia){
 }
 function renderBP(){
   document.getElementById('bpHint').textContent=t('bp_hint',settings.bpPerDay);
-  const n=data.bp.length, T=settings.bpPerDay;
+  const n=live(data.bp).length, T=settings.bpPerDay;
   document.getElementById('bpCountLabel').textContent=t('bp_n',n);
   document.getElementById('bpTargetLabel').textContent=t('bp_t',T);
   const bar=document.getElementById('bpBar'); bar.style.width=Math.min(n/T,1)*100+'%';
   bar.style.background= n>=T?'#3E8E7E':'#DFA24E';
   const wrap=document.getElementById('bpList'); wrap.innerHTML='';
-  [...data.bp].reverse().forEach(r=>{
+  live(data.bp).reverse().forEach(r=>{
     const d=new Date(r.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     const f=bpFlag(r.sys,r.dia);
-    const it=document.createElement('div'); it.className='gitem';
+    const it=document.createElement('div'); it.className='gitem tap';
     it.innerHTML=`<span>${hh}${r.pulse?' · '+t('pulse_s')+' '+r.pulse:''}</span>
-      <span><span class="gval">${r.sys}/${r.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span>`;
+      <span><span class="gval">${r.sys}/${r.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span> <span class="tapedit">✏️</span></span>`;
+    it.onclick=()=>openEditEntry('bp', r.t, TODAY);
     wrap.appendChild(it);
   });
 }
+/* live() — hide soft-deleted entries from views/counts (Build 2). Deleted rows stay in Firestore. */
+function live(arr){ return (arr||[]).filter(x=>x&&!x.del); }
 
 /* ============================================================
    9) GLUCOSE
@@ -1693,22 +1858,171 @@ function renderGlucose(){
   const g=settings.glucose;
   document.getElementById('gHint').textContent=t('g_hint',g.preLo,g.preHi,g.postLo,g.postHi);
   const wrap=document.getElementById('gList'); wrap.innerHTML='';
-  [...data.glucose].reverse().forEach(x=>{ const d=new Date(x.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    const f=gFlag(x.value,x.tag); const it=document.createElement('div'); it.className='gitem';
-    it.innerHTML=`<span>${t('tag_'+x.tag)} · ${hh}</span><span><span class="gval">${x.value.toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span>`;
+  live(data.glucose).reverse().forEach(x=>{ const d=new Date(x.t), hh=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+    const f=gFlag(x.value,x.tag); const it=document.createElement('div'); it.className='gitem tap';
+    it.innerHTML=`<span>${t('tag_'+x.tag)} · ${hh}</span><span><span class="gval">${x.value.toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span> <span class="tapedit">✏️</span></span>`;
+    it.onclick=()=>openEditEntry('glucose', x.t, TODAY);
     wrap.appendChild(it); });
 }
 
 /* ============================================================
+   9b) BUILD 2 — edit / delete a logged entry (soft-delete)
+   ============================================================ */
+let entryEdit=null, editTag='餐前', editMood=null;
+const SCALAR_KINDS=['weight','mood'];                 // one value per day, no timestamp
+const EDIT_TITLES={ bp:'修改血压 / Edit blood pressure', glucose:'修改血糖 / Edit glucose',
+  fluid:'修改喝水 / Edit water', shock:'修改电击记录 / Edit shock', weight:'修改体重 / Edit weight',
+  mood:'修改感觉 / Edit mood' };
+/* Which array on the day doc holds this kind's entries (fluid lives under fluid.log). */
+function entryArray(src, kind){
+  if(kind==='fluid') return (src.fluid&&src.fluid.log)||[];
+  if(kind==='shock') return src.shocks||[];
+  return src[kind]||[];                                // bp, glucose
+}
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function editFieldsHTML(kind, e){
+  if(kind==='bp'){
+    return `<div class="two">
+      <div class="field"><label>高压 Systolic (mmHg)</label><input id="ed_sys" type="number" inputmode="numeric" value="${e.sys}"></div>
+      <div class="field"><label>低压 Diastolic (mmHg)</label><input id="ed_dia" type="number" inputmode="numeric" value="${e.dia}"></div></div>
+      <div class="field"><label>脉搏 Pulse（可不填 / optional）</label><input id="ed_pulse" type="number" inputmode="numeric" value="${e.pulse||''}"></div>`;
+  }
+  if(kind==='glucose'){
+    return `<div class="g-tags" style="margin-bottom:12px;">
+        <div class="g-tag ${e.tag==='餐前'?'on':''}" id="ed_pre" onclick="editSetTag('餐前')">餐前 Before meal</div>
+        <div class="g-tag ${e.tag==='餐后'?'on':''}" id="ed_post" onclick="editSetTag('餐后')">餐后 After meal</div></div>
+      <div class="field"><label>血糖 Glucose (mmol/L)</label><input id="ed_val" type="number" step="0.1" inputmode="decimal" value="${e.value}"></div>`;
+  }
+  if(kind==='fluid'){
+    return `<div class="field"><label>喝了多少 Amount (ml)</label><input id="ed_ml" type="number" inputmode="numeric" value="${e.ml}"></div>
+      ${e.label?`<p class="sub2" style="margin:-4px 0 6px;">${esc(e.label)}</p>`:''}`;
+  }
+  if(kind==='shock'){
+    return `<div class="field"><label>当时在做什么 What（可不填 / optional）</label><input id="ed_what" type="text" value="${esc(e.what)}"></div>
+      <div class="field"><label>当时感觉 How he felt（可不填 / optional）</label><input id="ed_how" type="text" value="${esc(e.how)}"></div>`;
+  }
+  if(kind==='weight'){
+    return `<div class="field"><label>体重 Weight (kg)</label><input id="ed_wt" type="number" step="0.1" inputmode="decimal" value="${e.weight??''}"></div>`;
+  }
+  if(kind==='mood'){
+    const opts=[['好','😊 很好 Good'],['一般','😐 一般 OK'],['不舒服','😟 不舒服 Unwell']];
+    return `<div class="mood" id="ed_moodRow">`+opts.map(([v,lab])=>
+      `<div class="${e.mood===v?'on':''}" onclick="editSetMood('${v}')">${lab}</div>`).join('')+`</div>`;
+  }
+  return '';
+}
+let editDay=null;   // buffer holding a PAST day being edited (today edits use `data` directly)
+async function loadDayForEdit(dayKey){
+  if(dayKey===TODAY) return data;
+  let d=lget('day:'+dayKey);
+  if(cloud){ try{ const cd=await cloudGet(dayPath(dayKey)); if(cd) d=cd; }catch(e){} }
+  editDay = mergeDay(d); return editDay;
+}
+function editSrc(){ return (entryEdit && entryEdit.dayKey!==TODAY) ? editDay : data; }
+window.openEditEntry=async function(kind, ts, dayKey){
+  const src=await loadDayForEdit(dayKey);
+  let e;
+  if(SCALAR_KINDS.includes(kind)){
+    if(kind==='weight' && src.weight==null) return;
+    if(kind==='mood' && src.mood==null) return;
+    e={weight:src.weight, mood:src.mood};
+  } else {
+    e=entryArray(src,kind).find(x=>x.t===ts && !x.del); if(!e) return;
+  }
+  entryEdit={kind, t:ts, dayKey}; editTag=e.tag||'餐前'; editMood=src.mood;
+  document.getElementById('edit_title').textContent = EDIT_TITLES[kind]||'修改记录 / Edit entry';
+  document.getElementById('edit_note').textContent = dayKey===TODAY
+    ? '当天的记录可以直接修改。/ Today’s entries can be edited freely.'
+    : '⚠️ 你在修改过去的记录（'+dayKey+'）。/ You are editing a PAST day ('+dayKey+').';
+  document.getElementById('edit_fields').innerHTML = editFieldsHTML(kind, e);
+  const timeField=document.getElementById('edit_time').closest('.field');
+  if(SCALAR_KINDS.includes(kind)){ timeField.style.display='none'; }
+  else { timeField.style.display=''; document.getElementById('edit_time').value=hm(ts); }
+  document.getElementById('editMask').classList.add('on');
+};
+function rerenderKind(kind){
+  if(kind==='bp') renderBP();
+  else if(kind==='glucose') renderGlucose();
+  else if(kind==='fluid') renderFluid();
+  else if(kind==='shock') renderShocks();
+  else if(kind==='weight'||kind==='mood') renderWeight();
+}
+async function persistEdit(){
+  if(!entryEdit) return;
+  if(entryEdit.dayKey===TODAY){ await saveDay(); rerenderKind(entryEdit.kind); }
+  else { lset('day:'+entryEdit.dayKey, editDay);
+    if(cloud){ try{ await cloudSet(dayPath(entryEdit.dayKey), editDay); }catch(e){ console.warn(e); } }
+    if(typeof buildWeek==='function') buildWeek(); }
+}
+window.editSetTag=function(tag){ editTag=tag;
+  document.getElementById('ed_pre').classList.toggle('on',tag==='餐前');
+  document.getElementById('ed_post').classList.toggle('on',tag==='餐后'); };
+window.editSetMood=function(m){ editMood=m;
+  document.querySelectorAll('#ed_moodRow div').forEach((d,i)=>d.classList.toggle('on',['好','一般','不舒服'][i]===m)); };
+function applyEditTime(e){ const tv=document.getElementById('edit_time').value;
+  if(tv){ const [h,m]=tv.split(':').map(Number); const d=new Date(e.t); d.setHours(h,m,0,0); e.t=d.getTime(); } }
+window.saveEditEntry=async function(){
+  if(!entryEdit) return; const {kind,t:ts}=entryEdit; const src=editSrc();
+  if(kind==='weight'){
+    const v=parseFloat(document.getElementById('ed_wt').value);
+    if(!(v>0)){ alert(t('wt_bad')); return; }
+    src.weight=v;
+  } else if(kind==='mood'){
+    if(!editMood){ alert('请选择感觉 / Please pick a mood'); return; }
+    src.mood=editMood;
+  } else {
+    const e=entryArray(src,kind).find(x=>x.t===ts); if(!e){ closeMask('editMask'); return; }
+    if(kind==='bp'){
+      const sys=parseInt(document.getElementById('ed_sys').value,10), dia=parseInt(document.getElementById('ed_dia').value,10);
+      const pulse=parseInt(document.getElementById('ed_pulse').value,10);
+      if(!(sys>0)||!(dia>0)){ alert('请输入正确的血压 / Enter a valid reading'); return; }
+      e.sys=sys; e.dia=dia; e.pulse=pulse>0?pulse:null;
+    } else if(kind==='glucose'){
+      const v=parseFloat(document.getElementById('ed_val').value);
+      if(!(v>0)){ alert('请输入正确的血糖 / Enter a valid reading'); return; }
+      e.value=v; e.tag=editTag;
+    } else if(kind==='fluid'){
+      const ml=parseInt(document.getElementById('ed_ml').value,10);
+      if(!(ml>0)){ alert('请输入正确的份量 / Enter a valid amount'); return; }
+      src.fluid.total=Math.max(0, (src.fluid.total||0) + (ml - e.ml)); e.ml=ml;
+    } else if(kind==='shock'){
+      e.what=document.getElementById('ed_what').value.trim();
+      e.how=document.getElementById('ed_how').value.trim();
+    }
+    applyEditTime(e); e.edited=Date.now();
+  }
+  await persistEdit(); closeMask('editMask');
+};
+window.deleteEditEntry=async function(){
+  if(!entryEdit) return; const {kind,t:ts}=entryEdit; const src=editSrc();
+  const scalar=SCALAR_KINDS.includes(kind);
+  const msg = scalar ? '清除这一项吗？/ Clear this entry?'
+    : '删除这一笔记录吗？会从列表和图表隐藏，但仍保留可找回。\nDelete this entry? It is hidden from views but kept so it can be recovered.';
+  if(!confirm(msg)) return;
+  if(kind==='weight'){ src.weight=null; }
+  else if(kind==='mood'){ src.mood=null; }
+  else {
+    const e=entryArray(src,kind).find(x=>x.t===ts);
+    if(e){ e.del=true; e.delAt=Date.now(); if(kind==='fluid') src.fluid.total=Math.max(0,(src.fluid.total||0)-e.ml); }
+  }
+  await persistEdit(); closeMask('editMask');
+};
+
+/* ============================================================
    10) HISTORY (7/30/90/180 days · summary + detail)
    ============================================================ */
-let histDays=7, histMode='sum';
+let histDays=7, curMetric='overview', curView='trend';
 window.setHist=function(d){ histDays=d;
   document.querySelectorAll('#histChips .chip').forEach(c=>c.classList.toggle('on',+c.dataset.d===d));
   buildWeek(); };
-window.setHistMode=function(m){ histMode=m;
-  document.getElementById('hmSum').classList.toggle('on',m==='sum');
-  document.getElementById('hmDet').classList.toggle('on',m==='det');
+window.setMetric=function(m){ curMetric=m;
+  document.querySelectorAll('#metricChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.m===m));
+  document.getElementById('viewTabs').style.display=(m==='overview')?'none':'flex';
+  buildWeek(); };
+window.setView=function(v){ curView=v;
+  document.getElementById('vwTrend').classList.toggle('on',v==='trend');
+  document.getElementById('vwDist').classList.toggle('on',v==='dist');
+  document.getElementById('vwRec').classList.toggle('on',v==='rec');
   buildWeek(); };
 
 async function fetchRange(days){
@@ -1723,6 +2037,7 @@ async function fetchRange(days){
   return out;
 }
 const hm=ts=>{ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
+function moodLabel(m){ return ({'好':'😊 '+t('mood_good_s'),'一般':'😐 '+t('mood_ok_s'),'不舒服':'😟 '+t('mood_bad_s')})[m]||m; }
 function dayTitle(dt){ const d=new Date(dt+'T00:00:00');
   if(LANG==='zh'){ const W=TT.zh.wd.split(','); return (d.getMonth()+1)+'月'+d.getDate()+'日 · 星期'+W[d.getDay()]; }
   const mo=TT.en.mon.split(','), wd=TT.en.wd.split(',');
@@ -1731,17 +2046,26 @@ function dayTitle(dt){ const d=new Date(dt+'T00:00:00');
 window.buildWeek=async function(){
   const wrap=document.getElementById('weekBody'); wrap.innerHTML='<p class="sub2">'+t('loading')+'</p>';
   const recs=await fetchRange(histDays);
-  const ks=Object.keys(recs).sort().reverse();
-  if(!ks.length){ wrap.innerHTML='<p class="sub2">'+t('none')+'</p>'; return; }
-  if(histMode==='sum') renderSummary(recs,ks,wrap); else renderDetail(recs,ks,wrap);
+  const ks=Object.keys(recs).sort().reverse();     // newest first
+  if(!ks.length){ wrap.innerHTML='<div class="emptybox">'+t('none')+'</div>'; return; }
+  if(curMetric==='overview'){
+    wrap.innerHTML='';
+    const top=document.createElement('div'); wrap.appendChild(top); renderSummary(recs,ks,top);
+    const det=document.createElement('div'); det.style.marginTop='6px'; wrap.appendChild(det); renderDetail(recs,ks,det);
+    return;
+  }
+  const asc=ks.slice().reverse();                  // oldest first for charts
+  if(curView==='trend') renderTrend(curMetric,recs,asc,wrap);
+  else if(curView==='dist') renderDist(curMetric,recs,asc,wrap);
+  else renderMetricRecords(curMetric,recs,ks,wrap);
 };
 function renderSummary(recs,ks,wrap){
   let fluidSum=0, fluidOver=0, gPre=[], gPost=[], gPreHi=0, gPostHi=0, bpS=[], bpD=[], bpHi=0, carbDays=0, fluidDays=0;
   ks.forEach(dt=>{ const r=recs[dt];
     if(r.fluid){ fluidSum+=r.fluid.total; fluidDays++; if(r.fluid.total>settings.fluidTarget) fluidOver++; }
-    (r.glucose||[]).forEach(x=>{ const f=gFlag(x.value,x.tag);
+    live(r.glucose).forEach(x=>{ const f=gFlag(x.value,x.tag);
       if(x.tag==='餐前'){ gPre.push(x.value); if(f.c==='hi') gPreHi++; } else { gPost.push(x.value); if(f.c==='hi') gPostHi++; } });
-    (r.bp||[]).forEach(x=>{ bpS.push(x.sys); bpD.push(x.dia); if(bpFlag(x.sys,x.dia).c==='hi') bpHi++; });
+    live(r.bp).forEach(x=>{ bpS.push(x.sys); bpD.push(x.dia); if(bpFlag(x.sys,x.dia).c==='hi') bpHi++; });
     let ct=0; CARB_KEYS.forEach(k=>ct+=(r.carbs?.[k]||0)); if(Math.abs(ct-settings.carbTotal)<=1) carbDays++;
   });
   const avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length):null;
@@ -1758,10 +2082,10 @@ function renderSummary(recs,ks,wrap){
 function renderDetail(recs,ks,wrap){
   let h='';
   ks.forEach(dt=>{ const r=recs[dt]; let rows='';
-    (r.bp||[]).forEach(x=>{ const f=bpFlag(x.sys,x.dia);
-      rows+=`<div class="hrow"><span class="ht">${hm(x.t)} ${t('dt_bp')}${x.pulse?' · '+t('pulse_s')+' '+x.pulse:''}</span><span><span class="hv">${x.sys}/${x.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span></div>`; });
-    (r.glucose||[]).forEach(x=>{ const f=gFlag(x.value,x.tag);
-      rows+=`<div class="hrow"><span class="ht">${hm(x.t)} ${t('dt_g')} · ${t('tag_'+x.tag)}</span><span><span class="hv">${(+x.value).toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span></span></div>`; });
+    live(r.bp).forEach(x=>{ const f=bpFlag(x.sys,x.dia);
+      rows+=`<div class="hrow tap" onclick="openEditEntry('bp',${x.t},'${dt}')"><span class="ht">${hm(x.t)} ${t('dt_bp')}${x.pulse?' · '+t('pulse_s')+' '+x.pulse:''}</span><span><span class="hv">${x.sys}/${x.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span> <span class="tapedit">✏️</span></span></div>`; });
+    live(r.glucose).forEach(x=>{ const f=gFlag(x.value,x.tag);
+      rows+=`<div class="hrow tap" onclick="openEditEntry('glucose',${x.t},'${dt}')"><span class="ht">${hm(x.t)} ${t('dt_g')} · ${t('tag_'+x.tag)}</span><span><span class="hv">${(+x.value).toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span> <span class="tapedit">✏️</span></span></div>`; });
     if(r.fluid && (r.fluid.total>0 || (r.fluid.log||[]).length)){
       const over=r.fluid.total>settings.fluidTarget;
       rows+=`<div class="hrow"><span class="ht">${t('dt_w',(r.fluid.log||[]).length)}</span><span class="hv" style="color:${over?'#D66A5A':'inherit'}">${r.fluid.total} ${t('ml')}${over?' ⚠️':''}</span></div>`; }
@@ -1770,26 +2094,295 @@ function renderDetail(recs,ks,wrap){
     let pt=0; PROT.forEach(k=>pt+=proteinCount(r.protein?.[k])); const pEst=r.proteinEstimate?' ~':'';
     if(pt>0) rows+=`<div class="hrow"><span class="ht">${t('dt_prot')}${pEst}</span><span class="hv">${t('n_of',pt,settings.proteinTotal)}</span></div>`;
     if(r.fruit>0) rows+=`<div class="hrow"><span class="ht">${t('dt_fruit')}</span><span class="hv">${r.fruit}</span></div>`;
+    if(r.weight) rows+=`<div class="hrow tap" onclick="openEditEntry('weight',0,'${dt}')"><span class="ht">${t('dt_weight')}</span><span><span class="hv">${r.weight} ${t('kg')}</span> <span class="tapedit">✏️</span></span></div>`;
+    if(r.mood) rows+=`<div class="hrow tap" onclick="openEditEntry('mood',0,'${dt}')"><span class="ht">${t('dt_mood')}</span><span><span class="hv">${moodLabel(r.mood)}</span> <span class="tapedit">✏️</span></span></div>`;
+    live(r.shocks).forEach(s=>{
+      rows+=`<div class="hrow tap" onclick="openEditEntry('shock',${s.t},'${dt}')"><span class="ht">${hm(s.t)} ⚡${s.what?' · '+esc(s.what):''}</span><span class="tapedit">✏️</span></div>`; });
     if(rows) h+=`<div class="day-h">${dayTitle(dt)}</div>`+rows;
   });
   wrap.innerHTML=h||'<p class="sub2">'+t('none_range')+'</p>';
 }
 
 /* ============================================================
+   10a-2) BUILD 3 — CHARTS (trend · distribution · records) + DOCTOR REPORT
+   All charts are inline SVG (no external library — vanilla PWA, strict CSP-safe).
+   ============================================================ */
+const COL={ok:'#3E8E7E',hi:'#D66A5A',lo:'#DFA24E',ink:'#26332F',sub:'#6E7B76',line:'#E8E4DB',jade:'#3E8E7E',coral:'#D66A5A',band:'#CFE6DE'};
+const avgOf=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+function svgOpen(w,h){ return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="font-family:inherit">`; }
+function niceTicks(lo,hi,n){ const out=[],step=(hi-lo)/n; for(let i=0;i<=n;i++) out.push(+(lo+step*i).toFixed(1)); return out; }
+function chartWrap(svg){ return '<div class="chart-wrap">'+svg+'</div>'; }
+function statRow(items){ return '<div class="statrow">'+items.map(([k,v])=>`<div class="stat"><div class="sv">${v}</div><div class="sk">${k}</div></div>`).join('')+'</div>'; }
+function emptyBox(){ return '<div class="emptybox">'+t('none_metric')+'</div>'; }
+
+/* Collect plottable points for a metric. ks = date keys (any order); returns time-ordered points. */
+function metricPoints(metric, recs, ks){
+  const pts=[];
+  ks.forEach(dt=>{ const r=recs[dt]; if(!r) return;
+    if(metric==='bp') live(r.bp).forEach(x=> pts.push({t:x.t, sys:+x.sys, dia:+x.dia, c:bpFlag(x.sys,x.dia).c}));
+    else if(metric==='glucose') live(r.glucose).forEach(x=> pts.push({t:x.t, v:+x.value, tag:x.tag, c:gFlag(x.value,x.tag).c}));
+    else if(metric==='weight'){ if(r.weight) pts.push({t:new Date(dt+'T12:00:00').getTime(), v:+r.weight, dt}); }
+    else if(metric==='fluid'){ if(r.fluid) pts.push({t:new Date(dt+'T12:00:00').getTime(), v:+(r.fluid.total||0), dt}); }
+  });
+  return pts.sort((a,b)=>a.t-b.t);
+}
+function buildLineChart(cfg){
+  const W=680,H=300,L=48,R=16,T=16,B=34, iw=W-L-R, ih=H-T-B;
+  const ts=cfg.pts.map(p=>p.t); let tMin=Math.min(...ts), tMax=Math.max(...ts);
+  if(!isFinite(tMin)) return '';
+  if(tMin===tMax){ tMin-=43200000; tMax+=43200000; }
+  const X=v=> L+(v-tMin)/(tMax-tMin)*iw;
+  const Y=v=> T+(1-(v-cfg.yLo)/(cfg.yHi-cfg.yLo))*ih;
+  let s=svgOpen(W,H);
+  (cfg.bands||[]).forEach(bd=>{ const y1=Y(Math.min(bd.hi,cfg.yHi)), y2=Y(Math.max(bd.lo,cfg.yLo));
+    s+=`<rect x="${L}" y="${y1.toFixed(1)}" width="${iw}" height="${Math.max(0,y2-y1).toFixed(1)}" fill="${bd.color}" opacity="0.55"/>`; });
+  niceTicks(cfg.yLo,cfg.yHi,4).forEach(v=>{ const y=Y(v);
+    s+=`<line x1="${L}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}" stroke="${COL.line}" stroke-width="1"/>`;
+    s+=`<text x="${L-6}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="13" fill="${COL.sub}">${cfg.yfmt?cfg.yfmt(v):v}</text>`; });
+  (cfg.lines||[]).forEach(ln=>{ const y=Y(ln.v);
+    s+=`<line x1="${L}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}" stroke="${ln.color}" stroke-width="1.5" stroke-dasharray="5 4"/>`; });
+  const dlab=v=>{ const d=new Date(v); return (d.getMonth()+1)+'/'+d.getDate(); };
+  s+=`<text x="${L}" y="${H-10}" font-size="13" fill="${COL.sub}">${dlab(tMin)}</text>`;
+  s+=`<text x="${W-R}" y="${H-10}" text-anchor="end" font-size="13" fill="${COL.sub}">${dlab(tMax)}</text>`;
+  cfg.series.forEach(se=>{
+    const seq=cfg.pts.filter(p=>se.get(p)!=null);
+    if(seq.length>1){ let d='';
+      seq.forEach((p,i)=>{ d+=(i?'L':'M')+X(p.t).toFixed(1)+' '+Y(se.get(p)).toFixed(1)+' '; });
+      s+=`<path d="${d}" fill="none" stroke="${se.color||COL.jade}" stroke-width="2" opacity="0.45" stroke-linejoin="round"/>`; }
+    seq.forEach(p=>{ const c=se.dot?se.dot(p):(se.color||COL.jade);
+      s+=`<circle cx="${X(p.t).toFixed(1)}" cy="${Y(se.get(p)).toFixed(1)}" r="4.5" fill="${c}"/>`; });
+  });
+  return s+'</svg>';
+}
+function buildBarChart(cfg){
+  const W=680,H=300,L=48,R=16,T=16,B=40, iw=W-L-R, ih=H-T-B, n=cfg.bars.length;
+  if(!n) return '';
+  const vMax=Math.max(cfg.target*1.15, ...cfg.bars.map(b=>b.v), 1);
+  const Y=v=> T+(1-v/vMax)*ih, gap=iw/n, bw=Math.min(gap*0.7,44);
+  let s=svgOpen(W,H);
+  [0,cfg.target].forEach(v=>{ const y=Y(v); s+=`<line x1="${L}" y1="${y.toFixed(1)}" x2="${W-R}" y2="${y.toFixed(1)}" stroke="${v?COL.coral:COL.line}" stroke-width="${v?1.5:1}" stroke-dasharray="${v?'5 4':''}"/>`;
+    s+=`<text x="${L-6}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="12" fill="${v?COL.coral:COL.sub}">${v}</text>`; });
+  cfg.bars.forEach((b,i)=>{ const x=L+gap*i+(gap-bw)/2, y=Y(b.v), over=b.v>cfg.target;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${(T+ih-y).toFixed(1)}" rx="3" fill="${over?COL.coral:COL.jade}"/>`; });
+  const dlab=dt=>{ const d=new Date(dt+'T12:00:00'); return (d.getMonth()+1)+'/'+d.getDate(); };
+  s+=`<text x="${L}" y="${H-12}" font-size="13" fill="${COL.sub}">${dlab(cfg.bars[0].dt)}</text>`;
+  s+=`<text x="${W-R}" y="${H-12}" text-anchor="end" font-size="13" fill="${COL.sub}">${dlab(cfg.bars[n-1].dt)}</text>`;
+  return s+'</svg>';
+}
+function buildDonut(segs){
+  const total=segs.reduce((a,b)=>a+b.val,0); if(!total) return '';
+  const cx=110,cy=110,r=80,sw=34; let a0=-Math.PI/2, s=svgOpen(220,220);
+  if(segs.filter(x=>x.val).length===1){ const only=segs.find(x=>x.val);
+    s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${only.color}" stroke-width="${sw}"/>`; }
+  else segs.forEach(sg=>{ if(!sg.val) return; const frac=sg.val/total, a1=a0+frac*2*Math.PI, large=frac>0.5?1:0;
+    const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+    s+=`<path d="M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${r} ${r} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="${sg.color}" stroke-width="${sw}"/>`;
+    a0=a1; });
+  s+=`<text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="30" font-weight="800" fill="${COL.ink}">${total}</text>`;
+  s+=`<text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="14" fill="${COL.sub}">${t('d_count')}</text>`;
+  return s+'</svg>';
+}
+function bpCategory(sys,dia){
+  if(sys<90||dia<60) return 0;
+  if(sys>=180||dia>=120) return 5;
+  if(sys>=140||dia>=90) return 4;
+  if(sys>=130||dia>=80) return 3;
+  if(sys>=120&&dia<80) return 2;
+  return 1;
+}
+function bpGrid(sys,dia){
+  const cats=[[t('bpc0'),'&lt; 90 / &lt; 60'],[t('bpc1'),'&lt; 120 / &lt; 80'],[t('bpc2'),'120–129 / &lt; 80'],
+    [t('bpc3'),'130–139 / 80–89'],[t('bpc4'),'≥ 140 / ≥ 90'],[t('bpc5'),'≥ 180 / ≥ 120']];
+  const hit=bpCategory(sys,dia);
+  let h='<div class="sec-t">'+t('bpgrid_h')+'</div><div class="bpgrid">';
+  cats.forEach((c,i)=>{ const badge=i===hit?` <b style="color:var(--jade)">◀ ${t('bp_his')}</b>`:'';
+    h+=`<div class="bprow ${i===hit?'hit':''}"><span class="bpn">${c[0]}</span><span class="bpr">${c[1]}${badge}</span></div>`; });
+  return h+'</div>';
+}
+function renderTrend(metric, recs, ks, wrap){
+  const pts=metricPoints(metric,recs,ks);
+  if(!pts.length){ wrap.innerHTML=emptyBox(); return; }
+  let chart='',cap='',stat='',extra='';
+  if(metric==='bp'){
+    const b=settings.bp, sysv=pts.map(p=>p.sys), diav=pts.map(p=>p.dia);
+    const yLo=Math.min(55,Math.floor(Math.min(...diav)/10)*10), yHi=Math.max(180,Math.ceil(Math.max(...sysv)/10)*10);
+    chart=buildLineChart({ pts, yLo, yHi, yfmt:v=>Math.round(v),
+      bands:[{lo:b.sysLo,hi:b.sysHi,color:COL.band}],
+      lines:[{v:b.sysHi,color:COL.coral},{v:b.diaHi,color:COL.lo}],
+      series:[{get:p=>p.sys,color:COL.ink,dot:p=>COL[bpFlag(p.sys,p.dia).c]},{get:p=>p.dia,color:'#9DB4AD',dot:p=>'#9DB4AD'}] });
+    cap=t('cap_bp');
+    stat=statRow([[t('st_avg'),Math.round(avgOf(sysv))+'/'+Math.round(avgOf(diav))],[t('st_max'),Math.max(...sysv)+'/'+Math.max(...diav)],
+      [t('st_min'),Math.min(...sysv)+'/'+Math.min(...diav)],[t('st_cnt'),pts.length]]);
+    extra=bpGrid(Math.round(avgOf(sysv)),Math.round(avgOf(diav)));
+  } else if(metric==='glucose'){
+    const g=settings.glucose, vs=pts.map(p=>p.v);
+    const yLo=Math.min(3,Math.floor(Math.min(...vs))), yHi=Math.max(12,Math.ceil(Math.max(...vs)));
+    chart=buildLineChart({ pts, yLo, yHi, yfmt:v=>v.toFixed(0),
+      bands:[{lo:g.preLo,hi:g.postHi,color:COL.band}],
+      lines:[{v:g.postHi,color:COL.coral},{v:g.preLo,color:COL.lo}],
+      series:[{get:p=>p.v,color:COL.ink,dot:p=>COL[gFlag(p.v,p.tag).c]}] });
+    cap=t('cap_g');
+    stat=statRow([[t('st_avg'),avgOf(vs).toFixed(1)],[t('st_max'),Math.max(...vs).toFixed(1)],[t('st_min'),Math.min(...vs).toFixed(1)],[t('st_cnt'),pts.length]]);
+  } else if(metric==='weight'){
+    const vs=pts.map(p=>p.v), b0=pts[0].v;
+    const yLo=Math.floor(Math.min(...vs)-2), yHi=Math.ceil(Math.max(...vs)+2);
+    chart=buildLineChart({ pts, yLo, yHi, yfmt:v=>v.toFixed(0),
+      bands:[{lo:b0-1.5,hi:b0+1.5,color:COL.band}],
+      series:[{get:p=>p.v,color:COL.jade,dot:()=>COL.jade}] });
+    cap=t('cap_wt');
+    const chg=vs.length>1?(vs[vs.length-1]-vs[0]):0;
+    stat=statRow([[t('st_avg'),avgOf(vs).toFixed(1)],[t('st_max'),Math.max(...vs).toFixed(1)],[t('st_min'),Math.min(...vs).toFixed(1)],[t('st_chg'),(chg>=0?'+':'')+chg.toFixed(1)]]);
+  } else if(metric==='fluid'){
+    const bars=pts.map(p=>({dt:p.dt,v:p.v})), vs=pts.map(p=>p.v), over=pts.filter(p=>p.v>settings.fluidTarget).length;
+    chart=buildBarChart({ bars, target:settings.fluidTarget });
+    cap=t('cap_fl');
+    stat=statRow([[t('st_avgd'),Math.round(avgOf(vs))],[t('st_max'),Math.max(...vs)],[t('st_over'),over],[t('st_days'),pts.length]]);
+  }
+  wrap.innerHTML=chartWrap(chart)+(cap?`<div class="chart-cap">${cap}</div>`:'')+stat+extra;
+}
+function distSegs(metric, pts){
+  if(metric==='bp'||metric==='glucose'){ const c={ok:0,hi:0,lo:0}; pts.forEach(p=>c[p.c]++);
+    return [[t('f_ok'),c.ok,COL.ok],[t('f_hi'),c.hi,COL.hi],[t('f_lo'),c.lo,COL.lo]]; }
+  if(metric==='fluid'){ let ok=0,over=0; pts.forEach(p=>{ p.v>settings.fluidTarget?over++:ok++; });
+    return [[t('fl_ok'),ok,COL.ok],[t('fl_over'),over,COL.hi]]; }
+  const b0=pts[0].v; let inr=0,up=0,dn=0; pts.forEach(p=>{ if(p.v>b0+1.5)up++; else if(p.v<b0-1.5)dn++; else inr++; });
+  return [[t('wt_stable'),inr,COL.ok],[t('wt_up'),up,COL.hi],[t('wt_down'),dn,COL.lo]];
+}
+function renderDist(metric, recs, ks, wrap){
+  const pts=metricPoints(metric,recs,ks);
+  if(!pts.length){ wrap.innerHTML=emptyBox(); return; }
+  const segs=distSegs(metric,pts), total=segs.reduce((a,s)=>a+s[1],0);
+  const donut=buildDonut(segs.map(s=>({val:s[1],color:s[2]})));
+  const legend='<div class="legend">'+segs.map(s=>`<span><i style="background:${s[2]}"></i>${s[0]} ${s[1]} (${total?Math.round(s[1]/total*100):0}%)</span>`).join('')+'</div>';
+  wrap.innerHTML='<div class="chart-wrap" style="max-width:240px;margin:6px auto 0;">'+donut+'</div>'+legend+`<p class="chart-cap">${t('dist_cap')}</p>`;
+}
+function renderMetricRecords(metric, recs, ks, wrap){
+  let h='';
+  ks.forEach(dt=>{ const r=recs[dt]; if(!r) return; let rows='';
+    if(metric==='bp') live(r.bp).slice().reverse().forEach(x=>{ const f=bpFlag(x.sys,x.dia);
+      rows+=`<div class="hrow tap" onclick="openEditEntry('bp',${x.t},'${dt}')"><span class="ht">${hm(x.t)}${x.pulse?' · '+t('pulse_s')+' '+x.pulse:''}</span><span><span class="hv">${x.sys}/${x.dia}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span> <span class="tapedit">✏️</span></span></div>`; });
+    else if(metric==='glucose') live(r.glucose).slice().reverse().forEach(x=>{ const f=gFlag(x.value,x.tag);
+      rows+=`<div class="hrow tap" onclick="openEditEntry('glucose',${x.t},'${dt}')"><span class="ht">${hm(x.t)} · ${t('tag_'+x.tag)}</span><span><span class="hv">${(+x.value).toFixed(1)}</span> <span class="pill ${f.c}">${t('f_'+f.c)}</span> <span class="tapedit">✏️</span></span></div>`; });
+    else if(metric==='weight'){ if(r.weight) rows+=`<div class="hrow tap" onclick="openEditEntry('weight',0,'${dt}')"><span class="ht">${t('dt_weight')}</span><span><span class="hv">${r.weight} ${t('kg')}</span> <span class="tapedit">✏️</span></span></div>`; }
+    else if(metric==='fluid'){ const items=live(r.fluid&&r.fluid.log); const dayKey=dt;
+      items.slice().reverse().forEach(x=>{ const attr=x.t?`class="hrow tap" onclick="openEditEntry('fluid',${x.t},'${dayKey}')"`:'class="hrow"';
+        rows+=`<div ${attr}><span class="ht">${x.t?hm(x.t):''}${x.label?(x.t?' · ':'')+esc(x.label):''}</span><span><span class="hv">${x.ml} ${t('ml')}</span>${x.t?' <span class="tapedit">✏️</span>':''}</span></div>`; });
+      if(r.fluid && r.fluid.total>0){ const over=r.fluid.total>settings.fluidTarget;
+        rows+=`<div class="hrow"><span class="ht">${t('fl_total')}</span><span class="hv" style="color:${over?COL.coral:'inherit'}">${r.fluid.total} ${t('ml')}${over?' ⚠️':''}</span></div>`; } }
+    if(rows) h+=`<div class="day-h">${dayTitle(dt)}</div>`+rows;
+  });
+  wrap.innerHTML=h||emptyBox();
+}
+
+/* ---------- Doctor report (bilingual, printable → Save as PDF) ---------- */
+function rangeLabel(days){ const to=new Date(), from=new Date(Date.now()-(days-1)*864e5);
+  const f=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return f(from)+' → '+f(to)+' ('+days+' '+t('rep_days')+')'; }
+window.openReport=async function(){
+  const body=document.getElementById('reportBody');
+  body.innerHTML='<p class="rmeta">'+t('loading')+'</p>';
+  document.getElementById('reportMask').classList.add('on');
+  const recs=await fetchRange(histDays);
+  const ks=Object.keys(recs).sort();               // oldest→newest
+  const asc=ks.slice();
+  // aggregates
+  const bp=metricPoints('bp',recs,asc), gl=metricPoints('glucose',recs,asc),
+        wt=metricPoints('weight',recs,asc), fl=metricPoints('fluid',recs,asc);
+  const gPre=gl.filter(p=>p.tag==='餐前'), gPost=gl.filter(p=>p.tag==='餐后');
+  const fluidOver=fl.filter(p=>p.v>settings.fluidTarget).length;
+  // shocks + weight alerts in range
+  let shockRows='', shockN=0, prevW=null, wAlertN=0;
+  ks.forEach(dt=>{ const r=recs[dt]; if(!r) return;
+    live(r.shocks).forEach(s=>{ shockN++; shockRows+=`<tr><td>${dt} ${hm(s.t)}</td><td>${esc(s.what)||'—'}</td><td>${esc(s.how)||'—'}</td></tr>`; });
+    if(r.weight){ if(prevW!=null && r.weight-prevW>=1.5) wAlertN++; prevW=r.weight; } });
+  const P=devpass||{};
+  const dtStr=new Date().toLocaleString();
+  const sec=(zh,en)=>`<h2>${LANG==='zh'?zh:en} <span style="color:var(--sub);font-weight:600;font-size:13px;">${LANG==='zh'?en:zh}</span></h2>`;
+  const distTable=(metric,pts)=>{ const segs=distSegs(metric,pts), tot=segs.reduce((a,s)=>a+s[1],0);
+    return '<table><tr>'+segs.map(s=>`<th>${s[0]}</th>`).join('')+'</tr><tr>'+segs.map(s=>`<td>${s[1]} (${tot?Math.round(s[1]/tot*100):0}%)</td>`).join('')+'</tr></table>'; };
+  let h=`<h1>康心 · HeartWell — ${t('rep_title')}</h1>
+    <p class="rmeta">${t('rep_gen')}: ${dtStr}<br>${t('rep_range')}: ${rangeLabel(histDays)}</p>`;
+  // device passport
+  h+=sec('心脏装置','Cardiac Device');
+  h+=`<table>
+    <tr><th>${t('pp_model')}</th><td>${esc(P.model)||'—'}</td><th>${t('pp_side')}</th><td>${esc(P.side)||'—'}</td></tr>
+    <tr><th>${t('pp_serial')}</th><td>${esc(P.serial)||'—'}</td><th>${t('pp_date')}</th><td>${esc(P.date)||'—'}</td></tr>
+    <tr><th>${t('pp_hosp')}</th><td>${esc(P.hosp)||'—'}</td><th>${t('pp_doc')}</th><td>${esc(P.doc)||'—'}</td></tr></table>`;
+  // BP
+  h+=sec('血压','Blood Pressure');
+  if(bp.length){ const sysv=bp.map(p=>p.sys), diav=bp.map(p=>p.dia);
+    h+=`<p class="rmeta">${t('st_avg')} ${Math.round(avgOf(sysv))}/${Math.round(avgOf(diav))} · ${t('st_max')} ${Math.max(...sysv)}/${Math.max(...diav)} · ${t('st_min')} ${Math.min(...sysv)}/${Math.min(...diav)} · ${t('st_cnt')} ${bp.length}</p>`;
+    h+=chartWrap(buildLineChart({ pts:bp, yLo:Math.min(55,Math.floor(Math.min(...diav)/10)*10), yHi:Math.max(180,Math.ceil(Math.max(...sysv)/10)*10), yfmt:v=>Math.round(v),
+      bands:[{lo:settings.bp.sysLo,hi:settings.bp.sysHi,color:COL.band}], lines:[{v:settings.bp.sysHi,color:COL.coral},{v:settings.bp.diaHi,color:COL.lo}],
+      series:[{get:p=>p.sys,color:COL.ink,dot:p=>COL[bpFlag(p.sys,p.dia).c]},{get:p=>p.dia,color:'#9DB4AD',dot:p=>'#9DB4AD'}] }));
+    h+=distTable('bp',bp); h+=bpGrid(Math.round(avgOf(sysv)),Math.round(avgOf(diav)));
+  } else h+=`<p class="rmeta">${t('none_metric')}</p>`;
+  // Glucose
+  h+=sec('血糖','Blood Glucose');
+  if(gl.length){ h+=`<p class="rmeta">${t('s_pre')} ${gPre.length?avgOf(gPre.map(p=>p.v)).toFixed(1):'—'} · ${t('s_post')} ${gPost.length?avgOf(gPost.map(p=>p.v)).toFixed(1):'—'} · ${t('st_cnt')} ${gl.length}</p>`;
+    h+=chartWrap(buildLineChart({ pts:gl, yLo:Math.min(3,Math.floor(Math.min(...gl.map(p=>p.v)))), yHi:Math.max(12,Math.ceil(Math.max(...gl.map(p=>p.v)))), yfmt:v=>v.toFixed(0),
+      bands:[{lo:settings.glucose.preLo,hi:settings.glucose.postHi,color:COL.band}], lines:[{v:settings.glucose.postHi,color:COL.coral},{v:settings.glucose.preLo,color:COL.lo}],
+      series:[{get:p=>p.v,color:COL.ink,dot:p=>COL[gFlag(p.v,p.tag).c]}] }));
+    h+=distTable('glucose',gl);
+  } else h+=`<p class="rmeta">${t('none_metric')}</p>`;
+  // Weight
+  h+=sec('体重','Weight');
+  if(wt.length){ const vs=wt.map(p=>p.v), chg=vs.length>1?vs[vs.length-1]-vs[0]:0;
+    h+=`<p class="rmeta">${t('st_avg')} ${avgOf(vs).toFixed(1)} · ${t('st_max')} ${Math.max(...vs).toFixed(1)} · ${t('st_min')} ${Math.min(...vs).toFixed(1)} · ${t('st_chg')} ${(chg>=0?'+':'')+chg.toFixed(1)} ${t('kg')} · ⚠️ ${wAlertN} ${t('rep_alerts')}</p>`;
+    h+=chartWrap(buildLineChart({ pts:wt, yLo:Math.floor(Math.min(...vs)-2), yHi:Math.ceil(Math.max(...vs)+2), yfmt:v=>v.toFixed(0),
+      bands:[{lo:wt[0].v-1.5,hi:wt[0].v+1.5,color:COL.band}], series:[{get:p=>p.v,color:COL.jade,dot:()=>COL.jade}] }));
+  } else h+=`<p class="rmeta">${t('none_metric')}</p>`;
+  // Fluid
+  h+=sec('喝水','Fluid');
+  if(fl.length){ h+=`<p class="rmeta">${t('st_avgd')} ${Math.round(avgOf(fl.map(p=>p.v)))} ${t('ml')} · ${t('st_over')} ${fluidOver} ${t('rep_days')} · ${t('rep_limit')} ${settings.fluidTarget} ${t('ml')}</p>`;
+    h+=chartWrap(buildBarChart({ bars:fl.map(p=>({dt:p.dt,v:p.v})), target:settings.fluidTarget }));
+  } else h+=`<p class="rmeta">${t('none_metric')}</p>`;
+  // Shock log
+  h+=sec('电击记录','Shock Log');
+  h+= shockN ? `<table><tr><th>${t('rep_when')}</th><th>${t('sk_what')}</th><th>${t('sk_how')}</th></tr>${shockRows}</table>`
+             : `<p class="rmeta">${t('rep_noshock')}</p>`;
+  // Questions for the doctor
+  h+=sec('给医生的问题','Questions for the Doctor');
+  let q='';
+  if(shockN) q+=`<li>${t('cq_shock',shockN)}</li>`;
+  if(wAlertN) q+=`<li>${t('cq_weight')}</li>`;
+  if(fluidOver) q+=`<li>${t('cq_fluid',fluidOver)}</li>`;
+  const gHi=gl.filter(p=>p.c==='hi').length, bpHi=bp.filter(p=>p.c==='hi').length;
+  if(gHi) q+=`<li>${t('cq_glu',gHi)}</li>`;
+  if(bpHi) q+=`<li>${t('cq_bp',bpHi)}</li>`;
+  ['cq1','cq2','cq3','cq4','cq5','cq6'].forEach(k=>q+=`<li>${t(k)}</li>`);
+  h+=`<ul style="font-size:14px;line-height:1.7;padding-left:20px;">${q}</ul>`;
+  h+=`<p class="rmeta" style="margin-top:20px;">${t('rep_foot')}</p>`;
+  body.innerHTML=h;
+};
+window.closeReport=function(){ document.getElementById('reportMask').classList.remove('on'); };
+window.printReport=function(){ window.print(); };
+
+/* ============================================================
    10b) APPOINTMENTS
    ============================================================ */
-let appts=[];
+let appts=[]; let apEditId=null;
 async function saveApptsAll(){ lset('appts',appts); if(cloud){ try{ await cloudSet(apptPath,appts);}catch(e){} } }
-window.openAppt=function(){ document.getElementById('ap_date').value=''; document.getElementById('ap_time').value='';
+window.openAppt=function(){ apEditId=null;
+  document.getElementById('apptTitle').textContent=t('ap_new');
+  document.getElementById('ap_date').value=''; document.getElementById('ap_time').value='';
   ['ap_place','ap_doc','ap_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('apptMask').classList.add('on'); };
+window.editAppt=function(id){ const a=appts.find(x=>x.id===id); if(!a) return; apEditId=id;
+  document.getElementById('apptTitle').textContent=t('ap_edit');
+  document.getElementById('ap_date').value=a.date||''; document.getElementById('ap_time').value=a.time||'';
+  document.getElementById('ap_place').value=a.place||''; document.getElementById('ap_doc').value=a.doc||'';
+  document.getElementById('ap_note').value=a.note||'';
   document.getElementById('apptMask').classList.add('on'); };
 window.closeMask=function(id){ document.getElementById(id).classList.remove('on'); };
 window.saveAppt=async function(){
   const date=document.getElementById('ap_date').value;
   if(!date){ alert(t('ap_needdate')); return; }
-  appts.push({ id:'a'+Date.now(), date, time:document.getElementById('ap_time').value||'',
+  const rec={ date, time:document.getElementById('ap_time').value||'',
     place:document.getElementById('ap_place').value||'', doc:document.getElementById('ap_doc').value||'',
-    note:document.getElementById('ap_note').value||'' });
+    note:document.getElementById('ap_note').value||'' };
+  if(apEditId){ const a=appts.find(x=>x.id===apEditId); if(a) Object.assign(a,rec); }
+  else appts.push(Object.assign({id:'a'+Date.now()},rec));
   await saveApptsAll(); closeMask('apptMask'); renderAppts();
 };
 window.delAppt=async function(id){ if(!confirm(t('ap_del'))) return;
@@ -1803,7 +2396,7 @@ function renderAppts(){
     const dlab=(LANG==='zh')?((d.getMonth()+1)+'月'+d.getDate()+'日'):(TT.en.mon.split(',')[d.getMonth()]+' '+d.getDate());
     const tlab=a.time||((LANG==='zh')?('星期'+TT.zh.wd.split(',')[d.getDay()]):TT.en.wd.split(',')[d.getDay()]);
     return `<div class="appt ${cls}"><div class="ad">${dlab}<br>${tlab}</div>
-      <div class="ai"><b>${a.place||t('ap_visit')}</b>${a.doc?`<div class="sub2">${a.doc}</div>`:''}${a.note?`<div class="sub2">📝 ${a.note}</div>`:''}</div>
+      <div class="ai tap" onclick="editAppt('${a.id}')"><b>${a.place||t('ap_visit')} <span class="tapedit">✏️</span></b>${a.doc?`<div class="sub2">${a.doc}</div>`:''}${a.note?`<div class="sub2">📝 ${a.note}</div>`:''}</div>
       <button class="del" onclick="delAppt('${a.id}')">🗑</button></div>`; };
   let h=up.map(a=>item(a,'')).join('');
   if(past.length) h+=`<p class="sub2" style="margin:12px 0 2px;">${t('ap_past',past.length)}</p>`+past.slice(0,10).map(a=>item(a,'past')).join('');
@@ -1833,10 +2426,28 @@ document.getElementById('rc_photo').addEventListener('change', async e=>{
     if(gemKey()) document.getElementById('rc_ai').style.display='block';
   } else { p.style.display='none'; alert(t('photofail')); }
 });
-window.openRec=function(){ pendingPhoto=null;
+let recEditId=null;
+window.openRec=function(){ pendingPhoto=null; recEditId=null;
+  document.getElementById('recTitle').textContent=t('rc_new');
+  document.getElementById('rc_ai').style.display='none';
+  document.getElementById('rc_ainote').style.display='none';
   ['rc_date','rc_type','rc_title','rc_find','rc_treat','rc_photo'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('rc_date').value=TODAY;
   document.getElementById('rc_prev').style.display='none';
+  document.getElementById('recMask').classList.add('on'); };
+window.editRec=function(id){ const r=(mrecs||[]).find(x=>x.id===id); if(!r) return;
+  recEditId=id; pendingPhoto=r.photo||null;
+  document.getElementById('recTitle').textContent=t('rc_edit');
+  document.getElementById('rc_ainote').style.display='none';
+  document.getElementById('rc_date').value=r.date||TODAY;
+  document.getElementById('rc_type').value=r.type||'';
+  document.getElementById('rc_title').value=r.title||'';
+  document.getElementById('rc_find').value=r.find||'';
+  document.getElementById('rc_treat').value=r.treat||'';
+  document.getElementById('rc_photo').value='';
+  const p=document.getElementById('rc_prev');
+  if(r.photo){ p.src=r.photo; p.style.display='block'; document.getElementById('rc_ai').style.display=gemKey()?'block':'none'; }
+  else { p.style.display='none'; document.getElementById('rc_ai').style.display='none'; }
   document.getElementById('recMask').classList.add('on'); };
 window.saveRec=async function(){
   const rec={ date:document.getElementById('rc_date').value||TODAY,
@@ -1845,9 +2456,17 @@ window.saveRec=async function(){
     photo:pendingPhoto||null, created:Date.now() };
   const btn=document.getElementById('rc_save'); btn.textContent=t('saving'); btn.disabled=true;
   let ok=false;
-  if(cloud){ try{ await fx.addDoc(fx.collection(db,'patients',PATIENT_ID,'records'),{d:rec}); ok=true; }catch(e){ console.warn(e); } }
-  if(!ok){ const arr=lget('mrecords')||[]; arr.push(Object.assign({id:'l'+Date.now()},rec));
-    try{ lset('mrecords',arr); ok=true; }catch(e){ alert(t('nospace')); } }
+  if(recEditId){
+    const cur=(mrecs||[]).find(x=>x.id===recEditId); if(cur&&cur.created) rec.created=cur.created;
+    if(String(recEditId).startsWith('l')){
+      let arr=lget('mrecords')||[]; const i=arr.findIndex(x=>x.id===recEditId);
+      if(i>=0){ arr[i]=Object.assign({id:recEditId},rec); try{ lset('mrecords',arr); ok=true; }catch(e){ alert(t('nospace')); } }
+    } else if(cloud){ try{ await fx.setDoc(fx.doc(db,'patients',PATIENT_ID,'records',recEditId),{d:rec}); ok=true; }catch(e){ console.warn(e); } }
+  } else {
+    if(cloud){ try{ await fx.addDoc(fx.collection(db,'patients',PATIENT_ID,'records'),{d:rec}); ok=true; }catch(e){ console.warn(e); } }
+    if(!ok){ const arr=lget('mrecords')||[]; arr.push(Object.assign({id:'l'+Date.now()},rec));
+      try{ lset('mrecords',arr); ok=true; }catch(e){ alert(t('nospace')); } }
+  }
   btn.textContent=t('save'); btn.disabled=false;
   if(ok){ closeMask('recMask'); mrecs=null; renderRecords(); }
 };
@@ -1876,7 +2495,9 @@ async function renderRecords(){
       <div class="sub2">${ds}${r.type?' · '+r.type:''}</div><b style="font-size:17px;">${r.title}</b>
       ${body?`<div class="rb">${body}</div>`:''}</div>
       ${r.photo?`<img src="${r.photo}" onclick="viewPhoto('${r.id}')">`:''}</div>
-      <button class="link" style="text-align:right;margin-top:4px;" onclick="delRec('${r.id}')">${t('del')}</button></div>`;
+      <div style="display:flex;gap:16px;justify-content:flex-end;margin-top:4px;">
+        <button class="link" onclick="editRec('${r.id}')">${t('rc_editbtn')}</button>
+        <button class="link" onclick="delRec('${r.id}')">${t('del')}</button></div></div>`;
   }).join('');
 }
 
@@ -1967,9 +2588,9 @@ window.logShock=async function(){
 };
 function renderShocks(){
   const box=document.getElementById('shockList');
-  const arr=data.shocks||[];
+  const arr=live(data.shocks);
   box.innerHTML = arr.length ? '<div class="sec-t">'+t('sk_today')+'</div>'+arr.map(s=>
-    `<div class="shocklog">⚡ ${hm(s.t)}${s.what?' · '+s.what:''}${s.how?' · '+s.how:''}</div>`).join('') : '';
+    `<div class="shocklog tap" onclick="openEditEntry('shock',${s.t},'${TODAY}')">⚡ ${hm(s.t)}${s.what?' · '+esc(s.what):''}${s.how?' · '+esc(s.how):''} <span class="tapedit">✏️</span></div>`).join('') : '';
 }
 /* device passport */
 const DEFAULT_PASS={model:'',serial:'',date:'',side:'左 / Left',hosp:'',doc:'',tel:'',mri:'',tx:'',next:'',note:''};
@@ -2002,10 +2623,10 @@ async function renderClinicQ(){
   const recs=await fetchRange(90);
   let shocks=0, over=0, gHi=0, bpHi=0, wAlert=false, prevW=null;
   Object.keys(recs).sort().reverse().forEach(dt=>{ const r=recs[dt];
-    shocks+=(r.shocks||[]).length;
+    shocks+=live(r.shocks).length;
     if(r.fluid && r.fluid.total>settings.fluidTarget) over++;
-    (r.glucose||[]).forEach(x=>{ if(gFlag(x.value,x.tag).c==='hi') gHi++; });
-    (r.bp||[]).forEach(x=>{ if(bpFlag(x.sys,x.dia).c==='hi') bpHi++; });
+    live(r.glucose).forEach(x=>{ if(gFlag(x.value,x.tag).c==='hi') gHi++; });
+    live(r.bp).forEach(x=>{ if(bpFlag(x.sys,x.dia).c==='hi') bpHi++; });
     if(r.weight){ if(prevW && r.weight-prevW>=1.5) wAlert=true; prevW=r.weight; }
   });
   let h='<div class="sec-t">'+t('cq_mine')+'</div>';
@@ -2319,6 +2940,7 @@ async function loadPatientMeta(){
    14) AUTH DISPATCH — runs LAST, after every window.* handler is defined, so the app can
    never be revealed in an unclickable state. Non-blocking + error-safe.
    ============================================================ */
+renderAuthLang();   // set splash/login-form language on load (AUTHTXT is defined by now)
 if(cloud){
   const u = await waitForAuth();       // persisted session, or null (8s timeout)
   if(u && !u.isAnonymous && u.email){
