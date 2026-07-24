@@ -154,9 +154,16 @@
   .field textarea{width:100%;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:12px;font-weight:600;min-height:72px;font-family:inherit;line-height:1.5;}
   .photo-mask{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:99;}
   .photo-mask.on{display:flex;}
-  .photo-mask img{max-width:96%;max-height:92%;border-radius:8px;}
+  #photoBigWrap{max-width:96%;max-height:94%;overflow-y:auto;display:flex;flex-direction:column;gap:10px;align-items:center;padding:8px 0;-webkit-overflow-scrolling:touch;}
+  #photoBigWrap img{max-width:100%;border-radius:8px;}
+  .photo-close{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:100;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:44px;height:44px;font-size:20px;cursor:pointer;}
+  .recthumb{position:relative;flex:none;display:inline-block;cursor:pointer;}
+  .recthumb img{width:66px;height:66px;object-fit:cover;border-radius:10px;border:1px solid var(--line);}
+  .recthumb .pagebadge{position:absolute;right:-6px;top:-6px;background:var(--jade);color:#fff;font-size:12px;font-weight:800;border-radius:12px;padding:1px 7px;border:2px solid #fff;}
   .addbtn{width:100%;border:2px dashed var(--jade);background:var(--jade-soft);color:var(--jade);border-radius:14px;padding:13px;font-size:16px;font-weight:800;cursor:pointer;margin-top:12px;}
   .photo-prev{width:100%;max-height:180px;object-fit:contain;border-radius:12px;border:1px solid var(--line);margin-top:8px;display:none;}
+  .docchip{margin-top:8px;padding:12px 14px;border:1.5px solid var(--jade);background:var(--jade-soft);color:var(--jade);border-radius:12px;font-size:15px;font-weight:700;word-break:break-all;}
+  .docthumb{width:66px;height:66px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-size:30px;cursor:pointer;flex:none;display:flex;align-items:center;justify-content:center;}
 
   /* device tab */
   .acc{border:2px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;}
@@ -727,10 +734,11 @@
     <div class="field"><label data-i18n="place">医院／诊所</label><input id="ap_place" type="text" placeholder="例如 心脏专科中心"></div>
     <div class="field"><label data-i18n="doc_opt">科室／医生（可不填）</label><input id="ap_doc" type="text" placeholder="例如 心内科 · 陈医生"></div>
     <div class="field"><label data-i18n="note_opt">备注（可不填）</label><input id="ap_note" type="text" placeholder="例如 要空腹抽血"></div>
-    <div class="field"><label data-i18n="ap_photo">拍照或选择预约卡（可不填）</label>
-      <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="ap_photohint">拍下预约卡后，会出现 🤖 按钮帮你自动填写上面的资料（需先在 ⚙️ 里填 AI Key）。</p>
-      <input id="ap_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;">
+    <div class="field"><label data-i18n="ap_photo">拍照，或上传照片／PDF 文件（可不填）</label>
+      <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="ap_photohint">可以拍照，也可以从相册或文件里选照片或 PDF。选好后会出现 🤖 按钮自动填写上面的资料（需先在 ⚙️ 里填 AI Key）。</p>
+      <input id="ap_photo" type="file" accept="image/*,application/pdf" style="font-size:15px;">
       <img id="ap_prev" class="photo-prev">
+      <div id="ap_prevdoc" class="docchip" style="display:none;"></div>
       <button class="ghost" id="ap_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiReadAppt()" data-i18n="ap_ai_btn">🤖 AI 帮我读这张卡</button>
       <p class="sub2" id="ap_ainote" style="display:none;margin-top:8px;line-height:1.5;"></p>
     </div>
@@ -750,10 +758,11 @@
     <div class="field"><label data-i18n="rtitle">标题</label><input id="rc_title" type="text" placeholder="例如 心脏复诊 · 陈医生"></div>
     <div class="field"><label data-i18n="rfind">检查结果／医生说了什么（可不填）</label><textarea id="rc_find"></textarea></div>
     <div class="field"><label data-i18n="rtreat">治疗／药物调整（可不填）</label><textarea id="rc_treat"></textarea></div>
-    <div class="field"><label data-i18n="rphoto">拍照或选择照片（可不填）</label>
-      <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="rc_photohint">拍下报告后，会出现 🤖 按钮帮你自动读出日期、结果和用药（需先在 ⚙️ 里填 AI Key）。</p>
-      <input id="rc_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;">
+    <div class="field"><label data-i18n="rphoto">拍照，或上传照片／PDF 文件（可不填）</label>
+      <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="rc_photohint">可以拍照，也可以从相册或文件里选照片或 PDF 报告。选好后会出现 🤖 按钮自动读出日期、结果和用药（需先在 ⚙️ 里填 AI Key）。</p>
+      <input id="rc_photo" type="file" accept="image/*,application/pdf" style="font-size:15px;">
       <img id="rc_prev" class="photo-prev">
+      <div id="rc_prevdoc" class="docchip" style="display:none;"></div>
       <button class="ghost" id="rc_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiRead()" data-i18n="ai_btn">🤖 AI 帮我读这份报告</button>
       <p class="sub2" id="rc_ainote" style="display:none;margin-top:8px;line-height:1.5;"></p>
     </div>
@@ -796,7 +805,7 @@
 </div>
 
 <!-- fullscreen photo -->
-<div class="photo-mask" id="photoMask" onclick="this.classList.remove('on')"><img id="photoBig"></div>
+<div class="photo-mask" id="photoMask" onclick="if(event.target===this)this.classList.remove('on')"><div id="photoBigWrap"></div><button class="photo-close" onclick="document.getElementById('photoMask').classList.remove('on')">✕</button></div>
 
 <!-- Build 3: doctor report (printable) -->
 <div id="reportMask"><div class="report">
@@ -855,7 +864,7 @@
     <button class="link" onclick="closeMask('refMask')" data-i18n="close">关闭</button>
   </div>
 </div>
-<input id="ref_sheet_input" type="file" accept="image/*" capture="environment" style="display:none;">
+<input id="ref_sheet_input" type="file" accept="image/*" style="display:none;">
 
 <!-- single reference item editor -->
 <div class="mask" id="refItemMask">
@@ -865,7 +874,7 @@
     <div class="field"><label>English</label><input id="rf_en" type="text" placeholder="e.g. 1 egg"></div>
     <div class="field"><label data-i18n="rf_photo_l">照片（可拍自己家的碗盘）</label>
       <img id="rf_prev" class="photo-prev">
-      <input id="rf_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;"></div>
+      <input id="rf_photo" type="file" accept="image/*" style="font-size:15px;"></div>
     <label style="display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-size:16px;font-weight:700;">
       <input id="rf_fluid" type="checkbox" style="width:22px;height:22px;flex:none;"> <span data-i18n="rf_fluid_l">💧 也算进喝水</span></label>
     <div class="field" id="rf_fluidMlWrap" style="display:none;"><label data-i18n="rf_ml_l">加多少毫升</label>
@@ -1067,7 +1076,7 @@ en:{
  ap_new:'Add appointment/test', date:'Date', time_opt:'Time (optional)', place:'Hospital/Clinic',
  doc_opt:'Dept/Doctor (optional)', note_opt:'Notes (optional)',
  rc_new:'Add medical record', rtype:'Type', rtitle:'Title', rfind:'Findings / what the doctor said (optional)',
- rtreat:'Treatment / medication changes (optional)', rphoto:'Take or choose a photo (optional)',
+ rtreat:'Treatment / medication changes (optional)', rphoto:'Take a photo, or upload a photo / PDF (optional)',
  em_edit_h:'Edit key medical information', em_edit_hint:'Medical staff will read this. Please make sure it is accurate.',
  em_diag:'Medical history / diagnoses', em_warn:'⚠️ Important warnings', em_allergy:'Allergies', em_meds:'Current medications',
  em_blood:'Blood type', em_contact:'Emergency contact',
@@ -1089,7 +1098,7 @@ en:{
  dt_weight:'Weight', dt_mood:'Feeling', kg:'kg', fl_log:'💧 Drinks logged today',
  mood_good_s:'Good', mood_ok_s:'OK', mood_bad_s:'Unwell',
  ap_edit:'Edit appointment/test', rc_edit:'Edit medical record', rc_editbtn:'✏️ Edit',
- ap_photo:'Photo of the appointment card (optional)', ap_ai_btn:'🤖 AI, read this card',
+ ap_photo:'Take a photo, or upload a photo / PDF (optional)', ap_ai_btn:'🤖 AI, read this card',
  ap_viewscan:'View scan', ap_replacescan:'pick a new photo to replace', ap_scan:'Scan',
  em_ai_btn:'🤖 Suggest update from records (password)', em_ai_h:'Suggested update',
  bk_h:'💾 Full data backup', bk_hint:'Downloads ALL cloud data (including report photos) as one JSON file. Save it before any upgrade.', bk_btn:'💾 Download backup',
@@ -1097,8 +1106,11 @@ en:{
  fam_h:'👨‍👩‍👦 Family', fam_hint:'Add family to help. Everyone you add can log and view his data from <b>their own phone</b> — so if he forgets, you can record for him.',
  fam_email_l:'Email', fam_role_l:'Role', fam_opt_patient:'🧑 The patient', fam_opt_care:'👩‍⚕️ Family / caregiver', fam_invite:'＋ Invite family',
  acc_h:'🔑 Account', acc_signout:'Sign out', ai_test:'🔌 Test the AI Key',
- ap_photohint:'After you photograph the card, a 🤖 button appears to auto-fill the fields above (set an AI Key in ⚙️ first).',
- rc_photohint:'After you photograph the report, a 🤖 button appears to read out the date, results and medication (set an AI Key in ⚙️ first).',
+ ap_photohint:'Take a photo, or pick a photo or PDF from your gallery / files. Once chosen, a 🤖 button appears to auto-fill the fields above (set an AI Key in ⚙️ first).',
+ rc_photohint:'Take a photo, or pick a photo or PDF report from your gallery / files. Once chosen, a 🤖 button appears to read out the date, results and medication (set an AI Key in ⚙️ first).',
+ file_toobig:'File is too big to store (max ~0.9 MB). Please use a photo or a smaller / single-page PDF.',
+ pdf_converting:'📄 Converting PDF…', pdf_pages:'{0} pages',
+ pdf_toobig:'This PDF is too big to store and could not be converted. Please upload a photo, or a smaller / single-page PDF.',
  dv_prec:'⚠️ Device precautions', dv_rm:'📡 Remote monitoring', dv_care:'❤️ Daily care & living well', dv_cq:'🩺 Questions for the clinic',
  edit_entry:'Edit entry', ed_time:'Time', ed_del:'🗑 Delete this entry',
  ref_diethint:'These are examples of "1 portion" — and quick-add buttons. Edit them, or add your own photos, to match your dietitian.',
@@ -1185,6 +1197,9 @@ TT.zh = {
  rc_none:'还没有记录。按下面的按钮，把报告拍下来。', rc_del:'删除这条记录？（照片也会一起删除）',
  del:'删除', saving:'保存中…', saved:'已保存 ✓', wrongpw:'密码不正确', enterpw:'输入照护者密码',
  nospace:'本地空间不足，照片太大', photofail:'照片读取失败，请再试一次',
+ file_toobig:'文件太大，无法保存（上限约 0.9 MB）。请改用照片，或较小／单页的 PDF。',
+ pdf_converting:'📄 正在转换 PDF…', pdf_pages:'{0} 页',
+ pdf_toobig:'这个 PDF 太大，无法转换保存。请上传照片，或较小／单页的 PDF。',
  custom_prompt:'喝了多少毫升？（数字）', custom_lbl:'自己填',
  ai_reading:'🤖 正在读取…（约 10 秒）',
  ai_done:'✅ AI 已填好上面的栏目。AI 可能会读错——保存前请对照原件检查日期和数值。',
@@ -1789,7 +1804,7 @@ window.openRef=function(set){
 function renderRefSheetPhoto(){
   const img=document.getElementById('refSheetPhoto'), btns=document.getElementById('refSheetBtns');
   const sheet=REFS()[curRefSet]&&REFS()[curRefSet].sheet;
-  if(sheet){ img.src=sheet; img.style.display='block'; img.onclick=()=>{ document.getElementById('photoBig').src=sheet; document.getElementById('photoMask').classList.add('on'); }; }
+  if(sheet){ img.src=sheet; img.style.display='block'; img.onclick=()=>showImages(photoPages(sheet)); }
   else { img.style.display='none'; }
   btns.innerHTML = isCaregiver()
     ? `<button class="ghost" onclick="refSetSheet()" style="margin-top:0;">📄 ${sheet?L('换一张营养师表格照片','Change sheet photo'):L('加营养师的表格照片','Add dietitian sheet photo')}</button>`
@@ -1809,7 +1824,7 @@ function renderRefItems(){
     return `<div class="refitem">${thumb}<div class="ri-b"><b>${nm}</b>${fl}</div>${act}</div>`;
   }).join('') : '<p class="sub2">'+L('还没有项目','No items yet')+'</p>';
 }
-window.bigPhoto=function(id){ const it=sortedItems(curRefSet).find(x=>x.id===id); if(it&&it.photo){ document.getElementById('photoBig').src=it.photo; document.getElementById('photoMask').classList.add('on'); } };
+window.bigPhoto=function(id){ const it=sortedItems(curRefSet).find(x=>x.id===id); if(it&&it.photo) showImages(photoPages(it.photo)); };
 window.refMove=async function(id,dir){
   const items=sortedItems(curRefSet); const i=items.findIndex(x=>x.id===id); const j=i+dir;
   if(j<0||j>=items.length) return;
@@ -2434,17 +2449,15 @@ async function loadApptPhoto(id){
 }
 function resetApptPhotoUI(){ pendingApptPhoto=null; apptPhotoTouched=false;
   const el=document.getElementById('ap_photo'); if(el) el.value='';
-  document.getElementById('ap_prev').style.display='none';
+  showUploadPreview('ap_prev','ap_prevdoc',null);
   document.getElementById('ap_ai').style.display='none';
   document.getElementById('ap_ainote').style.display='none';
 }
 document.getElementById('ap_photo').addEventListener('change', async e=>{
   const f=e.target.files[0]; if(!f) return;
-  pendingApptPhoto=await compressImage(f); apptPhotoTouched=true;
-  const p=document.getElementById('ap_prev');
-  if(pendingApptPhoto){ p.src=pendingApptPhoto; p.style.display='block';
-    if(gemKey()) document.getElementById('ap_ai').style.display='block';
-  } else { p.style.display='none'; alert(t('photofail')); }
+  pendingApptPhoto=await processUpload(f, document.getElementById('ap_ainote')); apptPhotoTouched=true;
+  showUploadPreview('ap_prev','ap_prevdoc',pendingApptPhoto, f.name);
+  document.getElementById('ap_ai').style.display=(pendingApptPhoto&&gemKey())?'block':'none';
 });
 window.openAppt=function(){ apEditId=null; resetApptPhotoUI();
   document.getElementById('apptTitle').textContent=t('ap_new');
@@ -2466,10 +2479,11 @@ window.aiReadAppt=async function(){
   btn.textContent=t('ai_reading'); btn.disabled=true; note.style.display='none';
   const prompt='你是帮助家属整理复诊安排的助手。请阅读这张预约卡/复诊卡照片（语言可能是英文、马来文或中文），只回复一个 JSON 对象，不要任何其他文字或markdown：{"date":"YYYY-MM-DD 预约日期，找不到则空字符串","time":"HH:MM 24小时制，找不到则空字符串","place":"医院或诊所名称","doc":"科室或医生，可空","note":"其他备注例如需要空腹、带旧报告（简体中文，可空）"}';
   try{
-    const b64=pendingApptPhoto.split(',')[1];
+    const parts=[{text:prompt}].concat(photoPages(pendingApptPhoto).map(pg=>
+      ({inline_data:{mime_type:isPdfData(pg)?'application/pdf':'image/jpeg', data:pg.split(',')[1]}})));
     const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+gemKey(),{
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:'image/jpeg',data:b64}}]}]})});
+      body:JSON.stringify({contents:[{parts}]})});
     if(!res.ok) throw new Error('API '+res.status);
     const j=await res.json();
     let txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
@@ -2484,8 +2498,7 @@ window.aiReadAppt=async function(){
   }catch(e){ console.warn('aiAppt',e); note.textContent=t('ai_fail',e.message||'network'); note.style.display='block'; }
   btn.textContent=t('ap_ai_btn'); btn.disabled=false;
 };
-window.viewApptScan=async function(id){ const p=await loadApptPhoto(id);
-  if(p){ document.getElementById('photoBig').src=p; document.getElementById('photoMask').classList.add('on'); } };
+window.viewApptScan=async function(id){ const p=await loadApptPhoto(id); if(p) openScan(p); };
 window.saveAppt=async function(){
   const date=document.getElementById('ap_date').value;
   if(!date){ alert(t('ap_needdate')); return; }
@@ -2540,13 +2553,111 @@ function compressImage(file){ return new Promise(res=>{
     URL.revokeObjectURL(url); res(out); };
   img.onerror=()=>res(null);
   img.src=url; }); }
+/* ---- Accept camera photos AND uploaded photos / PDF documents ----
+   PDFs are RASTERIZED to compressed JPEG page-images (pdf.js, lazy-loaded from CDN) so a
+   multi-MB scan becomes small, readable and AI-readable, and multi-page reports fit under
+   Firestore's ~1 MB/doc limit. Stored "photo" is a single data-URL string (1 image) OR an
+   array of data-URL strings (multi-page) — both handled everywhere; old single-string
+   records keep working. If pdf.js can't load (offline), a small PDF is stored raw as a
+   fallback (detected by isPdfData). */
+const MAX_UPLOAD=920000;   // keep a stored file/pageset under Firestore's ~1 MB doc limit
+const PDF_MAX_PAGES=12;
+function isPdfData(d){ return typeof d==='string' && d.indexOf('data:application/pdf')===0; }
+function photoPages(p){ return Array.isArray(p)?p.filter(Boolean):(p?[p]:[]); }
+function photoThumb(p){ return photoPages(p)[0]||null; }
+function readAsDataURL(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=()=>res(null); r.readAsDataURL(file); }); }
+let _pdfjs=null;
+const PDFJS_BASE='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/';
+async function loadPdfJs(){
+  if(_pdfjs) return _pdfjs;
+  const m=await import(PDFJS_BASE+'build/pdf.min.mjs');
+  // the worker is cross-origin (a Worker can't load cross-origin directly) → fetch it as
+  // text and run from a same-origin blob URL. Fall back to the CDN URL if that fails.
+  try{ const code=await (await fetch(PDFJS_BASE+'build/pdf.worker.min.mjs')).text();
+    m.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));
+  }catch(e){ m.GlobalWorkerOptions.workerSrc=PDFJS_BASE+'build/pdf.worker.min.mjs'; }
+  _pdfjs=m; return m;
+}
+/* render each PDF page to a compressed JPEG, budgeting per-page bytes so the whole set fits. */
+async function pdfToImages(file, onProgress){
+  const pdfjs=await loadPdfJs();
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjs.getDocument({data:new Uint8Array(buf),
+    standardFontDataUrl:PDFJS_BASE+'standard_fonts/', cMapUrl:PDFJS_BASE+'cmaps/', cMapPacked:true}).promise;
+  const N=Math.min(pdf.numPages, PDF_MAX_PAGES);
+  const budget=Math.floor((MAX_UPLOAD*0.92)/N);
+  const pages=[];
+  for(let i=1;i<=N;i++){
+    if(onProgress) onProgress(i,N);
+    const page=await pdf.getPage(i);
+    const v1=page.getViewport({scale:1});
+    let scale=Math.min(1600/Math.max(v1.width,v1.height), 2.4); if(!(scale>0)) scale=1.5;
+    let vp=page.getViewport({scale});
+    let cv=document.createElement('canvas'); cv.width=Math.round(vp.width); cv.height=Math.round(vp.height);
+    // guard the paint so a stalled renderer can never freeze the UI → falls back instead
+    const task=page.render({canvasContext:cv.getContext('2d'), viewport:vp});
+    await Promise.race([task.promise,
+      new Promise((_,rej)=>setTimeout(()=>{ try{task.cancel();}catch(e){} rej(new Error('render-timeout')); }, 30000))]);
+    let q=0.72, out=cv.toDataURL('image/jpeg',q);
+    while(out.length>budget && q>0.32){ q-=0.1; out=cv.toDataURL('image/jpeg',q); }
+    let guard=0;
+    while(out.length>budget && guard<3){ guard++;
+      const cv2=document.createElement('canvas'); cv2.width=Math.round(cv.width*0.75); cv2.height=Math.round(cv.height*0.75);
+      cv2.getContext('2d').drawImage(cv,0,0,cv2.width,cv2.height); cv=cv2;
+      q=0.6; out=cv.toDataURL('image/jpeg',q); while(out.length>budget && q>0.3){ q-=0.1; out=cv.toDataURL('image/jpeg',q); } }
+    pages.push(out);
+  }
+  return pages;
+}
+async function processUpload(file, statusEl){
+  if(!file) return null;
+  const isPdf = file.type==='application/pdf' || /\.pdf$/i.test(file.name||'');
+  if(isPdf){
+    if(statusEl){ statusEl.style.display='block'; statusEl.textContent=t('pdf_converting'); }
+    try{
+      const pages=await pdfToImages(file,(i,n)=>{ if(statusEl) statusEl.textContent=t('pdf_converting')+' '+i+'/'+n; });
+      if(statusEl) statusEl.style.display='none';
+      if(pages&&pages.length) return pages.length===1?pages[0]:pages;
+    }catch(e){ console.warn('pdf raster failed',e); if(statusEl) statusEl.style.display='none'; }
+    // fallback (e.g. offline): keep the raw PDF only if it's small enough
+    const data=await readAsDataURL(file);
+    if(!data){ alert(t('photofail')); return null; }
+    if(data.length>MAX_UPLOAD){ alert(t('pdf_toobig')); return null; }
+    return data;
+  }
+  const data=await compressImage(file);
+  if(!data){ alert(t('photofail')); return null; }
+  return data;
+}
+/* preview: first page as <img> (+ "N pages" note); raw-PDF fallback → 📄 chip. */
+function showUploadPreview(imgId, docId, data, filename){
+  const img=document.getElementById(imgId), doc=docId?document.getElementById(docId):null;
+  const pages=photoPages(data);
+  if(!pages.length){ if(img) img.style.display='none'; if(doc) doc.style.display='none'; return; }
+  if(isPdfData(pages[0])){ if(img) img.style.display='none';
+    if(doc){ doc.textContent='📄 '+(filename||'PDF')+' ✓'; doc.style.display='block'; } return; }
+  if(img){ img.src=pages[0]; img.style.display='block'; }
+  if(doc){ if(pages.length>1){ doc.textContent='📄 '+t('pdf_pages',pages.length); doc.style.display='block'; } else doc.style.display='none'; }
+}
+/* view a stored scan: raw-PDF → new tab; image(s) → scrollable viewer showing all pages. */
+window.showImages=function(arr){ const w=document.getElementById('photoBigWrap'); if(!w) return;
+  w.innerHTML=(arr||[]).map(s=>`<img src="${s}">`).join(''); w.scrollTop=0;
+  document.getElementById('photoMask').classList.add('on'); };
+window.openScan=function(data){
+  const pages=photoPages(data); if(!pages.length) return;
+  if(isPdfData(pages[0])){
+    try{ const bin=atob(pages[0].split(',')[1]); const arr=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+      const url=URL.createObjectURL(new Blob([arr],{type:'application/pdf'}));
+      window.open(url,'_blank'); setTimeout(()=>URL.revokeObjectURL(url),60000);
+    }catch(e){ window.open(pages[0],'_blank'); }
+  } else showImages(pages);
+};
 document.getElementById('rc_photo').addEventListener('change', async e=>{
   const f=e.target.files[0]; if(!f) return;
-  pendingPhoto=await compressImage(f);
-  const p=document.getElementById('rc_prev');
-  if(pendingPhoto){ p.src=pendingPhoto; p.style.display='block';
-    if(gemKey()) document.getElementById('rc_ai').style.display='block';
-  } else { p.style.display='none'; alert(t('photofail')); }
+  pendingPhoto=await processUpload(f, document.getElementById('rc_ainote'));
+  showUploadPreview('rc_prev','rc_prevdoc',pendingPhoto, f.name);
+  document.getElementById('rc_ai').style.display=(pendingPhoto&&gemKey())?'block':'none';
 });
 let recEditId=null;
 window.openRec=function(){ pendingPhoto=null; recEditId=null;
@@ -2555,7 +2666,7 @@ window.openRec=function(){ pendingPhoto=null; recEditId=null;
   document.getElementById('rc_ainote').style.display='none';
   ['rc_date','rc_type','rc_title','rc_find','rc_treat','rc_photo'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('rc_date').value=TODAY;
-  document.getElementById('rc_prev').style.display='none';
+  showUploadPreview('rc_prev','rc_prevdoc',null);
   document.getElementById('recMask').classList.add('on'); };
 window.editRec=function(id){ const r=(mrecs||[]).find(x=>x.id===id); if(!r) return;
   recEditId=id; pendingPhoto=r.photo||null;
@@ -2567,9 +2678,8 @@ window.editRec=function(id){ const r=(mrecs||[]).find(x=>x.id===id); if(!r) retu
   document.getElementById('rc_find').value=r.find||'';
   document.getElementById('rc_treat').value=r.treat||'';
   document.getElementById('rc_photo').value='';
-  const p=document.getElementById('rc_prev');
-  if(r.photo){ p.src=r.photo; p.style.display='block'; document.getElementById('rc_ai').style.display=gemKey()?'block':'none'; }
-  else { p.style.display='none'; document.getElementById('rc_ai').style.display='none'; }
+  showUploadPreview('rc_prev','rc_prevdoc', r.photo||null, isPdfData(r.photo)?'PDF':'');
+  document.getElementById('rc_ai').style.display=(r.photo&&gemKey())?'block':'none';
   document.getElementById('recMask').classList.add('on'); };
 window.saveRec=async function(){
   const rec={ date:document.getElementById('rc_date').value||TODAY,
@@ -2596,8 +2706,7 @@ window.delRec=async function(id){ if(!confirm(t('rc_del'))) return;
   if(id.startsWith('l')){ let arr=lget('mrecords')||[]; arr=arr.filter(r=>r.id!==id); lset('mrecords',arr); }
   else if(cloud){ try{ await fx.deleteDoc(fx.doc(db,'patients',PATIENT_ID,'records',id)); }catch(e){} }
   mrecs=null; renderRecords(); };
-window.viewPhoto=function(id){ const r=(mrecs||[]).find(x=>x.id===id);
-  if(r&&r.photo){ document.getElementById('photoBig').src=r.photo; document.getElementById('photoMask').classList.add('on'); } };
+window.viewPhoto=function(id){ const r=(mrecs||[]).find(x=>x.id===id); if(r&&r.photo) openScan(r.photo); };
 async function renderRecords(){
   const wrap=document.getElementById('recList');
   if(mrecs===null){ wrap.innerHTML='<p class="sub2">'+t('loading')+'</p>';
@@ -2613,10 +2722,14 @@ async function renderRecords(){
     const d=r.date?new Date(r.date+'T00:00:00'):null;
     const ds=d?((LANG==='zh')?(d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'):(TT.en.mon.split(',')[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear())):'';
     let body=''; if(r.find) body+='🔍 '+r.find; if(r.treat) body+=(body?'\n':'')+'💊 '+r.treat;
+    const th=photoThumb(r.photo), np=photoPages(r.photo).length;
+    const thumb = !th ? '' : (isPdfData(th)
+      ? `<button class="docthumb" onclick="viewPhoto('${r.id}')" title="PDF">📄</button>`
+      : `<span class="recthumb" onclick="viewPhoto('${r.id}')"><img src="${th}">${np>1?`<b class="pagebadge">${np}</b>`:''}</span>`);
     return `<div class="rec"><div class="rt"><div style="min-width:0;">
       <div class="sub2">${ds}${r.type?' · '+r.type:''}</div><b style="font-size:17px;">${r.title}</b>
       ${body?`<div class="rb">${body}</div>`:''}</div>
-      ${r.photo?`<img src="${r.photo}" onclick="viewPhoto('${r.id}')">`:''}</div>
+      ${thumb}</div>
       <div style="display:flex;gap:16px;justify-content:flex-end;margin-top:4px;">
         <button class="link" onclick="editRec('${r.id}')">${t('rc_editbtn')}</button>
         <button class="link" onclick="delRec('${r.id}')">${t('del')}</button></div></div>`;
@@ -2633,10 +2746,11 @@ window.aiRead=async function(){
   note.style.display='none';
   const prompt='你是一位帮助家属整理病历的助手。请阅读这张医疗文件照片（可能是检查报告、出院摘要或复诊卡，语言可能是英文、马来文或中文），只回复一个 JSON 对象，不要任何其他文字或markdown，格式：{"date":"YYYY-MM-DD 文件上的日期，找不到则空字符串","type":"文件类型（中文，如 抽血报告/复诊卡/出院摘要）","title":"简短标题（简体中文）","find":"主要发现/结果摘要（简体中文，2-4行，包含关键数值）","treat":"治疗或药物调整（简体中文，没有则空字符串）","emer_note":"如有对急救人员重要的新信息（新诊断、药物更改、过敏），用一行简体中文写出；否则空字符串"}';
   try{
-    const b64=pendingPhoto.split(',')[1];
+    const parts=[{text:prompt}].concat(photoPages(pendingPhoto).map(pg=>
+      ({inline_data:{mime_type:isPdfData(pg)?'application/pdf':'image/jpeg', data:pg.split(',')[1]}})));
     const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+gemKey(),{
       method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:'image/jpeg',data:b64}}]}]})});
+      body:JSON.stringify({contents:[{parts}]})});
     if(!res.ok) throw new Error('API '+res.status);
     const j=await res.json();
     let txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
