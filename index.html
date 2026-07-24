@@ -131,8 +131,15 @@
   .hrow .hv{font-weight:800;}
   .emer{border:2.5px solid var(--coral);}
   .emer h2{color:var(--coral);}
-  .emer .et{font-size:13px;font-weight:800;color:var(--coral);margin:14px 0 3px;letter-spacing:.5px;}
-  .emer .eb{font-size:17px;line-height:1.75;white-space:pre-line;font-weight:600;}
+  .emer .ecard{border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;margin:10px 0;background:#fff;}
+  .emer .ecard.warn{border:2px solid var(--coral);background:var(--coral-soft);}
+  .emer .et{font-size:12.5px;font-weight:800;color:var(--coral);letter-spacing:.3px;margin:0 0 5px;text-transform:uppercase;}
+  .emer .ecard.warn .et{font-size:14px;}
+  .emer .eline{font-size:18px;line-height:1.4;font-weight:800;color:var(--ink);padding:2px 0 0;}
+  .emer .eline.en{font-size:14.5px;font-weight:600;color:var(--sub);padding:0 0 4px;}
+  .emer .erow{display:flex;gap:10px;} .emer .erow .ecard{flex:1;margin:10px 0;}
+  /* legacy fallback */
+  .emer .eb{font-size:18px;line-height:1.7;white-space:pre-line;font-weight:700;}
   .appt{display:flex;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
   .appt:last-child{border-bottom:none;}
   .appt .ad{flex:none;text-align:center;background:var(--jade-soft);color:var(--jade);border-radius:12px;padding:8px 10px;font-weight:800;font-size:14px;min-width:66px;line-height:1.35;}
@@ -383,7 +390,7 @@
   </div>
 
   <div class="card">
-    <div class="cardhead"><h2 data-i18n="carb_h">🍚 主食（碳水）</h2><button class="iref" onclick="openRef('carbs')" title="份量参考 / Portion guide">ℹ️</button></div>
+    <div class="cardhead"><h2 data-i18n="carb_h">🍚 主食（碳水）</h2><button class="iref" onclick="openRef('carbs')" title="份量参考">ℹ️</button></div>
     <p class="hint" id="carbHint">一天 12 份。1 份 ≈ ¼ 碗饭、1 片面包、⅓ 碗米粉。</p>
     <div class="qadds" id="carbQuick"></div>
     <div id="carbRows"></div>
@@ -392,7 +399,7 @@
   </div>
 
   <div class="card">
-    <div class="cardhead"><h2 data-i18n="fruit_h">🍎 水果</h2><button class="iref" onclick="openRef('fruit')" title="份量参考 / Portion guide">ℹ️</button></div>
+    <div class="cardhead"><h2 data-i18n="fruit_h">🍎 水果</h2><button class="iref" onclick="openRef('fruit')" title="份量参考">ℹ️</button></div>
     <p class="hint" id="fruitHint">一天 2 份。例如 1 粒苹果、8 粒葡萄。</p>
     <div class="qadds" id="fruitQuick"></div>
     <div class="meal-row">
@@ -406,7 +413,7 @@
   </div>
 
   <div class="card">
-    <div class="cardhead"><h2 data-i18n="prot_h">🥚 蛋白质（份）</h2><button class="iref" onclick="openRef('protein')" title="份量参考 / Portion guide">ℹ️</button></div>
+    <div class="cardhead"><h2 data-i18n="prot_h">🥚 蛋白质（份）</h2><button class="iref" onclick="openRef('protein')" title="份量参考">ℹ️</button></div>
     <p class="hint" id="proteinHint">一天 7 份。1 份 ≈ 火柴盒大小的肉／鱼、1 个鸡蛋、½ 块豆腐。</p>
     <div class="qadds" id="proteinQuick"></div>
     <div id="proteinRows"></div>
@@ -482,7 +489,7 @@
       <div class="g-tag" id="vwRec" onclick="setView('rec')" data-i18n="vw_rec">记录</div>
     </div>
     <div id="weekBody"></div>
-    <button class="repbtn" onclick="openReport()" data-i18n="rep_btn">🩺 生成医生报告 / Doctor report</button>
+    <button class="repbtn" onclick="openReport()" data-i18n="rep_btn">🩺 生成医生报告</button>
     <button class="ghost" onclick="buildWeek()" data-i18n="refresh">🔄 刷新</button>
   </div>
   <p class="foot" data-i18n="foot">记录会保存在这台手机上；如果已连接云端，照护者也能同步看到。</p>
@@ -547,31 +554,31 @@
     <p class="hint" data-i18n="rf_note">血钾偏低也会引起心律不整 — 抽血复诊对他特别重要，不要拖。</p>
   </div>
 
-  <details class="acc" open><summary>⚠️ 装置注意事项 / Device precautions</summary><div class="body">
+  <details class="acc" open><summary data-i18n="dv_prec">⚠️ 装置注意事项</summary><div class="body">
     <div class="princ" id="princBox"></div>
     <div id="precBody"></div>
     <button class="ghost" onclick="editPrec()" data-i18n="pr_edit">✏️ 修改这些内容（需密码）</button>
     <p class="hint" data-i18n="pr_note">这些是一般建议。<b>医生说的最准</b> — 医生交代过的，请在这里改成他说的。</p>
   </div></details>
 
-  <details class="acc"><summary>📡 远程监测（传输器）/ Remote monitoring</summary><div class="body">
+  <details class="acc"><summary data-i18n="dv_rm">📡 远程监测（传输器）</summary><div class="body">
     <div id="rmBody"></div>
     <button class="ghost" onclick="editRM()" data-i18n="pr_edit">✏️ 修改这些内容（需密码）</button>
   </div></details>
 
-  <details class="acc"><summary>❤️ 日常照护 &amp; 长期保养 / Daily care &amp; living well</summary><div class="body">
+  <details class="acc"><summary data-i18n="dv_care">❤️ 日常照护 &amp; 长期保养</summary><div class="body">
     <div id="careBody"></div>
     <button class="ghost" onclick="editCare()" data-i18n="pr_edit">✏️ 修改这些内容（需密码）</button>
   </div></details>
 
   <div class="card">
-    <h2 data-i18n="pp_h">📋 装置资料 / DEVICE PASSPORT</h2>
+    <h2 data-i18n="pp_h">📋 装置资料</h2>
     <p class="hint" data-i18n="pp_hint">急诊或看新医生时要用到。请照着装置卡填写。</p>
     <div id="passBody"></div>
     <button class="ghost" onclick="editPass()" data-i18n="pp_edit">✏️ 填写／修改（需密码）</button>
   </div>
 
-  <details class="acc"><summary>🩺 复诊要问医生 / Questions for the clinic</summary><div class="body">
+  <details class="acc"><summary data-i18n="dv_cq">🩺 复诊要问医生</summary><div class="body">
     <div id="clinicQ"></div>
   </div></details>
 </div>
@@ -601,41 +608,41 @@
     <div id="settingsForm" style="display:none;">
       <!-- Permanent caregiver export (was the Build 0 backup button) -->
       <div class="grp" id="tempBackupBox" style="border:2px solid var(--jade);background:#eef6f3;">
-        <div class="gt" style="color:var(--jade);">💾 备份全部数据 / Full data backup</div>
-        <p class="hint" style="margin-top:0;">下载云端全部数据（含照片）为一个 JSON 文件，保存到手机／电脑。<br>Downloads ALL cloud data (including report photos) as one JSON file. Save it before any upgrade.</p>
-        <button class="primary" id="backupBtn" onclick="doBackup()" style="background:var(--jade);">💾 下载备份 / Download backup</button>
+        <div class="gt" style="color:var(--jade);" data-i18n="bk_h">💾 备份全部数据</div>
+        <p class="hint" style="margin-top:0;" data-i18n="bk_hint">下载云端全部数据（含照片）为一个 JSON 文件，保存到手机／电脑。</p>
+        <button class="primary" id="backupBtn" onclick="doBackup()" style="background:var(--jade);" data-i18n="bk_btn">💾 下载备份</button>
         <p class="sub2" id="backupStatus" style="margin-top:8px;line-height:1.5;"></p>
       </div>
 
       <!-- Migration: import legacy WWP data into this account -->
       <div class="grp" id="migrateBox" style="border:2px solid var(--amber);background:var(--amber-soft);">
-        <div class="gt" style="color:var(--amber);">📦 从旧版导入数据 / Import old data</div>
-        <p class="hint" style="margin-top:0;">把旧版（WWP）的全部记录复制到这个账号：每天的记录、血糖、血压、体重、设置、紧急信息、医疗记录和照片。<b>旧数据不会被改动</b>，可以安全地重复点击。<br>Copies ALL old-app data into this account (days, glucose, BP, weight, settings, emergency info, records &amp; photos). <b>The originals are never touched.</b> Safe to run more than once.</p>
-        <button class="ghost" id="migrateBtn" onclick="runMigration()" style="border-color:var(--amber);color:var(--amber);">📦 开始导入 / Start import</button>
+        <div class="gt" style="color:var(--amber);" data-i18n="mig_h">📦 从旧版导入数据</div>
+        <p class="hint" style="margin-top:0;" data-i18n-h="mig_hint">把旧版（WWP）的全部记录复制到这个账号：每天的记录、血糖、血压、体重、设置、紧急信息、医疗记录和照片。<b>旧数据不会被改动</b>，可以安全地重复点击。</p>
+        <button class="ghost" id="migrateBtn" onclick="runMigration()" style="border-color:var(--amber);color:var(--amber);" data-i18n="mig_btn">📦 开始导入</button>
         <div class="sub2" id="migrateStatus" style="margin-top:10px;line-height:1.7;white-space:pre-line;"></div>
       </div>
 
       <!-- Family / members -->
       <div class="grp" id="familyBox">
-        <div class="gt">👨‍👩‍👦 家人 / Family</div>
-        <p class="hint" style="margin-top:0;">加入家人一起照顾。你加的每个人都可以在<b>自己的手机</b>上帮他记录和查看数据（万一他忘了记）。<br>Add family to help. Everyone you add can log and view his data from <b>their own phone</b> — so if he forgets, you can record for him.</p>
+        <div class="gt" data-i18n="fam_h">👨‍👩‍👦 家人</div>
+        <p class="hint" style="margin-top:0;" data-i18n-h="fam_hint">加入家人一起照顾。你加的每个人都可以在<b>自己的手机</b>上帮他记录和查看数据（万一他忘了记）。</p>
         <div id="memberList"><p class="sub2">…</p></div>
-        <div class="field" style="margin-top:12px;"><label>邮箱 / Email</label>
+        <div class="field" style="margin-top:12px;"><label data-i18n="fam_email_l">邮箱</label>
           <input id="fam_email" type="email" inputmode="email" autocomplete="off" placeholder="family@example.com"></div>
-        <div class="field"><label>角色 / Role</label>
+        <div class="field"><label data-i18n="fam_role_l">角色</label>
           <select id="fam_role" style="width:100%;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:12px;font-weight:700;">
-            <option value="patient">🧑 本人（病人）/ The patient</option>
-            <option value="caregiver">👩‍⚕️ 家人 / 照护者 Family / caregiver</option>
+            <option value="patient" data-i18n="fam_opt_patient">🧑 本人（病人）</option>
+            <option value="caregiver" data-i18n="fam_opt_care">👩‍⚕️ 家人／照护者</option>
           </select></div>
-        <button class="ghost" onclick="addFamily()">＋ 邀请家人 / Invite family</button>
+        <button class="ghost" onclick="addFamily()" data-i18n="fam_invite">＋ 邀请家人</button>
         <p class="sub2" id="famMsg" style="margin-top:8px;line-height:1.5;"></p>
       </div>
 
       <!-- account / sign out -->
       <div class="grp" id="acctBox">
-        <div class="gt">🔑 账号 / Account</div>
+        <div class="gt" data-i18n="acc_h">🔑 账号</div>
         <p class="sub2" id="acctEmail" style="margin:0 0 10px;"></p>
-        <button class="ghost" onclick="doLogout()" style="border-color:var(--coral);color:var(--coral);">退出登录 / Sign out</button>
+        <button class="ghost" onclick="doLogout()" style="border-color:var(--coral);color:var(--coral);" data-i18n="acc_signout">退出登录</button>
       </div>
 
       <h3 data-i18n="st_h">调整目标</h3>
@@ -699,6 +706,8 @@
 
       <div class="gt" data-i18n="st_ai">🤖 AI 识别</div>
     <div class="field"><label data-i18n="st_aikey">AI Key（只保存在这台设备）</label><input id="s_gemkey" type="password" autocomplete="off" placeholder="AIza…"></div>
+    <button class="ghost" id="aiTestBtn" onclick="testAiKey()" style="margin-top:0;border-color:var(--jade);color:var(--jade);" data-i18n="ai_test">🔌 测试 AI Key 是否可用</button>
+    <p class="sub2" id="aiTestStatus" style="margin-top:8px;line-height:1.5;"></p>
     <p class="hint" data-i18n="st_aihint">在 aistudio.google.com 免费申请。留空则隐藏 AI 按钮。</p>
     <button class="primary" onclick="saveSettings()" data-i18n="save">保存</button>
       <button class="link" onclick="closeCare()" data-i18n="close">关闭</button>
@@ -719,6 +728,7 @@
     <div class="field"><label data-i18n="doc_opt">科室／医生（可不填）</label><input id="ap_doc" type="text" placeholder="例如 心内科 · 陈医生"></div>
     <div class="field"><label data-i18n="note_opt">备注（可不填）</label><input id="ap_note" type="text" placeholder="例如 要空腹抽血"></div>
     <div class="field"><label data-i18n="ap_photo">拍照或选择预约卡（可不填）</label>
+      <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="ap_photohint">拍下预约卡后，会出现 🤖 按钮帮你自动填写上面的资料（需先在 ⚙️ 里填 AI Key）。</p>
       <input id="ap_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;">
       <img id="ap_prev" class="photo-prev">
       <button class="ghost" id="ap_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiReadAppt()" data-i18n="ap_ai_btn">🤖 AI 帮我读这张卡</button>
@@ -741,6 +751,7 @@
     <div class="field"><label data-i18n="rfind">检查结果／医生说了什么（可不填）</label><textarea id="rc_find"></textarea></div>
     <div class="field"><label data-i18n="rtreat">治疗／药物调整（可不填）</label><textarea id="rc_treat"></textarea></div>
     <div class="field"><label data-i18n="rphoto">拍照或选择照片（可不填）</label>
+      <p class="sub2" style="margin:2px 0 8px;line-height:1.5;" data-i18n="rc_photohint">拍下报告后，会出现 🤖 按钮帮你自动读出日期、结果和用药（需先在 ⚙️ 里填 AI Key）。</p>
       <input id="rc_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;">
       <img id="rc_prev" class="photo-prev">
       <button class="ghost" id="rc_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiRead()" data-i18n="ai_btn">🤖 AI 帮我读这份报告</button>
@@ -772,7 +783,7 @@
 <!-- AI-suggested Key Medical Info update (review before applying — never silent) -->
 <div class="mask" id="emerAiMask">
   <div class="sheet">
-    <h3 data-i18n="em_ai_h">AI 建议的更新 / Suggested update</h3>
+    <h3 data-i18n="em_ai_h">AI 建议的更新</h3>
     <p class="edit-note" data-i18n="em_ai_note">AI 根据病历记录提出建议。请先逐项检查，确认无误再套用 —— AI 可能出错，医生的话最准。</p>
     <div id="emerAiChanges"></div>
     <div class="field"><label data-i18n="em_diag">主要病史／诊断</label><textarea id="ea_diag" style="min-height:110px;"></textarea></div>
@@ -800,20 +811,20 @@
 <!-- device passport sheet -->
 <div class="mask" id="passMask">
   <div class="sheet">
-    <h3 data-i18n="pp_edit_h">装置资料 / Device passport</h3>
-    <div class="field"><label data-i18n="pp_model">装置型号 / Model</label><input id="pp_model" type="text" placeholder="e.g. Medtronic Cobalt XT VR"></div>
-    <div class="field"><label data-i18n="pp_serial">序号 / Serial no.</label><input id="pp_serial" type="text"></div>
+    <h3 data-i18n="pp_edit_h">装置资料</h3>
+    <div class="field"><label data-i18n="pp_model">装置型号</label><input id="pp_model" type="text" placeholder="e.g. Medtronic Cobalt XT VR"></div>
+    <div class="field"><label data-i18n="pp_serial">序号</label><input id="pp_serial" type="text"></div>
     <div class="two">
-      <div class="field"><label data-i18n="pp_date">植入日期 / Implant date</label><input id="pp_date" type="date"></div>
-      <div class="field"><label data-i18n="pp_side">位置 / Side</label><input id="pp_side" type="text" value="左 / Left"></div>
+      <div class="field"><label data-i18n="pp_date">植入日期</label><input id="pp_date" type="date"></div>
+      <div class="field"><label data-i18n="pp_side">位置</label><input id="pp_side" type="text"></div>
     </div>
-    <div class="field"><label data-i18n="pp_hosp">医院 / Hospital</label><input id="pp_hosp" type="text"></div>
-    <div class="field"><label data-i18n="pp_doc">心脏科医生 / Cardiologist</label><input id="pp_doc" type="text"></div>
-    <div class="field"><label data-i18n="pp_tel">诊所电话 / Clinic phone</label><input id="pp_tel" type="tel"></div>
-    <div class="field"><label data-i18n="pp_mri">可以做 MRI 吗 / MRI-conditional</label><input id="pp_mri" type="text" placeholder="是 / 否 / 不确定 — 问医生"></div>
-    <div class="field"><label data-i18n="pp_tx">传输器型号 / Transmitter</label><input id="pp_tx" type="text" placeholder="e.g. MyCareLink"></div>
-    <div class="field"><label data-i18n="pp_next">下次检查 / Next device check</label><input id="pp_next" type="date"></div>
-    <div class="field"><label data-i18n="pp_note">医生的特别交代（开车、运动等）/ Doctor's notes</label><textarea id="pp_note"></textarea></div>
+    <div class="field"><label data-i18n="pp_hosp">医院</label><input id="pp_hosp" type="text"></div>
+    <div class="field"><label data-i18n="pp_doc">心脏科医生</label><input id="pp_doc" type="text"></div>
+    <div class="field"><label data-i18n="pp_tel">诊所电话</label><input id="pp_tel" type="tel"></div>
+    <div class="field"><label data-i18n="pp_mri">可以做 MRI 吗</label><input id="pp_mri" type="text"></div>
+    <div class="field"><label data-i18n="pp_tx">传输器型号</label><input id="pp_tx" type="text" placeholder="e.g. MyCareLink"></div>
+    <div class="field"><label data-i18n="pp_next">下次检查</label><input id="pp_next" type="date"></div>
+    <div class="field"><label data-i18n="pp_note">医生的特别交代（开车、运动等）</label><textarea id="pp_note"></textarea></div>
     <button class="primary" onclick="savePass()" data-i18n="save">保存</button>
     <button class="link" onclick="closeMask('passMask')" data-i18n="cancel">取消</button>
   </div>
@@ -822,13 +833,13 @@
 <!-- Build 2: edit / delete a logged entry -->
 <div class="mask" id="editMask">
   <div class="sheet">
-    <h3 id="edit_title">修改记录 / Edit entry</h3>
+    <h3 id="edit_title" data-i18n="edit_entry">修改记录</h3>
     <p class="edit-note" id="edit_note"></p>
     <div id="edit_fields"></div>
-    <div class="field"><label>时间 / Time</label><input id="edit_time" type="time"></div>
-    <button class="primary" onclick="saveEditEntry()">保存 / Save</button>
-    <button class="ghost" onclick="deleteEditEntry()" style="border-color:var(--coral);color:var(--coral);">🗑 删除这一笔 / Delete this entry</button>
-    <button class="link" onclick="closeMask('editMask')">取消 / Cancel</button>
+    <div class="field"><label data-i18n="ed_time">时间</label><input id="edit_time" type="time"></div>
+    <button class="primary" onclick="saveEditEntry()" data-i18n="save">保存</button>
+    <button class="ghost" onclick="deleteEditEntry()" style="border-color:var(--coral);color:var(--coral);" data-i18n="ed_del">🗑 删除这一笔</button>
+    <button class="link" onclick="closeMask('editMask')" data-i18n="cancel">取消</button>
   </div>
 </div>
 
@@ -836,12 +847,12 @@
 <div class="mask" id="refMask">
   <div class="sheet">
     <h3 id="refTitle">份量参考</h3>
-    <p class="hint" id="refDietHint">这些是「1 份」的例子，也是快速记录的按钮。营养师／医生的建议最准，可以自己修改、加照片。<br>These are examples of "1 portion" — and quick-add buttons. Edit them, or add your own photos, to match your dietitian.</p>
+    <p class="hint" id="refDietHint" data-i18n="ref_diethint">这些是「1 份」的例子，也是快速记录的按钮。营养师／医生的建议最准，可以自己修改、加照片。</p>
     <img id="refSheetPhoto" class="sheetphoto">
     <div id="refSheetBtns" style="margin-bottom:12px;"></div>
     <div id="refItems"></div>
-    <button class="addbtn" id="refAddBtn" onclick="refAddItem()">＋ 添加一项 / Add an item</button>
-    <button class="link" onclick="closeMask('refMask')">关闭 / Close</button>
+    <button class="addbtn" id="refAddBtn" onclick="refAddItem()" data-i18n="ref_add">＋ 添加一项</button>
+    <button class="link" onclick="closeMask('refMask')" data-i18n="close">关闭</button>
   </div>
 </div>
 <input id="ref_sheet_input" type="file" accept="image/*" capture="environment" style="display:none;">
@@ -849,19 +860,19 @@
 <!-- single reference item editor -->
 <div class="mask" id="refItemMask">
   <div class="sheet">
-    <h3 id="refItemTitle">修改 / Edit item</h3>
+    <h3 id="refItemTitle" data-i18n="ref_edit_item">修改项目</h3>
     <div class="field"><label>中文</label><input id="rf_zh" type="text" placeholder="例如 1 个鸡蛋"></div>
     <div class="field"><label>English</label><input id="rf_en" type="text" placeholder="e.g. 1 egg"></div>
-    <div class="field"><label>照片（可拍自己家的碗盘）/ Photo (your own bowl/plate)</label>
+    <div class="field"><label data-i18n="rf_photo_l">照片（可拍自己家的碗盘）</label>
       <img id="rf_prev" class="photo-prev">
       <input id="rf_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;"></div>
     <label style="display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-size:16px;font-weight:700;">
-      <input id="rf_fluid" type="checkbox" style="width:22px;height:22px;flex:none;"> 💧 也算进喝水 / Also counts as fluid</label>
-    <div class="field" id="rf_fluidMlWrap" style="display:none;"><label>加多少毫升 / How many ml</label>
+      <input id="rf_fluid" type="checkbox" style="width:22px;height:22px;flex:none;"> <span data-i18n="rf_fluid_l">💧 也算进喝水</span></label>
+    <div class="field" id="rf_fluidMlWrap" style="display:none;"><label data-i18n="rf_ml_l">加多少毫升</label>
       <input id="rf_fluidMl" type="number" inputmode="numeric" placeholder="200"></div>
-    <button class="primary" onclick="refSaveItem()">保存 / Save</button>
-    <button class="ghost" id="rf_del" onclick="refDeleteItem()" style="border-color:var(--coral);color:var(--coral);">删除 / Delete</button>
-    <button class="link" onclick="closeMask('refItemMask')">取消 / Cancel</button>
+    <button class="primary" onclick="refSaveItem()" data-i18n="save">保存</button>
+    <button class="ghost" id="rf_del" onclick="refDeleteItem()" style="border-color:var(--coral);color:var(--coral);" data-i18n="del">删除</button>
+    <button class="link" onclick="closeMask('refItemMask')" data-i18n="cancel">取消</button>
   </div>
 </div>
 
@@ -870,16 +881,16 @@
 <div class="mask" id="itemMask">
   <div class="sheet">
     <h3 id="itemTitle">修改</h3>
-    <div class="field"><label data-i18n="it_kind">类型 / Type</label>
+    <div class="field"><label data-i18n="it_kind">类型</label>
       <select id="it_kind" style="width:100%;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:12px;font-weight:700;">
-        <option value="no">🚫 要避免 / Avoid</option>
-        <option value="yes">✅ 要做 / Do</option>
-        <option value="ok2">ℹ️ 安全／提醒 / Safe or note</option>
+        <option value="no" data-i18n="it_opt_no">🚫 要避免</option>
+        <option value="yes" data-i18n="it_opt_yes">✅ 要做</option>
+        <option value="ok2" data-i18n="it_opt_ok2">ℹ️ 安全／提醒</option>
       </select></div>
-    <div class="field"><label data-i18n="it_grp">分类 / Group</label><input id="it_grp" type="text" placeholder="家里 / 外出 / 医疗场所 / 身体与习惯"></div>
+    <div class="field"><label data-i18n="it_grp">分类</label><input id="it_grp" type="text" placeholder="家里 / 外出 / 医疗场所 / 身体与习惯"></div>
     <div class="field"><label data-i18n="it_zh">中文</label><textarea id="it_zh" style="min-height:60px;"></textarea></div>
     <div class="field"><label data-i18n="it_en">English</label><textarea id="it_en" style="min-height:60px;"></textarea></div>
-    <div class="field"><label data-i18n="it_why">为什么 / Why (optional)</label><textarea id="it_why" style="min-height:60px;"></textarea></div>
+    <div class="field"><label data-i18n="it_why">为什么（可不填）</label><textarea id="it_why" style="min-height:60px;"></textarea></div>
     <button class="primary" onclick="saveItem()" data-i18n="save">保存</button>
     <button class="ghost" id="it_del" onclick="deleteItem()" style="border-color:var(--coral);color:var(--coral);" data-i18n="del">删除</button>
     <button class="link" onclick="closeMask('itemMask')" data-i18n="cancel">取消</button>
@@ -1080,7 +1091,19 @@ en:{
  ap_edit:'Edit appointment/test', rc_edit:'Edit medical record', rc_editbtn:'✏️ Edit',
  ap_photo:'Photo of the appointment card (optional)', ap_ai_btn:'🤖 AI, read this card',
  ap_viewscan:'View scan', ap_replacescan:'pick a new photo to replace', ap_scan:'Scan',
- em_ai_btn:'🤖 Suggest update from records (password)', em_ai_h:'Suggested update / AI',
+ em_ai_btn:'🤖 Suggest update from records (password)', em_ai_h:'Suggested update',
+ bk_h:'💾 Full data backup', bk_hint:'Downloads ALL cloud data (including report photos) as one JSON file. Save it before any upgrade.', bk_btn:'💾 Download backup',
+ mig_h:'📦 Import old data', mig_hint:'Copies ALL old-app data into this account (days, glucose, BP, weight, settings, emergency info, records &amp; photos). <b>The originals are never touched.</b> Safe to run more than once.', mig_btn:'📦 Start import',
+ fam_h:'👨‍👩‍👦 Family', fam_hint:'Add family to help. Everyone you add can log and view his data from <b>their own phone</b> — so if he forgets, you can record for him.',
+ fam_email_l:'Email', fam_role_l:'Role', fam_opt_patient:'🧑 The patient', fam_opt_care:'👩‍⚕️ Family / caregiver', fam_invite:'＋ Invite family',
+ acc_h:'🔑 Account', acc_signout:'Sign out', ai_test:'🔌 Test the AI Key',
+ ap_photohint:'After you photograph the card, a 🤖 button appears to auto-fill the fields above (set an AI Key in ⚙️ first).',
+ rc_photohint:'After you photograph the report, a 🤖 button appears to read out the date, results and medication (set an AI Key in ⚙️ first).',
+ dv_prec:'⚠️ Device precautions', dv_rm:'📡 Remote monitoring', dv_care:'❤️ Daily care & living well', dv_cq:'🩺 Questions for the clinic',
+ edit_entry:'Edit entry', ed_time:'Time', ed_del:'🗑 Delete this entry',
+ ref_diethint:'These are examples of "1 portion" — and quick-add buttons. Edit them, or add your own photos, to match your dietitian.',
+ ref_add:'＋ Add an item', ref_edit_item:'Edit item', rf_photo_l:'Photo (your own bowl / plate)', rf_fluid_l:'💧 Also counts as fluid', rf_ml_l:'How many ml',
+ it_opt_no:'🚫 Avoid', it_opt_yes:'✅ Do', it_opt_ok2:'ℹ️ Safe or note',
  em_ai_note:'AI drafts this from the records. Check every line and confirm before applying — AI can be wrong; the doctor is the final word.',
  em_ai_apply:'✓ Looks right — apply', em_ai_nokey:'Add an AI key first in ⚙️ settings.',
  em_ai_changes:'What changed', em_ai_nochange:'No changes suggested.',
@@ -1208,7 +1231,11 @@ function applyLang(){
   if(document.getElementById('page-week').classList.contains('on')) buildWeek();
   if(document.getElementById('page-dev').classList.contains('on')){ renderGuide(); renderPass(); renderShocks(); renderClinicQ(); }
 }
-window.toggleLang=function(){ LANG=(LANG==='zh')?'en':'zh'; lset('lang',LANG); applyLang(); };
+window.toggleLang=function(){ LANG=(LANG==='zh')?'en':'zh'; lset('lang',LANG); applyLang();
+  if(document.getElementById('careMask').classList.contains('on')){ try{ renderMembers(); }catch(e){} } };
+/* single-language helper for JS-rendered UI: pick the current language (safety-critical
+   surfaces — 🆘 card, shock plan, when-to-seek-help — intentionally stay bilingual). */
+const L=(zh,en)=> (LANG==='zh')?zh:en;
 function setHead(){ const d=new Date();
   if(LANG==='zh'){ const wk=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
     document.getElementById('date').textContent=(d.getMonth()+1)+' 月 '+d.getDate()+' 日 · '+wk[d.getDay()];
@@ -1358,7 +1385,7 @@ async function afterLogin(user){
   authUser=user;
   try{ await resolvePatient(user); }
   catch(e){ console.error('resolvePatient failed', e); showAuthGate();
-    authError('登录后读取资料出错，请重试 / Could not load your data — please try again'); return; }
+    authError(L('登录后读取资料出错，请重试','Could not load your data — please try again')); return; }
   hideAuthGate();
   await bootPatient();
 }
@@ -1432,7 +1459,7 @@ window.authForgot=async function(){
   }catch(e){ authError(authErrText(e&&e.code)); }
 };
 window.doLogout=async function(){
-  if(!confirm('确定要退出登录吗？/ Sign out of this device?')) return;
+  if(!confirm(L('确定要退出登录吗？','Sign out of this device?'))) return;
   try{ await authMod.signOut(auth); }catch(e){}
   location.reload();
 };
@@ -1464,7 +1491,7 @@ function applyRoleUI(){
 /* ---- Family / members (owner + caregiver manage; caregivers can log for the patient) ----
    Invited emails are kept on the patient doc's authorizedEmails map (which any member can
    read), so the admin can always see who's been invited — even before they've joined. */
-function roleLabel(r){ return r==='owner'?'管理者 Admin':(r==='patient'?'本人 Patient':'照护者 Caregiver'); }
+function roleLabel(r){ return r==='owner'?L('管理者','Admin'):(r==='patient'?L('本人','Patient'):L('照护者','Caregiver')); }
 async function readAuthEmails(){
   try{ const pd=await cloudGet(['patients',PATIENT_ID]); return (pd&&pd.authorizedEmails)||{}; }catch(e){ return {}; }
 }
@@ -1478,7 +1505,7 @@ async function writeAuthEmail(email, role){   // role=null → remove
 }
 async function renderMembers(){
   const wrap=document.getElementById('memberList');
-  document.getElementById('acctEmail').textContent=(authUser&&authUser.email)?('已登录 / Signed in: '+authUser.email+'　·　'+roleLabel(myRole)):'';
+  document.getElementById('acctEmail').textContent=(authUser&&authUser.email)?(L('已登录：','Signed in: ')+authUser.email+'　·　'+roleLabel(myRole)):'';
   if(!cloud||!PATIENT_ID){ wrap.innerHTML='<p class="sub2">—</p>'; return; }
   wrap.innerHTML='<p class="sub2">…</p>';
   try{
@@ -1494,36 +1521,36 @@ async function renderMembers(){
     wrap.innerHTML = rows.length ? rows.map(r=>{
       const isMe = authUser && (r.uid===authUser.uid || (r.email&&authUser.email&&r.email===authUser.email.toLowerCase()));
       const cls = !r.joined?'pending':(r.role==='patient'?'patient':'');
-      const lbl = r.joined?roleLabel(r.role):'待接受 Pending';
+      const lbl = r.joined?roleLabel(r.role):L('待接受','Pending');
       const canDel = !isMe && r.role!=='owner' && isCaregiver();
-      const del = canDel ? `<button class="mdel" title="移除 Remove" onclick="removeFamily('${(r.email||'').replace(/['"\\]/g,'')}','${r.uid||''}')">✕</button>` : '';
-      return `<div class="member"><div class="mi"><b>${r.email||'(no email)'}</b>${isMe?' <span class="sub2">(你 / you)</span>':''}</div>
+      const del = canDel ? `<button class="mdel" title="${L('移除','Remove')}" onclick="removeFamily('${(r.email||'').replace(/['"\\]/g,'')}','${r.uid||''}')">✕</button>` : '';
+      return `<div class="member"><div class="mi"><b>${r.email||'(no email)'}</b>${isMe?' <span class="sub2">('+L('你','you')+')</span>':''}</div>
         <div style="display:flex;align-items:center;gap:8px;"><span class="rolepill ${cls}">${lbl}</span>${del}</div></div>`;
-    }).join('') : '<p class="sub2">还没有其他家人 / No family added yet</p>';
-  }catch(e){ console.warn(e); wrap.innerHTML='<p class="sub2">读取失败 / Could not load</p>'; }
+    }).join('') : '<p class="sub2">'+L('还没有其他家人','No family added yet')+'</p>';
+  }catch(e){ console.warn(e); wrap.innerHTML='<p class="sub2">'+L('读取失败','Could not load')+'</p>'; }
 }
 window.addFamily=async function(){
   const msg=document.getElementById('famMsg');
   const email=(document.getElementById('fam_email').value||'').trim().toLowerCase();
   const role=document.getElementById('fam_role').value||'caregiver';
-  if(!email||email.indexOf('@')<1){ msg.textContent='请输入正确的邮箱 / Enter a valid email'; return; }
-  if(!cloud||!PATIENT_ID){ msg.textContent='云端未连接 / Not connected'; return; }
-  if(!isCaregiver()){ msg.textContent='只有管理者可以邀请 / Only the admin/caregiver can invite'; return; }
+  if(!email||email.indexOf('@')<1){ msg.textContent=L('请输入正确的邮箱','Enter a valid email'); return; }
+  if(!cloud||!PATIENT_ID){ msg.textContent=L('云端未连接','Not connected'); return; }
+  if(!isCaregiver()){ msg.textContent=L('只有管理者可以邀请','Only the admin/caregiver can invite'); return; }
   try{
     await cloudSet(['invites',email], {patientId:PATIENT_ID, role, invitedBy:(authUser&&authUser.uid)||'', createdAt:Date.now()});
     await writeAuthEmail(email, role);   // record on patient doc so the admin can see it
     document.getElementById('fam_email').value='';
-    msg.textContent='✅ 已邀请 '+email+'。请他用这个邮箱在 App 上注册即可自动加入。 / Invited — ask them to sign up with this email.';
+    msg.textContent=L('✅ 已邀请 '+email+'。请他用这个邮箱在 App 上注册即可自动加入。','✅ Invited '+email+' — ask them to sign up with this email to join.');
     renderMembers();
-  }catch(e){ console.warn(e); msg.textContent='邀请失败 / Could not invite: '+(e&&e.message||e); }
+  }catch(e){ console.warn(e); msg.textContent=L('邀请失败：','Could not invite: ')+(e&&e.message||e); }
 };
 window.removeFamily=async function(email,uid){
-  if(!confirm('确定移除这个人吗？/ Remove this person?')) return;
+  if(!confirm(L('确定移除这个人吗？','Remove this person?'))) return;
   try{
     if(uid){ try{ await fx.deleteDoc(fx.doc(db,'patients',PATIENT_ID,'members',uid)); }catch(e){} }
     if(email){ try{ await fx.deleteDoc(fx.doc(db,'invites',email)); }catch(e){} await writeAuthEmail(email, null); }
     renderMembers();
-  }catch(e){ console.warn(e); alert('移除失败 / Could not remove'); }
+  }catch(e){ console.warn(e); alert(L('移除失败','Could not remove')); }
 };
 
 /* ---- Migration: COPY legacy patients/WWP → this patient. Never touches the originals.
@@ -1541,12 +1568,12 @@ function reshapeDayForMigration(d){
 }
 window.runMigration=async function(){
   const st=document.getElementById('migrateStatus'), btn=document.getElementById('migrateBtn');
-  const log=[]; const put=(zh,en)=>{ log.push(zh+'\n'+en); st.textContent=log.join('\n\n'); };
-  if(!cloud||!PATIENT_ID){ st.textContent='云端未连接 / Not connected'; return; }
-  if(PATIENT_ID===LEGACY_PID){ st.textContent='当前就是旧版文件夹，无需导入。/ Already on the legacy folder — nothing to import.'; return; }
-  if(!isCaregiver()){ st.textContent='只有照护者可以导入。/ Only caregivers can import.'; return; }
-  if(!confirm('开始从旧版导入全部数据？旧数据不会被改动。\nImport all data from the old app? The originals stay untouched.')) return;
-  btn.disabled=true; btn.textContent='… 导入中 / Importing';
+  const log=[]; const put=(zh,en)=>{ log.push(L(zh,en)); st.textContent=log.join('\n\n'); };
+  if(!cloud||!PATIENT_ID){ st.textContent=L('云端未连接','Not connected'); return; }
+  if(PATIENT_ID===LEGACY_PID){ st.textContent=L('当前就是旧版文件夹，无需导入。','Already on the legacy folder — nothing to import.'); return; }
+  if(!isCaregiver()){ st.textContent=L('只有照护者可以导入。','Only caregivers can import.'); return; }
+  if(!confirm(L('开始从旧版导入全部数据？旧数据不会被改动。','Import all data from the old app? The originals stay untouched.'))) return;
+  btn.disabled=true; btn.textContent=L('… 导入中','Importing');
   try{
     const src=['patients',LEGACY_PID], dst=['patients',PATIENT_ID];
     const readColl=async(base,name)=>{ const s=await fx.getDocs(fx.collection(db,...base,name)); const o={}; s.forEach(d=>o[d.id]=d.data()); return o; };
@@ -1596,7 +1623,7 @@ window.runMigration=async function(){
     put(ok?'导入完成，数字对得上。请翻看各页面核对，没问题后再更新安全规则。':'数字对不上，请把这段文字截图给开发者，先不要更新安全规则。',
         ok?'Done — counts match. Browse the pages to double-check, then update the security rules.':'Counts do not match — screenshot this for the developer; do NOT update the rules yet.');
   }catch(e){ console.error(e); put('导入出错：'+(e&&e.message||e),'Import error — see console'); }
-  finally{ btn.disabled=false; btn.textContent='📦 开始导入 / Start import'; }
+  finally{ btn.disabled=false; btn.textContent=L('📦 开始导入','Start import'); }
 };
 
 
@@ -1754,7 +1781,7 @@ function toast(msg){ let el=document.getElementById('toast');
 let curRefSet='protein', editRefId=null, refPendingPhoto=null;
 window.openRef=function(set){
   curRefSet=set; const m=REF_META[set];
-  document.getElementById('refTitle').textContent=(LANG==='zh'?m.zh:m.en)+' '+m.icon+' 份量参考 / Portion guide';
+  document.getElementById('refTitle').textContent=(LANG==='zh'?m.zh:m.en)+' '+m.icon+' '+L('份量参考','Portion guide');
   document.getElementById('refAddBtn').style.display=isCaregiver()?'':'none';
   renderRefSheetPhoto(); renderRefItems();
   document.getElementById('refMask').classList.add('on');
@@ -1765,8 +1792,8 @@ function renderRefSheetPhoto(){
   if(sheet){ img.src=sheet; img.style.display='block'; img.onclick=()=>{ document.getElementById('photoBig').src=sheet; document.getElementById('photoMask').classList.add('on'); }; }
   else { img.style.display='none'; }
   btns.innerHTML = isCaregiver()
-    ? `<button class="ghost" onclick="refSetSheet()" style="margin-top:0;">📄 ${sheet?'换一张营养师表格照片 / Change sheet photo':'加营养师的表格照片 / Add dietitian sheet photo'}</button>`
-      + (sheet?`<button class="link" onclick="refDelSheet()">删除表格照片 / Remove sheet photo</button>`:'')
+    ? `<button class="ghost" onclick="refSetSheet()" style="margin-top:0;">📄 ${sheet?L('换一张营养师表格照片','Change sheet photo'):L('加营养师的表格照片','Add dietitian sheet photo')}</button>`
+      + (sheet?`<button class="link" onclick="refDelSheet()">${L('删除表格照片','Remove sheet photo')}</button>`:'')
     : '';
 }
 function renderRefItems(){
@@ -1778,8 +1805,9 @@ function renderRefItems(){
         <button onclick="refMove('${it.id}',-1)" ${i===0?'disabled style=opacity:.3':''}>↑</button>
         <button onclick="refMove('${it.id}',1)" ${i===items.length-1?'disabled style=opacity:.3':''}>↓</button>
         <button onclick="refEdit('${it.id}')">✏️</button></div>`:'';
-    return `<div class="refitem">${thumb}<div class="ri-b"><b>${it.zh||''}</b><div class="sub2">${it.en||''}</div>${fl}</div>${act}</div>`;
-  }).join('') : '<p class="sub2">还没有项目 / No items yet</p>';
+    const nm=LANG==='zh'?(it.zh||it.en||''):(it.en||it.zh||'');
+    return `<div class="refitem">${thumb}<div class="ri-b"><b>${nm}</b>${fl}</div>${act}</div>`;
+  }).join('') : '<p class="sub2">'+L('还没有项目','No items yet')+'</p>';
 }
 window.bigPhoto=function(id){ const it=sortedItems(curRefSet).find(x=>x.id===id); if(it&&it.photo){ document.getElementById('photoBig').src=it.photo; document.getElementById('photoMask').classList.add('on'); } };
 window.refMove=async function(id,dir){
@@ -1789,7 +1817,7 @@ window.refMove=async function(id,dir){
   REFS()[curRefSet].items=items; await saveRefs(); renderRefItems(); renderQuickAdd();
 };
 window.refAddItem=function(){ editRefId=null; refPendingPhoto=null;
-  document.getElementById('refItemTitle').textContent='添加一项 / Add an item';
+  document.getElementById('refItemTitle').textContent=L('添加一项','Add an item');
   document.getElementById('rf_zh').value=''; document.getElementById('rf_en').value='';
   document.getElementById('rf_fluid').checked=false; document.getElementById('rf_fluidMl').value='';
   document.getElementById('rf_fluidMlWrap').style.display='none';
@@ -1799,7 +1827,7 @@ window.refAddItem=function(){ editRefId=null; refPendingPhoto=null;
 };
 window.refEdit=function(id){ const it=sortedItems(curRefSet).find(x=>x.id===id); if(!it) return;
   editRefId=id; refPendingPhoto=it.photo||null;
-  document.getElementById('refItemTitle').textContent='修改 / Edit item';
+  document.getElementById('refItemTitle').textContent=L('修改项目','Edit item');
   document.getElementById('rf_zh').value=it.zh||''; document.getElementById('rf_en').value=it.en||'';
   document.getElementById('rf_fluid').checked=!!it.countsAsFluid; document.getElementById('rf_fluidMl').value=it.fluidMl||'';
   document.getElementById('rf_fluidMlWrap').style.display=it.countsAsFluid?'block':'none';
@@ -1809,7 +1837,7 @@ window.refEdit=function(id){ const it=sortedItems(curRefSet).find(x=>x.id===id);
 };
 window.refSaveItem=async function(){
   const zh=document.getElementById('rf_zh').value.trim(), en=document.getElementById('rf_en').value.trim();
-  if(!zh && !en){ alert('请至少填一个名称 / Enter a name'); return; }
+  if(!zh && !en){ alert(L('请至少填一个名称','Enter a name')); return; }
   const fluid=document.getElementById('rf_fluid').checked;
   const fluidMl=fluid?(parseInt(document.getElementById('rf_fluidMl').value,10)||0):0;
   const set=REFS()[curRefSet]; if(!set.items) set.items=[];
@@ -1820,12 +1848,12 @@ window.refSaveItem=async function(){
   await saveRefs(); closeMask('refItemMask'); renderRefItems(); renderQuickAdd();
 };
 window.refDeleteItem=async function(){
-  if(!editRefId) return; if(!confirm('删除这一项？/ Delete this item?')) return;
+  if(!editRefId) return; if(!confirm(L('删除这一项？','Delete this item?'))) return;
   const set=REFS()[curRefSet]; set.items=(set.items||[]).filter(x=>x.id!==editRefId);
   await saveRefs(); closeMask('refItemMask'); renderRefItems(); renderQuickAdd();
 };
 window.refSetSheet=function(){ document.getElementById('ref_sheet_input').click(); };
-window.refDelSheet=async function(){ if(!confirm('删除表格照片？/ Remove sheet photo?')) return;
+window.refDelSheet=async function(){ if(!confirm(L('删除表格照片？','Remove sheet photo?'))) return;
   REFS()[curRefSet].sheet=null; await saveRefs(); renderRefSheetPhoto(); };
 document.getElementById('rf_fluid').addEventListener('change', e=>{
   document.getElementById('rf_fluidMlWrap').style.display=e.target.checked?'block':'none';
@@ -1904,9 +1932,9 @@ function renderGlucose(){
    ============================================================ */
 let entryEdit=null, editTag='餐前', editMood=null;
 const SCALAR_KINDS=['weight','mood'];                 // one value per day, no timestamp
-const EDIT_TITLES={ bp:'修改血压 / Edit blood pressure', glucose:'修改血糖 / Edit glucose',
-  fluid:'修改喝水 / Edit water', shock:'修改电击记录 / Edit shock', weight:'修改体重 / Edit weight',
-  mood:'修改感觉 / Edit mood' };
+const EDIT_TITLES=()=>({ bp:L('修改血压','Edit blood pressure'), glucose:L('修改血糖','Edit glucose'),
+  fluid:L('修改喝水','Edit water'), shock:L('修改电击记录','Edit shock'), weight:L('修改体重','Edit weight'),
+  mood:L('修改感觉','Edit mood') });
 /* Which array on the day doc holds this kind's entries (fluid lives under fluid.log). */
 function entryArray(src, kind){
   if(kind==='fluid') return (src.fluid&&src.fluid.log)||[];
@@ -1917,29 +1945,29 @@ function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,
 function editFieldsHTML(kind, e){
   if(kind==='bp'){
     return `<div class="two">
-      <div class="field"><label>高压 Systolic (mmHg)</label><input id="ed_sys" type="number" inputmode="numeric" value="${e.sys}"></div>
-      <div class="field"><label>低压 Diastolic (mmHg)</label><input id="ed_dia" type="number" inputmode="numeric" value="${e.dia}"></div></div>
-      <div class="field"><label>脉搏 Pulse（可不填 / optional）</label><input id="ed_pulse" type="number" inputmode="numeric" value="${e.pulse||''}"></div>`;
+      <div class="field"><label>${L('高压 (mmHg)','Systolic (mmHg)')}</label><input id="ed_sys" type="number" inputmode="numeric" value="${e.sys}"></div>
+      <div class="field"><label>${L('低压 (mmHg)','Diastolic (mmHg)')}</label><input id="ed_dia" type="number" inputmode="numeric" value="${e.dia}"></div></div>
+      <div class="field"><label>${L('脉搏（可不填）','Pulse (optional)')}</label><input id="ed_pulse" type="number" inputmode="numeric" value="${e.pulse||''}"></div>`;
   }
   if(kind==='glucose'){
     return `<div class="g-tags" style="margin-bottom:12px;">
-        <div class="g-tag ${e.tag==='餐前'?'on':''}" id="ed_pre" onclick="editSetTag('餐前')">餐前 Before meal</div>
-        <div class="g-tag ${e.tag==='餐后'?'on':''}" id="ed_post" onclick="editSetTag('餐后')">餐后 After meal</div></div>
-      <div class="field"><label>血糖 Glucose (mmol/L)</label><input id="ed_val" type="number" step="0.1" inputmode="decimal" value="${e.value}"></div>`;
+        <div class="g-tag ${e.tag==='餐前'?'on':''}" id="ed_pre" onclick="editSetTag('餐前')">${L('餐前','Before meal')}</div>
+        <div class="g-tag ${e.tag==='餐后'?'on':''}" id="ed_post" onclick="editSetTag('餐后')">${L('餐后','After meal')}</div></div>
+      <div class="field"><label>${L('血糖 (mmol/L)','Glucose (mmol/L)')}</label><input id="ed_val" type="number" step="0.1" inputmode="decimal" value="${e.value}"></div>`;
   }
   if(kind==='fluid'){
-    return `<div class="field"><label>喝了多少 Amount (ml)</label><input id="ed_ml" type="number" inputmode="numeric" value="${e.ml}"></div>
+    return `<div class="field"><label>${L('喝了多少 (毫升)','Amount (ml)')}</label><input id="ed_ml" type="number" inputmode="numeric" value="${e.ml}"></div>
       ${e.label?`<p class="sub2" style="margin:-4px 0 6px;">${esc(e.label)}</p>`:''}`;
   }
   if(kind==='shock'){
-    return `<div class="field"><label>当时在做什么 What（可不填 / optional）</label><input id="ed_what" type="text" value="${esc(e.what)}"></div>
-      <div class="field"><label>当时感觉 How he felt（可不填 / optional）</label><input id="ed_how" type="text" value="${esc(e.how)}"></div>`;
+    return `<div class="field"><label>${L('当时在做什么（可不填）','What he was doing (optional)')}</label><input id="ed_what" type="text" value="${esc(e.what)}"></div>
+      <div class="field"><label>${L('当时感觉（可不填）','How he felt (optional)')}</label><input id="ed_how" type="text" value="${esc(e.how)}"></div>`;
   }
   if(kind==='weight'){
-    return `<div class="field"><label>体重 Weight (kg)</label><input id="ed_wt" type="number" step="0.1" inputmode="decimal" value="${e.weight??''}"></div>`;
+    return `<div class="field"><label>${L('体重 (公斤)','Weight (kg)')}</label><input id="ed_wt" type="number" step="0.1" inputmode="decimal" value="${e.weight??''}"></div>`;
   }
   if(kind==='mood'){
-    const opts=[['好','😊 很好 Good'],['一般','😐 一般 OK'],['不舒服','😟 不舒服 Unwell']];
+    const opts=[['好',L('😊 很好','😊 Good')],['一般',L('😐 一般','😐 OK')],['不舒服',L('😟 不舒服','😟 Unwell')]];
     return `<div class="mood" id="ed_moodRow">`+opts.map(([v,lab])=>
       `<div class="${e.mood===v?'on':''}" onclick="editSetMood('${v}')">${lab}</div>`).join('')+`</div>`;
   }
@@ -1964,10 +1992,10 @@ window.openEditEntry=async function(kind, ts, dayKey){
     e=entryArray(src,kind).find(x=>x.t===ts && !x.del); if(!e) return;
   }
   entryEdit={kind, t:ts, dayKey}; editTag=e.tag||'餐前'; editMood=src.mood;
-  document.getElementById('edit_title').textContent = EDIT_TITLES[kind]||'修改记录 / Edit entry';
+  document.getElementById('edit_title').textContent = EDIT_TITLES()[kind]||L('修改记录','Edit entry');
   document.getElementById('edit_note').textContent = dayKey===TODAY
-    ? '当天的记录可以直接修改。/ Today’s entries can be edited freely.'
-    : '⚠️ 你在修改过去的记录（'+dayKey+'）。/ You are editing a PAST day ('+dayKey+').';
+    ? L('当天的记录可以直接修改。','Today’s entries can be edited freely.')
+    : L('⚠️ 你在修改过去的记录（'+dayKey+'）。','⚠️ You are editing a PAST day ('+dayKey+').');
   document.getElementById('edit_fields').innerHTML = editFieldsHTML(kind, e);
   const timeField=document.getElementById('edit_time').closest('.field');
   if(SCALAR_KINDS.includes(kind)){ timeField.style.display='none'; }
@@ -2002,22 +2030,22 @@ window.saveEditEntry=async function(){
     if(!(v>0)){ alert(t('wt_bad')); return; }
     src.weight=v;
   } else if(kind==='mood'){
-    if(!editMood){ alert('请选择感觉 / Please pick a mood'); return; }
+    if(!editMood){ alert(L('请选择感觉','Please pick a mood')); return; }
     src.mood=editMood;
   } else {
     const e=entryArray(src,kind).find(x=>x.t===ts); if(!e){ closeMask('editMask'); return; }
     if(kind==='bp'){
       const sys=parseInt(document.getElementById('ed_sys').value,10), dia=parseInt(document.getElementById('ed_dia').value,10);
       const pulse=parseInt(document.getElementById('ed_pulse').value,10);
-      if(!(sys>0)||!(dia>0)){ alert('请输入正确的血压 / Enter a valid reading'); return; }
+      if(!(sys>0)||!(dia>0)){ alert(L('请输入正确的血压','Enter a valid reading')); return; }
       e.sys=sys; e.dia=dia; e.pulse=pulse>0?pulse:null;
     } else if(kind==='glucose'){
       const v=parseFloat(document.getElementById('ed_val').value);
-      if(!(v>0)){ alert('请输入正确的血糖 / Enter a valid reading'); return; }
+      if(!(v>0)){ alert(L('请输入正确的血糖','Enter a valid reading')); return; }
       e.value=v; e.tag=editTag;
     } else if(kind==='fluid'){
       const ml=parseInt(document.getElementById('ed_ml').value,10);
-      if(!(ml>0)){ alert('请输入正确的份量 / Enter a valid amount'); return; }
+      if(!(ml>0)){ alert(L('请输入正确的份量','Enter a valid amount')); return; }
       src.fluid.total=Math.max(0, (src.fluid.total||0) + (ml - e.ml)); e.ml=ml;
     } else if(kind==='shock'){
       e.what=document.getElementById('ed_what').value.trim();
@@ -2030,8 +2058,8 @@ window.saveEditEntry=async function(){
 window.deleteEditEntry=async function(){
   if(!entryEdit) return; const {kind,t:ts}=entryEdit; const src=editSrc();
   const scalar=SCALAR_KINDS.includes(kind);
-  const msg = scalar ? '清除这一项吗？/ Clear this entry?'
-    : '删除这一笔记录吗？会从列表和图表隐藏，但仍保留可找回。\nDelete this entry? It is hidden from views but kept so it can be recovered.';
+  const msg = scalar ? L('清除这一项吗？','Clear this entry?')
+    : L('删除这一笔记录吗？会从列表和图表隐藏，但仍保留可找回。','Delete this entry? It is hidden from views but kept so it can be recovered.');
   if(!confirm(msg)) return;
   if(kind==='weight'){ src.weight=null; }
   else if(kind==='mood'){ src.mood=null; }
@@ -2794,19 +2822,21 @@ care:[
 let guide=JSON.parse(JSON.stringify(DEFAULT_GUIDE));
 async function saveGuide(){ lset('guidance',guide); if(cloud){ try{ await cloudSet(guidePath,guide);}catch(e){} } }
 const ICON={no:'🚫',yes:'✅',ok2:'ℹ️'};
+/* show the current language only (safety-critical surfaces elsewhere stay bilingual). */
+function gLabel(g){ if(!g) return ''; const p=g.split(' / '); return (LANG==='zh')?p[0]:(p[1]||p[0]); }
 function itemHTML(it,list,i){
-  const txt=(LANG==='zh')?it.zh:(it.en||it.zh), alt=(LANG==='zh')?(it.en||''):(it.zh||'');
+  const txt=(LANG==='zh')?(it.zh||it.en):(it.en||it.zh);
   return `<div class="li ${it.k}" onclick="editItem('${list}',${i})" style="cursor:pointer;">
-    <b>${ICON[it.k]||''} ${txt}${alt?` <span class="en">${alt}</span>`:''}</b>
+    <b>${ICON[it.k]||''} ${txt}</b>
     ${it.why?`<div class="why">${it.why}</div>`:''}</div>`;
 }
 function renderGuide(){
   const pb=document.getElementById('princBox');
-  if(pb) pb.innerHTML=(LANG==='zh'?guide.princ.zh:guide.princ.en)+'<br><span class="sub2">'+(LANG==='zh'?guide.princ.en:guide.princ.zh)+'</span>';
+  if(pb) pb.innerHTML=(LANG==='zh'?guide.princ.zh:guide.princ.en);
   const box=document.getElementById('precBody');
   if(box){ const groups={};
     guide.prec.forEach((it,i)=>{ (groups[it.g]=groups[it.g]||[]).push([it,i]); });
-    let h=''; Object.keys(groups).forEach(g=>{ h+=`<div class="sec-t">${g}</div>`;
+    let h=''; Object.keys(groups).forEach(g=>{ h+=`<div class="sec-t">${gLabel(g)}</div>`;
       groups[g].forEach(([it,i])=>h+=itemHTML(it,'prec',i)); });
     h+=`<div class="li ok2" style="cursor:pointer;opacity:.75;" onclick="addItem('prec')"><b>＋ ${t('pr_add')}</b></div>`;
     box.innerHTML=h; }
@@ -2868,11 +2898,21 @@ const DEFAULT_EMER={ v:2,
 function migrateEmer(e){ if(e && e.v!==2 && e.diag===OLD_V1_DIAG) return JSON.parse(JSON.stringify(DEFAULT_EMER)); return e; }
 let emer=JSON.parse(JSON.stringify(DEFAULT_EMER));
 function renderEmer(){
-  const e=emer, s=(h,b)=>`<div class="et">${h}</div><div class="eb">${b}</div>`;
-  document.getElementById('emerBody').innerHTML=
-    s('主要病史 / MEDICAL HISTORY',e.diag)+s('⚠️ 特别注意 / IMPORTANT WARNINGS',e.warn)+
-    s('过敏史 / ALLERGIES',e.allergy)+s('目前用药 / CURRENT MEDICATIONS',e.meds)+
-    s('血型 / BLOOD TYPE',e.blood)+s('紧急联络 / EMERGENCY CONTACT',e.contact);
+  const e=emer;
+  // Each line rendered on its own; Chinese lines bold, their English translation smaller/grey
+  // right beneath — so in an emergency a medic scans English and family scans Chinese, fast.
+  const lines=(val)=> esc(val).split('\n').map(ln=>{ const tt=ln.trim(); if(!tt) return '';
+    const isEn=/[A-Za-z]/.test(tt) && !/[一-鿿]/.test(tt);
+    return `<div class="eline ${isEn?'en':'zh'}">${ln}</div>`; }).join('');
+  const card=(icon,zh,en,val,cls)=> (val&&val.trim())
+    ? `<div class="ecard ${cls||''}"><div class="et">${icon} ${zh} · ${en}</div>${lines(val)}</div>` : '';
+  let h=card('⚠️','特别注意','IMPORTANT WARNINGS',e.warn,'warn')
+      + card('🫀','主要病史','MEDICAL HISTORY',e.diag)
+      + card('🚫','过敏史','ALLERGIES',e.allergy)
+      + card('💊','目前用药','MEDICATIONS',e.meds);
+  const bc=card('🩸','血型','BLOOD',e.blood), cc=card('📞','紧急联络','CONTACT',e.contact);
+  if(bc||cc) h+=`<div class="erow">${bc}${cc}</div>`;
+  document.getElementById('emerBody').innerHTML=h||'<p class="sub2" style="text-align:center;padding:16px;">—</p>';
   const ab=document.getElementById('emerAiBtn'); if(ab) ab.style.display=gemKey()?'block':'none';
 }
 /* AI-assisted Key Medical Info: drafts a revised summary from the patient's OWN records,
@@ -2978,6 +3018,23 @@ window.saveSettings=async function(){
   lset('gemkey',document.getElementById('s_gemkey').value.trim());
   await saveSet(); renderAll(); closeCare(); alert(t('saved'));
 };
+/* Test the AI Key live (uses the value in the field, so it can be checked before saving). */
+window.testAiKey=async function(){
+  const key=(document.getElementById('s_gemkey').value||'').trim();
+  const st=document.getElementById('aiTestStatus'), btn=document.getElementById('aiTestBtn');
+  if(!key){ st.style.color='var(--coral)'; st.textContent=L('请先填入 AI Key。','Enter an AI Key first.'); return; }
+  btn.disabled=true; st.style.color='var(--sub)'; st.textContent=L('测试中…','Testing…');
+  try{
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+key,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:'Reply with the single word: OK'}]}]})});
+    if(!res.ok){ let msg=res.status; try{ const ej=await res.json(); msg=(ej.error&&ej.error.message)||msg; }catch(e){}
+      st.style.color='var(--coral)'; st.textContent='❌ '+L('无法使用：','Not working: ')+msg; }
+    else { const j=await res.json(); const txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('').trim();
+      st.style.color='var(--jade)'; st.textContent='✅ '+L('可以使用！','Working!')+(txt?' ('+txt.slice(0,20)+')':''); }
+  }catch(e){ st.style.color='var(--coral)'; st.textContent='❌ '+L('网络错误：','Network error: ')+(e.message||''); }
+  btn.disabled=false;
+};
 
 /* TEMP (Build 0): full backup of everything under patients/WWP → single JSON file.
    Reads collections generically (getDocs) so nothing is missed, including photo
@@ -2985,12 +3042,12 @@ window.saveSettings=async function(){
 window.doBackup=async function(){
   const btn=document.getElementById('backupBtn');
   const status=document.getElementById('backupStatus');
-  const setStatus=(zh,en)=>{ status.textContent=zh+' / '+en; };
+  const setStatus=(zh,en)=>{ status.textContent=L(zh,en); };
   if(!cloud||!fx||!db){
     setStatus('云端未连接，无法备份','Cloud not connected — cannot back up');
     return;
   }
-  btn.disabled=true; btn.textContent='… 备份中 / Backing up';
+  btn.disabled=true; btn.textContent=L('… 备份中','Backing up');
   try{
     const base=['patients',PATIENT_ID];
     const readColl=async(name)=>{
@@ -3038,7 +3095,7 @@ window.doBackup=async function(){
     console.error(e);
     setStatus('备份失败：'+(e&&e.message||e),'Backup failed — see console');
   }finally{
-    btn.disabled=false; btn.textContent='💾 下载备份 / Download backup';
+    btn.disabled=false; btn.textContent=L('💾 下载备份','Download backup');
   }
 };
 
