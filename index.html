@@ -496,6 +496,7 @@
     <p class="hint" data-i18n="em_hint">看医生或紧急时，直接把这一页给医护人员看。</p>
     <div id="emerBody"></div>
     <button class="ghost" onclick="editEmer()" data-i18n="em_edit">✏️ 修改内容（需密码）</button>
+    <button class="ghost" id="emerAiBtn" style="display:none;border-color:var(--amber);color:var(--amber);" onclick="suggestEmerUpdate()" data-i18n="em_ai_btn">🤖 根据记录建议更新（需密码）</button>
   </div>
 
   <div class="card">
@@ -717,6 +718,12 @@
     <div class="field"><label data-i18n="place">医院／诊所</label><input id="ap_place" type="text" placeholder="例如 心脏专科中心"></div>
     <div class="field"><label data-i18n="doc_opt">科室／医生（可不填）</label><input id="ap_doc" type="text" placeholder="例如 心内科 · 陈医生"></div>
     <div class="field"><label data-i18n="note_opt">备注（可不填）</label><input id="ap_note" type="text" placeholder="例如 要空腹抽血"></div>
+    <div class="field"><label data-i18n="ap_photo">拍照或选择预约卡（可不填）</label>
+      <input id="ap_photo" type="file" accept="image/*" capture="environment" style="font-size:15px;">
+      <img id="ap_prev" class="photo-prev">
+      <button class="ghost" id="ap_ai" style="display:none;margin-top:10px;border-color:var(--amber);color:var(--amber);" onclick="aiReadAppt()" data-i18n="ap_ai_btn">🤖 AI 帮我读这张卡</button>
+      <p class="sub2" id="ap_ainote" style="display:none;margin-top:8px;line-height:1.5;"></p>
+    </div>
     <button class="primary" onclick="saveAppt()" data-i18n="save">保存</button>
     <button class="link" onclick="closeMask('apptMask')" data-i18n="cancel">取消</button>
   </div>
@@ -759,6 +766,21 @@
     </div>
     <button class="primary" onclick="saveEmer()" data-i18n="save">保存</button>
     <button class="link" onclick="closeMask('emerMask')" data-i18n="cancel">取消</button>
+  </div>
+</div>
+
+<!-- AI-suggested Key Medical Info update (review before applying — never silent) -->
+<div class="mask" id="emerAiMask">
+  <div class="sheet">
+    <h3 data-i18n="em_ai_h">AI 建议的更新 / Suggested update</h3>
+    <p class="edit-note" data-i18n="em_ai_note">AI 根据病历记录提出建议。请先逐项检查，确认无误再套用 —— AI 可能出错，医生的话最准。</p>
+    <div id="emerAiChanges"></div>
+    <div class="field"><label data-i18n="em_diag">主要病史／诊断</label><textarea id="ea_diag" style="min-height:110px;"></textarea></div>
+    <div class="field"><label data-i18n="em_warn">⚠️ 特别注意事项</label><textarea id="ea_warn" style="min-height:90px;"></textarea></div>
+    <div class="field"><label data-i18n="em_allergy">过敏史</label><textarea id="ea_allergy"></textarea></div>
+    <div class="field"><label data-i18n="em_meds">目前用药</label><textarea id="ea_meds"></textarea></div>
+    <button class="primary" onclick="applyEmerSuggestion()" data-i18n="em_ai_apply">✓ 检查无误，套用</button>
+    <button class="link" onclick="closeMask('emerAiMask')" data-i18n="cancel">取消</button>
   </div>
 </div>
 
@@ -1056,6 +1078,12 @@ en:{
  dt_weight:'Weight', dt_mood:'Feeling', kg:'kg', fl_log:'💧 Drinks logged today',
  mood_good_s:'Good', mood_ok_s:'OK', mood_bad_s:'Unwell',
  ap_edit:'Edit appointment/test', rc_edit:'Edit medical record', rc_editbtn:'✏️ Edit',
+ ap_photo:'Photo of the appointment card (optional)', ap_ai_btn:'🤖 AI, read this card',
+ ap_viewscan:'View scan', ap_replacescan:'pick a new photo to replace', ap_scan:'Scan',
+ em_ai_btn:'🤖 Suggest update from records (password)', em_ai_h:'Suggested update / AI',
+ em_ai_note:'AI drafts this from the records. Check every line and confirm before applying — AI can be wrong; the doctor is the final word.',
+ em_ai_apply:'✓ Looks right — apply', em_ai_nokey:'Add an AI key first in ⚙️ settings.',
+ em_ai_changes:'What changed', em_ai_nochange:'No changes suggested.',
  r_day:'Day', r_week:'Week', r_month:'Month',
  mt_over:'Overview', mt_bp:'🫀 BP', mt_g:'🩸 Glucose', mt_wt:'⚖️ Weight', mt_fl:'💧 Fluid',
  vw_trend:'Trend', vw_dist:'Spread', vw_rec:'Records',
@@ -1106,6 +1134,12 @@ TT.zh = {
  dt_weight:'体重', dt_mood:'感觉', kg:'公斤', fl_log:'💧 今天喝过的',
  mood_good_s:'很好', mood_ok_s:'一般', mood_bad_s:'不舒服',
  ap_edit:'修改复诊／检查', rc_edit:'修改医疗记录', rc_editbtn:'✏️ 修改',
+ ap_photo:'拍照或选择预约卡（可不填）', ap_ai_btn:'🤖 AI 帮我读这张卡',
+ ap_viewscan:'查看扫描件', ap_replacescan:'选新照片可替换', ap_scan:'扫描件',
+ em_ai_btn:'🤖 根据记录建议更新（需密码）', em_ai_h:'AI 建议的更新',
+ em_ai_note:'AI 根据病历记录提出建议。请先逐项检查，确认无误再套用 —— AI 可能出错，医生的话最准。',
+ em_ai_apply:'✓ 检查无误，套用', em_ai_nokey:'请先到 ⚙️ 设置里填写 AI Key。',
+ em_ai_changes:'改动内容', em_ai_nochange:'没有建议改动。',
  r_day:'日', r_week:'周', r_month:'月',
  mt_over:'总览', mt_bp:'🫀 血压', mt_g:'🩸 血糖', mt_wt:'⚖️ 体重', mt_fl:'💧 喝水',
  vw_trend:'趋势', vw_dist:'分布', vw_rec:'记录',
@@ -2362,31 +2396,90 @@ window.printReport=function(){ window.print(); };
    10b) APPOINTMENTS
    ============================================================ */
 let appts=[]; let apEditId=null;
+let pendingApptPhoto=null, apptPhotoTouched=false;   // Build 4: scan of the appt card
+const apptPhotoPath=id=>['patients',PATIENT_ID,'apptPhotos',id];
 async function saveApptsAll(){ lset('appts',appts); if(cloud){ try{ await cloudSet(apptPath,appts);}catch(e){} } }
-window.openAppt=function(){ apEditId=null;
+async function loadApptPhoto(id){
+  let p=lget('apptphoto:'+id);
+  if(cloud){ try{ const cp=await cloudGet(apptPhotoPath(id)); if(cp) p=cp; }catch(e){} }
+  return p;
+}
+function resetApptPhotoUI(){ pendingApptPhoto=null; apptPhotoTouched=false;
+  const el=document.getElementById('ap_photo'); if(el) el.value='';
+  document.getElementById('ap_prev').style.display='none';
+  document.getElementById('ap_ai').style.display='none';
+  document.getElementById('ap_ainote').style.display='none';
+}
+document.getElementById('ap_photo').addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  pendingApptPhoto=await compressImage(f); apptPhotoTouched=true;
+  const p=document.getElementById('ap_prev');
+  if(pendingApptPhoto){ p.src=pendingApptPhoto; p.style.display='block';
+    if(gemKey()) document.getElementById('ap_ai').style.display='block';
+  } else { p.style.display='none'; alert(t('photofail')); }
+});
+window.openAppt=function(){ apEditId=null; resetApptPhotoUI();
   document.getElementById('apptTitle').textContent=t('ap_new');
   document.getElementById('ap_date').value=''; document.getElementById('ap_time').value='';
   ['ap_place','ap_doc','ap_note'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('apptMask').classList.add('on'); };
-window.editAppt=function(id){ const a=appts.find(x=>x.id===id); if(!a) return; apEditId=id;
+window.editAppt=function(id){ const a=appts.find(x=>x.id===id); if(!a) return; apEditId=id; resetApptPhotoUI();
   document.getElementById('apptTitle').textContent=t('ap_edit');
   document.getElementById('ap_date').value=a.date||''; document.getElementById('ap_time').value=a.time||'';
   document.getElementById('ap_place').value=a.place||''; document.getElementById('ap_doc').value=a.doc||'';
   document.getElementById('ap_note').value=a.note||'';
+  if(a.photo){ const n=document.getElementById('ap_ainote'); n.style.display='block';
+    n.innerHTML=`📄 <a href="#" onclick="viewApptScan('${id}');return false;" style="color:var(--jade);font-weight:700;">${t('ap_viewscan')}</a> · ${t('ap_replacescan')}`; }
   document.getElementById('apptMask').classList.add('on'); };
 window.closeMask=function(id){ document.getElementById(id).classList.remove('on'); };
+window.aiReadAppt=async function(){
+  if(!pendingApptPhoto || !gemKey()) return;
+  const btn=document.getElementById('ap_ai'), note=document.getElementById('ap_ainote');
+  btn.textContent=t('ai_reading'); btn.disabled=true; note.style.display='none';
+  const prompt='你是帮助家属整理复诊安排的助手。请阅读这张预约卡/复诊卡照片（语言可能是英文、马来文或中文），只回复一个 JSON 对象，不要任何其他文字或markdown：{"date":"YYYY-MM-DD 预约日期，找不到则空字符串","time":"HH:MM 24小时制，找不到则空字符串","place":"医院或诊所名称","doc":"科室或医生，可空","note":"其他备注例如需要空腹、带旧报告（简体中文，可空）"}';
+  try{
+    const b64=pendingApptPhoto.split(',')[1];
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+gemKey(),{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt},{inline_data:{mime_type:'image/jpeg',data:b64}}]}]})});
+    if(!res.ok) throw new Error('API '+res.status);
+    const j=await res.json();
+    let txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+    txt=txt.replace(/```json|```/g,'').trim();
+    const out=JSON.parse(txt);
+    if(out.date && /^\d{4}-\d{2}-\d{2}$/.test(out.date)) document.getElementById('ap_date').value=out.date;
+    if(out.time && /^\d{1,2}:\d{2}$/.test(out.time)) document.getElementById('ap_time').value=out.time;
+    if(out.place) document.getElementById('ap_place').value=out.place;
+    if(out.doc) document.getElementById('ap_doc').value=out.doc;
+    if(out.note) document.getElementById('ap_note').value=out.note;
+    note.textContent=t('ai_done'); note.style.display='block';
+  }catch(e){ console.warn('aiAppt',e); note.textContent=t('ai_fail',e.message||'network'); note.style.display='block'; }
+  btn.textContent=t('ap_ai_btn'); btn.disabled=false;
+};
+window.viewApptScan=async function(id){ const p=await loadApptPhoto(id);
+  if(p){ document.getElementById('photoBig').src=p; document.getElementById('photoMask').classList.add('on'); } };
 window.saveAppt=async function(){
   const date=document.getElementById('ap_date').value;
   if(!date){ alert(t('ap_needdate')); return; }
   const rec={ date, time:document.getElementById('ap_time').value||'',
-    place:document.getElementById('ap_place').value||'', doc:document.getElementById('ap_doc').value||'',
+    place:document.getElementById('ap_place').value||'', doc:document.getElementById('ap_doc').value||'' ,
     note:document.getElementById('ap_note').value||'' };
-  if(apEditId){ const a=appts.find(x=>x.id===apEditId); if(a) Object.assign(a,rec); }
-  else appts.push(Object.assign({id:'a'+Date.now()},rec));
+  let a;
+  if(apEditId){ a=appts.find(x=>x.id===apEditId); if(a) Object.assign(a,rec); }
+  else { a=Object.assign({id:'a'+Date.now()},rec); appts.push(a); }
+  // persist the original scan alongside the extracted fields (separate doc — appts array must stay < 1 MB)
+  if(a && apptPhotoTouched && pendingApptPhoto){
+    a.photo=true; lset('apptphoto:'+a.id, pendingApptPhoto);
+    if(cloud){ try{ await cloudSet(apptPhotoPath(a.id), pendingApptPhoto);}catch(e){ console.warn(e); } }
+  }
   await saveApptsAll(); closeMask('apptMask'); renderAppts();
 };
 window.delAppt=async function(id){ if(!confirm(t('ap_del'))) return;
-  appts=appts.filter(a=>a.id!==id); await saveApptsAll(); renderAppts(); };
+  const a=appts.find(x=>x.id===id);
+  appts=appts.filter(x=>x.id!==id); await saveApptsAll();
+  if(a&&a.photo){ try{ localStorage.removeItem('apptphoto:'+id);}catch(e){}
+    if(cloud){ try{ await fx.deleteDoc(fx.doc(db,...apptPhotoPath(id))); }catch(e){} } }
+  renderAppts(); };
 function renderAppts(){
   const wrap=document.getElementById('apptList');
   if(!appts.length){ wrap.innerHTML='<p class="sub2">'+t('ap_none')+'</p>'; return; }
@@ -2395,8 +2488,9 @@ function renderAppts(){
   const item=(a,cls)=>{ const d=new Date(a.date+'T00:00:00');
     const dlab=(LANG==='zh')?((d.getMonth()+1)+'月'+d.getDate()+'日'):(TT.en.mon.split(',')[d.getMonth()]+' '+d.getDate());
     const tlab=a.time||((LANG==='zh')?('星期'+TT.zh.wd.split(',')[d.getDay()]):TT.en.wd.split(',')[d.getDay()]);
+    const scan=a.photo?` <a href="#" onclick="viewApptScan('${a.id}');return false;" style="color:var(--jade);font-size:13px;font-weight:700;">📄 ${t('ap_scan')}</a>`:'';
     return `<div class="appt ${cls}"><div class="ad">${dlab}<br>${tlab}</div>
-      <div class="ai tap" onclick="editAppt('${a.id}')"><b>${a.place||t('ap_visit')} <span class="tapedit">✏️</span></b>${a.doc?`<div class="sub2">${a.doc}</div>`:''}${a.note?`<div class="sub2">📝 ${a.note}</div>`:''}</div>
+      <div class="ai tap" onclick="editAppt('${a.id}')"><b>${a.place||t('ap_visit')} <span class="tapedit">✏️</span></b>${a.doc?`<div class="sub2">${a.doc}</div>`:''}${a.note?`<div class="sub2">📝 ${a.note}</div>`:''}${scan}</div>
       <button class="del" onclick="delAppt('${a.id}')">🗑</button></div>`; };
   let h=up.map(a=>item(a,'')).join('');
   if(past.length) h+=`<p class="sub2" style="margin:12px 0 2px;">${t('ap_past',past.length)}</p>`+past.slice(0,10).map(a=>item(a,'past')).join('');
@@ -2779,7 +2873,49 @@ function renderEmer(){
     s('主要病史 / MEDICAL HISTORY',e.diag)+s('⚠️ 特别注意 / IMPORTANT WARNINGS',e.warn)+
     s('过敏史 / ALLERGIES',e.allergy)+s('目前用药 / CURRENT MEDICATIONS',e.meds)+
     s('血型 / BLOOD TYPE',e.blood)+s('紧急联络 / EMERGENCY CONTACT',e.contact);
+  const ab=document.getElementById('emerAiBtn'); if(ab) ab.style.display=gemKey()?'block':'none';
 }
+/* AI-assisted Key Medical Info: drafts a revised summary from the patient's OWN records,
+   shows it for review, and only writes on explicit confirm. Never a silent rewrite. */
+window.suggestEmerUpdate=async function(){
+  if(!askPW()) return;
+  if(!gemKey()){ alert(t('em_ai_nokey')); return; }
+  const btn=document.getElementById('emerAiBtn'); const orig=btn.textContent;
+  btn.textContent=t('ai_reading'); btn.disabled=true;
+  try{
+    if(mrecs===null) await renderRecords();
+    const recsTxt=(mrecs||[]).slice(0,15).map(r=>
+      `- ${r.date||''} ${r.type||''} ${r.title||''} | 结果:${r.find||''} | 治疗:${r.treat||''}`).join('\n') || '（无病历记录 / no records）';
+    const cur=JSON.stringify({diag:emer.diag,warn:emer.warn,allergy:emer.allergy,meds:emer.meds});
+    const prompt='你在帮家属维护一份"重要医疗信息"急救摘要。下面是当前摘要(JSON)和最近的病历记录。请根据记录提出一份**修订后的**摘要，只反映记录里有依据的内容：补上新诊断、新药物或药物调整、新过敏；不要凭空捏造；保留原本的重要项目（例如低血钾、每日饮水上限）除非记录明确改变它。每一项都要**中英双语**（中文一行、英文一行）。只回复一个 JSON，不要其他文字或markdown：{"diag":"...","warn":"...","allergy":"...","meds":"...","changes":["用简体中文一句话说明每一处改动及原因"]}。\n\n当前摘要：'+cur+'\n\n最近病历：\n'+recsTxt;
+    const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+gemKey(),{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+    if(!res.ok) throw new Error('API '+res.status);
+    const j=await res.json();
+    let txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+    txt=txt.replace(/```json|```/g,'').trim();
+    const out=JSON.parse(txt);
+    document.getElementById('ea_diag').value=out.diag||emer.diag;
+    document.getElementById('ea_warn').value=out.warn||emer.warn;
+    document.getElementById('ea_allergy').value=out.allergy||emer.allergy;
+    document.getElementById('ea_meds').value=out.meds||emer.meds;
+    const ch=document.getElementById('emerAiChanges');
+    const changes=Array.isArray(out.changes)?out.changes.filter(Boolean):[];
+    ch.innerHTML = changes.length
+      ? '<div class="sec-t">'+t('em_ai_changes')+'</div>'+changes.map(c=>`<div class="li">• ${esc(c)}</div>`).join('')
+      : '<p class="sub2">'+t('em_ai_nochange')+'</p>';
+    closeMask('emerMask'); document.getElementById('emerAiMask').classList.add('on');
+  }catch(e){ console.warn('emerAi',e); alert(t('ai_fail',e.message||'network')); }
+  btn.textContent=orig; btn.disabled=false;
+};
+window.applyEmerSuggestion=async function(){
+  emer={ v:2, diag:document.getElementById('ea_diag').value, warn:document.getElementById('ea_warn').value,
+    allergy:document.getElementById('ea_allergy').value, meds:document.getElementById('ea_meds').value,
+    blood:emer.blood, contact:emer.contact };
+  lset('emergency',emer); if(cloud){ try{ await cloudSet(emerPath,emer);}catch(e){} }
+  closeMask('emerAiMask'); renderEmer(); alert(t('saved'));
+};
 window.editEmer=function(){
   const p=prompt(t('enterpw')); if(p===null) return;
   if(p!==CAREGIVER_PASSWORD){ alert(t('wrongpw')); return; }
